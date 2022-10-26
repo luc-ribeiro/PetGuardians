@@ -1,0 +1,55 @@
+dotnet new --list 
+dotnet new web -o GameBackend
+
+dotnet watch run
+
+dotnet add package Swashbuckle.AspNetCore --version 6.4.0
+
+dotnet clean
+
+https://gitlab.com/professordezani/gamebackend
+
+https://localhost:7212/Swagger
+
+
+--- Instalando o Entity Framework
+
+dotnet tool install --global dotnet-ef
+
+-- Atualizando
+
+dotnet tool update --global dotnet-ef
+
+-- Instalando a biblioteca que faz o design das classes do Entity Framework
+
+dotnet add package Microsoft.EntityFrameworkCore.Design
+
+-- Executando o Entity Framework
+
+dotnet ef
+
+-- Instalando os pacotes que estão no GameBackend.csproj
+
+dotnet restore
+
+-- Instalando pacote InMemory (cria o banco de dados em memória)
+
+dotnet add package Microsoft.EntityFrameworkCore.InMemory
+
+
+-- Instalando o pacote SQL Server para conexão com o banco de dados
+
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 7.0.0-rc.2.22472.11
+
+-- Executando a primeira migration
+
+dotnet ef migrations add "Primeira versão"
+
+
+-- Pegar a versão da migration atual e gerar o SQL
+
+dotnet ef migrations script > Script.SQL
+
+-- Atualizar o banco de dados
+
+dotnet ef database update
