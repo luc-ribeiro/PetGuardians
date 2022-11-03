@@ -1,0 +1,10 @@
+.button {
+  padding: 8px 16px;
+  background-color: var(--p2);
+  color: var(--w) !important;
+  border-radius: 8px;
+  transition: background 0.5s;
+  outline: 0;
+  border: 0;
+  width: 100%;
+}

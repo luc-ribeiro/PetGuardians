@@ -1,0 +1,63 @@
+.header {
+  padding: 48px 0 48px;
+  font-family: var(--type-text);
+}
+
+.nav,
+.navMenu,
+.navButtons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navMenu {
+  gap: 32px;
+}
+
+.navMenu li a {
+  color: var(--c9);
+  font-weight: 600;
+  transition: color 0.5s;
+}
+.navMenu li a:hover {
+  color: var(--p4);
+}
+
+.navSearch {
+  position: relative;
+}
+
+.navSearch .buttonSearch {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  outline: 0;
+  border: 0;
+  border-radius: 8px;
+}
+
+.navLogin {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.navLogin a {
+  color: var(--a3);
+  font-weight: 600;
+}
+
+.navButton {
+  padding: 8px 16px;
+  background-color: var(--p2);
+  color: var(--w) !important;
+  border-radius: 8px;
+  transition: background 0.5s;
+}
+
+.navButton:hover {
+  background-color: var(--p4);
+}

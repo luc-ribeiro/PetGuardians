@@ -1,0 +1,97 @@
+.intro {
+  margin-top: 40px;
+}
+
+.intro .introText {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.introText h1 {
+  font-family: var(--type-title);
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 60px;
+  color: var(--c10);
+  width: 22ch;
+}
+
+.introText h1 span {
+  color: var(--p5);
+}
+
+.introText p {
+  font-family: var(--type-text);
+  line-height: 24px;
+  color: var(--c8);
+  width: 42ch;
+  place-self: end;
+}
+
+.aboutImg {
+  margin-top: 80px;
+}
+
+.aboutImg img {
+  width: 100%;
+}
+
+.aboutSection {
+  margin-top: 80px;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--c6);
+}
+
+.aboutSection h2 {
+  font-family: var(--type-title);
+  font-size: 32px;
+  line-height: 60px;
+  color: var(--c10);
+  width: 15ch;
+}
+
+.aboutSection p {
+  font-family: var(--type-text);
+  width: 45ch;
+  margin-bottom: 32px;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.aboutSection .textBold {
+  font-weight: 600;
+}
+
+/* COUNTER */
+
+.counterSection {
+  margin-top: 72px;
+  margin-bottom: 80px;
+}
+
+.counterList {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  place-items: center;
+}
+
+.counterList li {
+  color: var(--c10);
+
+  text-align: center;
+}
+
+.counterList li h4 {
+  font-family: var(--type-title);
+  font-size: 64px;
+  line-height: 96px;
+}
+
+.counterList li p {
+  font-family: var(--type-text);
+  font-size: 24px;
+  line-height: 36px;
+  width: 12ch;
+}

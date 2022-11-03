@@ -1,0 +1,122 @@
+.main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.main .introText {
+  place-self: center;
+  padding-bottom: 40px;
+  justify-self: flex-start;
+}
+
+.introText h1 {
+  font-family: var(--type-title);
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 60px;
+  color: var(--c10);
+  width: 22ch;
+}
+
+.introText p {
+  font-family: var(--type-text);
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--c8);
+  width: 42ch;
+  margin-top: 16px;
+}
+
+.introText .button {
+  padding: 16px 16px;
+  margin-top: 24px;
+  background: linear-gradient(180deg, #ff934c 0%, #f17727 100%);
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+  color: var(--w);
+  border-radius: 8px;
+  display: inline-block;
+  font-family: var(--type-text);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 22px;
+}
+
+.introImg {
+  justify-self: flex-end;
+}
+
+.introImg img {
+  border-radius: 8px;
+}
+
+/* CARDS */
+
+.cardSection {
+  margin-top: 120px;
+}
+
+.cardSectionHeader {
+  text-align: center;
+}
+
+.cardSectionHeader h2 {
+  font-family: var(--type-title);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 60px;
+  color: var(--c9);
+}
+
+.cardSectionHeader p {
+  font-family: var(--type-text);
+  font-size: 20px;
+  line-height: 30px;
+  color: var(--c8);
+}
+
+.cardContainer {
+  margin-top: 64px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+}
+
+@media (max-width: 464px) {
+  .cardContainer {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+}
+
+.cards {
+  background-color: var(--w);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  padding: 40px 20px;
+  border-radius: 8px;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.cards h3 {
+  font-family: var(--type-title);
+  font-size: 20px;
+  line-height: 28px;
+  color: var(--c9);
+}
+
+.cards p {
+  font-family: var(--type-text);
+  color: var(--c7);
+  font-size: 16px;
+  line-height: 21px;
+}
+
+/* CITE IMG SECTION */
+
+.citeSection {
+  margin-top: 120px;
+}
