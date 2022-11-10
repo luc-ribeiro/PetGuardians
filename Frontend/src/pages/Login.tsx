@@ -9,28 +9,30 @@ import { Button } from '../components/Forms/Button'
 
 export function Login() {
   return (
-    <div className={styles.formContainer}>
+    <div className={styles.formWrapper}>
       <div className={styles.formImage}>
         <img src={imgLogin} alt="" />
       </div>
       <div className={styles.formArea}>
-        <div>
+        <div className={styles.logoContainer}>
           <img src={logo} alt="" />
         </div>
-        <div className={styles.form}>
-          <Link to="/">
-            <IconBack />
-          </Link>
-          <h1>Login</h1>
-          <form>
+        <div className={styles.formContainer}>
+          <div className={styles.formHeader}>
+            <Link to="/">
+              <IconBack />
+            </Link>
+            <h1>Login</h1>
+          </div>
+          <form className={styles.form}>
             <Input placeholder="E-mail" type="e-mail" name="email" />
             <Input placeholder="Senha" type="password" name="password" />
             <Link to="/esqueci-a-senha">Esqueci minha senha</Link>
             <Button type="submit">Entrar</Button>
           </form>
 
-          <p>
-            Não tem uma conta? <Link to="cadastrar">Cadastre-se!</Link>
+          <p className={styles.signIn}>
+            Não tem uma conta? <Link to="../cadastrar">Cadastre-se!</Link>
           </p>
         </div>
       </div>

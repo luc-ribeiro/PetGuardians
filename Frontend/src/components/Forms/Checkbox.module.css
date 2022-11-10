@@ -1,0 +1,15 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.label {
+  font: 400 16px/22px var(--type-text);
+  color: var(--c8);
+}
+
+.input {
+  background-color: var(--c10);
+  color: var(--c10);
+}

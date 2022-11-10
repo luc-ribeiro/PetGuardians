@@ -8,10 +8,8 @@
 }
 
 .introText h1 {
-  font-family: var(--type-title);
-  font-weight: 700;
-  font-size: 40px;
-  line-height: 60px;
+  font: 700 40px/60px var(--type-title);
+
   color: var(--c10);
   width: 22ch;
 }
@@ -22,6 +20,7 @@
 
 .introText p {
   font-family: var(--type-text);
+
   line-height: 24px;
   color: var(--c8);
   width: 42ch;
@@ -45,19 +44,17 @@
 }
 
 .aboutSection h2 {
-  font-family: var(--type-title);
-  font-size: 32px;
-  line-height: 60px;
+  font: 700 32px/60px var(--type-title);
+
   color: var(--c10);
   width: 15ch;
 }
 
 .aboutSection p {
-  font-family: var(--type-text);
+  font: 400 16px/24px var(--type-text);
+
   width: 45ch;
   margin-bottom: 32px;
-  font-size: 16px;
-  line-height: 24px;
 }
 
 .aboutSection .textBold {
@@ -84,14 +81,11 @@
 }
 
 .counterList li h4 {
-  font-family: var(--type-title);
-  font-size: 64px;
-  line-height: 96px;
+  font: 700 64px/96px var(--type-title);
 }
 
 .counterList li p {
-  font-family: var(--type-text);
-  font-size: 24px;
-  line-height: 36px;
+  font: 400 24px/36px var(--type-text);
+
   width: 12ch;
 }

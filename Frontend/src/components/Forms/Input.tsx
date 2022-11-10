@@ -10,6 +10,7 @@ interface InputProps {
   onChange?: ChangeEventHandler<HTMLInputElement>
   error?: ReactNode
   onBlur?: FocusEventHandler<HTMLInputElement>
+  width?: string
 }
 
 export function Input({
@@ -21,9 +22,10 @@ export function Input({
   onChange,
   error,
   onBlur,
+  width = '100%',
 }: InputProps) {
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper} style={{ width }}>
       <label htmlFor={name} className={styles.label}>
         {label}
       </label>

@@ -21,6 +21,11 @@
   font-weight: 600;
   transition: color 0.5s;
 }
+
+.navLink {
+  font-size: 30px !important;
+}
+
 .navMenu li a:hover {
   color: var(--p4);
 }
@@ -60,4 +65,15 @@
 
 .navButton:hover {
   background-color: var(--p4);
+}
+
+.searchInput {
+  outline: 0;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 8px;
+  background-color: var(--c2);
+  font-weight: 600;
+  color: var(--c9);
+  width: 100%;
 }

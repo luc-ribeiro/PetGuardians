@@ -10,18 +10,15 @@
 }
 
 .introText h1 {
-  font-family: var(--type-title);
-  font-weight: 700;
-  font-size: 40px;
-  line-height: 60px;
+  font: 700 40px/60px var(--type-title);
+
   color: var(--c10);
   width: 22ch;
 }
 
 .introText p {
-  font-family: var(--type-text);
-  font-size: 16px;
-  line-height: 24px;
+  font: 400 16px/24px var(--type-text);
+
   color: var(--c8);
   width: 42ch;
   margin-top: 16px;
@@ -35,10 +32,8 @@
   color: var(--w);
   border-radius: 8px;
   display: inline-block;
-  font-family: var(--type-text);
-  font-weight: 600;
-  font-size: 16px;
-  line-height: 22px;
+
+  font: 600 16px/22px var(--type-text);
 }
 
 .introImg {
@@ -60,17 +55,14 @@
 }
 
 .cardSectionHeader h2 {
-  font-family: var(--type-title);
-  font-weight: 700;
-  font-size: 32px;
-  line-height: 60px;
+  font: 700 32px/60px var(--type-title);
+
   color: var(--c9);
 }
 
 .cardSectionHeader p {
-  font-family: var(--type-text);
-  font-size: 20px;
-  line-height: 30px;
+  font: 400 20px/30px var(--type-text);
+
   color: var(--c8);
 }
 
@@ -102,17 +94,15 @@
 }
 
 .cards h3 {
-  font-family: var(--type-title);
-  font-size: 20px;
-  line-height: 28px;
+  font: 700 20px/28px var(--type-title);
+
   color: var(--c9);
 }
 
 .cards p {
-  font-family: var(--type-text);
+  font: 400 16px/21px var(--type-text);
+
   color: var(--c7);
-  font-size: 16px;
-  line-height: 21px;
 }
 
 /* CITE IMG SECTION */

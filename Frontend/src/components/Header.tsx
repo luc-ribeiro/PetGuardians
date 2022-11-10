@@ -7,6 +7,8 @@ import { ReactComponent as Logo } from '../assets/logo.svg'
 import { ReactComponent as IconSearch } from '../assets/icon-search.svg'
 
 export function Header() {
+  let activeClassName = 'navLink'
+
   return (
     <header className={styles.header}>
       <nav className={`${styles.nav} container`}>
@@ -27,7 +29,13 @@ export function Header() {
         </ul>
 
         <form className={styles.navSearch}>
-          <Input type="text" name="Pesquisar" placeholder="Pesquisar" />
+          <input
+            type="text"
+            name="search"
+            id="search"
+            placeholder="Pesquisar"
+            className={styles.searchInput}
+          />
           <button className={styles.buttonSearch} type="submit">
             <IconSearch />
           </button>

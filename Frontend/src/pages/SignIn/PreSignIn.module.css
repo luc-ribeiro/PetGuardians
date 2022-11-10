@@ -1,0 +1,85 @@
+.formWrapper {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.formImage img {
+  max-width: unset;
+}
+
+.formArea {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow-y: scroll;
+}
+
+.logoContainer {
+  margin: 45px 0 0 100px;
+}
+
+.formContainer {
+  margin: 180px auto 0 200px;
+}
+
+.formHeader {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.formHeader h1 {
+  font: 700 40px/60px var(--type-title);
+  color: var(--c10);
+}
+
+.linksContainer {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: var(--type-text);
+}
+
+.linksContainer p {
+  font-size: 20px;
+  color: var(--c8);
+}
+
+.donor,
+.shelter,
+.partner,
+.vet {
+  padding: 16px 56px;
+  color: var(--w);
+  border-radius: 8px;
+  transition: background 0.5s;
+  outline: 0;
+  border: 0;
+  width: 100%;
+  font-weight: 600;
+  font-size: 16px;
+  text-align: center;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.donor {
+  background: linear-gradient(180deg, #ff934c 0%, #f17727 100%);
+}
+
+.shelter {
+  background: linear-gradient(180deg, #1f9eac 0%, #108592 58.55%, #067380 100%);
+}
+
+.vet {
+  background: transparent;
+  outline: 2px solid var(--p5);
+  color: var(--p5);
+}
+
+.partner {
+  background: transparent;
+  outline: 2px solid var(--a5);
+  color: var(--a5);
+}

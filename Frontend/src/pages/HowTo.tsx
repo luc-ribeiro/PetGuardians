@@ -8,12 +8,10 @@ import { useState } from 'react'
 export function HowTo() {
   const [active, setActive] = useState(false)
 
-  function ativarPergunta(event) {
-    const pergunta = event.currentTarget
-
+  function ativarPergunta() {
+    // const pergunta = event.currentTarget
     // const controls = pergunta.getAttribute('aria-controls')
     // const resposta = document.getElementById(controls)
-
     // resposta.classList.toggle('ativa')
     // const ativa = resposta.classList.contains('ativa')
     // pergunta.setAttribute('aria-expanded', ativa)
@@ -40,6 +38,19 @@ export function HowTo() {
               </button>
             </dt>
             <dd id="pergunta1">Trabalhamos de forma x.</dd>
+          </div>
+
+          <div>
+            <dt>
+              <button
+                onClick={ativarPergunta}
+                aria-controls="pergunta2"
+                aria-expanded="false"
+              >
+                Como funciona?
+              </button>
+            </dt>
+            <dd id="pergunta2">Trabalhamos de forma x.</dd>
           </div>
 
           <div>

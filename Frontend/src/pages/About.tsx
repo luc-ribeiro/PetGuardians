@@ -4,7 +4,7 @@ import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
 
 import aboutImg from '../assets/img-about.jpg'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 export function About() {
   const [counter, setCounter] = useState(0)
@@ -12,23 +12,16 @@ export function About() {
   const [shelterNumber, setShelterNumber] = useState(0)
   const [donorNumber, setDonorNumber] = useState(0)
 
-  function incrementNumber() {
-    // const random = (min: number, max: number) =>
-    //   Math.floor(Math.random() * (max - min) + min)
+  const increment = setTimeout(() => {
+    setRationNumber(rationNumber + 6)
+    setShelterNumber(shelterNumber + 4)
+    setDonorNumber(donorNumber + 8)
+    setCounter(counter + 1)
+  }, 100)
 
-    const random = () => Math.floor(Math.random() * 100)
-
-    const randomIncrement = setInterval(() => {
-      setRationNumber(random())
-      setShelterNumber(random())
-      setDonorNumber(random())
-      clearInterval(randomIncrement)
-    }, 500)
+  if (counter == 10) {
+    clearInterval(increment)
   }
-
-  useEffect(() => {
-    incrementNumber()
-  }, [])
 
   return (
     <>
