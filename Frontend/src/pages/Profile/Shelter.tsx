@@ -1,5 +1,7 @@
 import styles from './Shelter.module.css'
 
+import { Link } from 'react-router-dom'
+
 import { Header } from '../../components/Header'
 import { Footer } from '../../components/Footer'
 import { Breadcrumb } from '../../components/Profiles/Breadcrumb'
@@ -25,9 +27,9 @@ export function ShelterProfile() {
               Rua Logo Ali 320, Jardim das Flores, São José do Rio Preto - São
               Paulo
             </p>
-            <a className={styles.button} href="">
+            <Link className={styles.button} to="editar">
               Editar perfil
-            </a>
+            </Link>
           </div>
           <div className={styles.qtdDonationsContainer}>
             <p className={styles.totalDonations}>

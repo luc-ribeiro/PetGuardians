@@ -5,6 +5,7 @@ import { Footer } from '../../components/Footer'
 import { Breadcrumb } from '../../components/Profiles/Breadcrumb'
 import { Avatar } from '../../components/Profiles/Avatar'
 import { Table } from '../../components/Profiles/Table'
+import { Link } from 'react-router-dom'
 
 export function DonorProfile() {
   return (
@@ -19,9 +20,9 @@ export function DonorProfile() {
           <div className={styles.profileHeader}>
             <h1 className={styles.userName}>Elaine Silva</h1>
             <p className={styles.userCity}>São José do Rio Preto, SP</p>
-            <a className={styles.button} href="">
+            <Link className={styles.button} to="/abrigos">
               Pesquisar abrigos
-            </a>
+            </Link>
           </div>
           <div className={styles.qtdDonationsContainer}>
             <p className={styles.totalDonations}>
