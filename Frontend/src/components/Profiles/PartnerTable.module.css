@@ -1,0 +1,52 @@
+.partnerContainer {
+  background-color: var(--w);
+  border-radius: 8px;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+  margin-top: 52px;
+  padding: 24px 64px;
+  color: var(--c9);
+}
+
+.partnerContainer h3 {
+  font: 400 20px/30px var(--type-text);
+  color: var(--c8);
+  margin: 0 auto;
+  padding-left: 40px;
+}
+
+.partnerHeader {
+  display: flex;
+  align-items: center;
+}
+
+.button {
+  padding: 4px;
+  background: linear-gradient(180deg, #1f9eac 0%, #108592 58.55%, #067380 100%);
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+  color: var(--w);
+  border-radius: 8px;
+  display: inline-block;
+
+  font: 600 16px/22px var(--type-text);
+
+  margin-right: -48px;
+}
+
+.partnerWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  align-items: baseline;
+  text-align: center;
+  margin-top: 32px;
+}
+
+.partner img {
+  margin: 0 auto;
+}
+
+.partnerName {
+  font: 400 14px/21px var(--type-text);
+  color: var(--a3);
+  margin-top: 8px;
+}

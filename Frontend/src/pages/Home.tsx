@@ -25,7 +25,7 @@ export function Home() {
             Faça a diferença na vida de um bichinho que está em um abrigo.
             Cadastre-se, escolha um abrigo e realize um ato de amor.
           </p>
-          <Link className={styles.button} to="/cadastrar">
+          <Link className={styles.button} to="/login">
             Quero Ajudar
           </Link>
         </div>

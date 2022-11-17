@@ -31,12 +31,12 @@ export function PreSignIn() {
             <Link className={styles.shelter} to="abrigo">
               Sou um abrigo e quero me cadastrar
             </Link>
-            <Link className={styles.vet} to="veterinario">
+            {/* <Link className={styles.vet} to="veterinario">
               Sou veterinário
-            </Link>
-            <Link className={styles.partner} to="parceiro">
+            </Link> */}
+            {/* <Link className={styles.partner} to="parceiro">
               Sou parceiro de um abrigo
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>
