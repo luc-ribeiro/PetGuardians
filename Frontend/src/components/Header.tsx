@@ -1,13 +1,13 @@
-import { useState } from 'react'
-
 import styles from './Header.module.css'
 import { Link, NavLink } from 'react-router-dom'
+
+import { Input } from './Forms/Input'
 
 import { ReactComponent as Logo } from '../assets/logo.svg'
 import { ReactComponent as IconSearch } from '../assets/icon-search.svg'
 
 export function Header() {
-  const [teste, setTeste] = useState(true)
+  let activeClassName = 'navLink'
 
   return (
     <header className={styles.header}>
@@ -42,19 +42,11 @@ export function Header() {
         </form>
 
         <div className={styles.navLogin}>
-          {teste ? (
-            <>
-              <Link to="/login">Entrar</Link>
+          <Link to="/login">Entrar</Link>
 
-              <Link className={styles.navButton} to="/cadastrar">
-                Cadastrar
-              </Link>
-            </>
-          ) : (
-            <>
-              <h2>Teste</h2>
-            </>
-          )}
+          <Link className={styles.navButton} to="/cadastrar">
+            Cadastrar
+          </Link>
         </div>
       </nav>
     </header>
