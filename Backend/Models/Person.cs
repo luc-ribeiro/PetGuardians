@@ -1,23 +1,20 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Models;
 
-public abstract class Person {
-    public int Id {get; set;}
+[Table("Persons")]
+public class Person
+{
+    public int Id { get; set; }
 
     [MaxLength(60)]
-    public string Name { get; set; }    
+    public string Name { get; set; }
 
-    [MaxLength(14)]
-    public string CPF { get; set; }    
+    [MaxLength(11)]
+    public string CPF { get; set; }
 
-    public DateTime Birthday { get; set; } 
+    public DateTime Birthday { get; set; }
 
-    public string Email {get; set; }
-
-    public string Password {get; set;}
-
-    public Address? Address { get; set; }
-
-        
+    public ICollection<Address> Addresses { get; set; }
 }

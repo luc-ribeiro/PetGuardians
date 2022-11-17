@@ -4,13 +4,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Backend.Models;
 
 [Table("Shelters")]
-public class Shelter: Person {
-    public int Id {get; set;}
+public class Shelter: User {
  
     [MaxLength(60)]
-    public string Name { get; set; }
+    public string CorporateName { get; set; }
 
-    [MaxLength(21)]
+    [MaxLength(14)]
     public string CNPJ { get; set; }
         
 }

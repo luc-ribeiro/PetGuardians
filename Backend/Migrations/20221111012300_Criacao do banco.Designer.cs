@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(DBPetGuardians))]
-    [Migration("20221025201901_PrimeiraVersãao")]
-    partial class PrimeiraVersãao
+    [Migration("20221111012300_Criacao do banco")]
+    partial class Criacaodobanco
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -53,6 +53,9 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("PersonId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Street")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -64,10 +67,12 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PersonId");
+
                     b.ToTable("Address");
                 });
 
-            modelBuilder.Entity("Backend.Models.Shelter", b =>
+            modelBuilder.Entity("Backend.Models.Person", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -75,52 +80,88 @@ namespace Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("AddressId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Birthday")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("CNPJ")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("nvarchar(21)");
 
                     b.Property<string>("CPF")
                         .IsRequired()
                         .HasMaxLength(14)
                         .HasColumnType("nvarchar(14)");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("IdAddress")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)");
 
+                    b.HasKey("Id");
+
+                    b.ToTable("Persons");
+                });
+
+            modelBuilder.Entity("Backend.Models.User", b =>
+                {
+                    b.HasBaseType("Backend.Models.Person");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("AddressId");
-
-                    b.ToTable("Shelters");
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Backend.Models.Shelter", b =>
                 {
-                    b.HasOne("Backend.Models.Address", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressId");
+                    b.HasBaseType("Backend.Models.User");
 
-                    b.Navigation("Address");
+                    b.Property<string>("CNPJ")
+                        .IsRequired()
+                        .HasMaxLength(21)
+                        .HasColumnType("nvarchar(21)");
+
+                    b.Property<string>("CorporateName")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.ToTable("Shelters");
+                });
+
+            modelBuilder.Entity("Backend.Models.Address", b =>
+                {
+                    b.HasOne("Backend.Models.Person", "Person")
+                        .WithMany("Addresses")
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Person");
+                });
+
+            modelBuilder.Entity("Backend.Models.User", b =>
+                {
+                    b.HasOne("Backend.Models.Person", null)
+                        .WithOne()
+                        .HasForeignKey("Backend.Models.User", "Id")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Backend.Models.Shelter", b =>
+                {
+                    b.HasOne("Backend.Models.User", null)
+                        .WithOne()
+                        .HasForeignKey("Backend.Models.Shelter", "Id")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Backend.Models.Person", b =>
+                {
+                    b.Navigation("Addresses");
                 });
 #pragma warning restore 612, 618
         }
