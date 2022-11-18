@@ -4,6 +4,7 @@ interface CheckboxProps {
   label?: string
   name: string
   value?: string
+  onClick?: (event: Event) => void
 }
 
 export function Checkbox({ label, name, value }: CheckboxProps) {
