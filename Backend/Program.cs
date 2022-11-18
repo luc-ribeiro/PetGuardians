@@ -9,6 +9,23 @@ public class Program
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+        // Cria regra do CORS
+        builder.Services.AddCors
+        (
+            option => option.AddPolicy
+            (
+                name: "MyAllowSpecificOrigins",
+                builder =>
+                {
+                    builder
+                        .AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowAnyOrigin();
+                }
+            )
+        );
+
+
         // Adicionar middlewares (services):
         builder.Services.AddControllers();
 
@@ -29,6 +46,9 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        // Usa o CORS   
+        app.UseCors("MyAllowSpecificOrigins");
 
         // Usa o middleware (adiciona no pipeline de execução):
         app.MapControllers();
