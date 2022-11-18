@@ -16,5 +16,5 @@ public class Person
 
     public DateTime Birthday { get; set; }
 
-    public ICollection<Address> Addresses { get; set; }
+    // public ICollection<Address> Addresses { get; set; }
 }
