@@ -16,5 +16,19 @@ public class Person
 
     public DateTime Birthday { get; set; }
 
-    // public ICollection<Address> Addresses { get; set; }
+    [MaxLength(8)]
+    public string CEP { get; set; }
+
+    [MaxLength(2)]
+    public string UF { get; set; }
+
+    public string City { get; set; }
+
+    public string Street { get; set; }
+
+    public string StreetNumber { get; set; }
+
+    public string District { get; set; }
+
+    public string Complement { get; set; }
 }

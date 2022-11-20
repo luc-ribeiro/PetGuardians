@@ -74,13 +74,6 @@ public class ShelterController : ControllerBase
         return Created(shelter.Id.ToString(), shelter);
     }
 
-
-    [HttpGet]
-    public ActionResult Read()
-    {
-        return Ok(db.Shelters.ToList());
-    }
-
     [HttpGet]
     [Route("{id}")]
     public ActionResult Read(int id)
@@ -91,6 +84,13 @@ public class ShelterController : ControllerBase
             return NotFound();
         }
         return Ok(shelter);
+    }
+
+
+    [HttpGet]
+    public ActionResult Read(string corporateName, string UF, string city)
+    {
+        return Ok(db.Shelters.Where(s => s.CorporateName.Contains(corporateName) && s.UF.Equals(UF) && s.City.Equals(city)).ToList());
     }
 
     [HttpPatch]
@@ -104,6 +104,7 @@ public class ShelterController : ControllerBase
         }
 
         _shelter.CorporateName = shelter.CorporateName;
+        _shelter.Slug = shelter.Slug;
         db.SaveChanges();
         return Ok();
     }

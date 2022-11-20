@@ -11,6 +11,19 @@ public class DBPetGuardians : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Shelter>(e =>
+        {
+            e.Property(s => s.CorporateName).UseCollation("SQL_Latin1_General_CP1_CI_AI");
+            e.HasIndex(s => s.CNPJ).IsUnique();
+            e.HasIndex(s => s.Slug).IsUnique();
+        });
+
+        modelBuilder.Entity<Person>(e =>
+        {
+            e.Property(p => p.City).UseCollation("SQL_Latin1_General_CP1_CI_AI");
+            e.Property(p => p.UF).UseCollation("SQL_Latin1_General_CP1_CI_AI");
+        });
+
         // modelBuilder.Entity<Person>()
         //     .HasMany(p => p.Addresses)
         //     .WithOne(a => a.Person)
@@ -21,8 +34,4 @@ public class DBPetGuardians : DbContext
     public DbSet<Person> Persons { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Shelter> Shelters { get; set; }
-    // public DbSet<Address> Addresses { get; set; }
-
-    // public DbSet<Email> Games { get; set; }
-    // public DbSet<Password> Quizzes { get; set; }
 }

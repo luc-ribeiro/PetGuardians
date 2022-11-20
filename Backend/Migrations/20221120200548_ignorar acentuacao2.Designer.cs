@@ -4,6 +4,7 @@ using Backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(DBPetGuardians))]
-    partial class DBPetGuardiansModelSnapshot : ModelSnapshot
+    [Migration("20221120200548_ignorar acentuacao2")]
+    partial class ignoraracentuacao2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,8 +47,7 @@ namespace Backend.Migrations
 
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .UseCollation("SQL_Latin1_General_CP1_CI_AI");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Complement")
                         .IsRequired()
@@ -61,19 +62,18 @@ namespace Backend.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)");
 
-                    b.Property<string>("Street")
+                    b.Property<string>("Number")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("StreetNumber")
+                    b.Property<string>("Street")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UF")
                         .IsRequired()
                         .HasMaxLength(2)
-                        .HasColumnType("nvarchar(2)")
-                        .UseCollation("SQL_Latin1_General_CP1_CI_AI");
+                        .HasColumnType("nvarchar(2)");
 
                     b.HasKey("Id");
 
@@ -109,17 +109,6 @@ namespace Backend.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)")
                         .UseCollation("SQL_Latin1_General_CP1_CI_AI");
-
-                    b.Property<string>("Slug")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasIndex("CNPJ")
-                        .IsUnique()
-                        .HasFilter("[CNPJ] IS NOT NULL");
-
-                    b.HasIndex("Slug")
-                        .IsUnique()
-                        .HasFilter("[Slug] IS NOT NULL");
 
                     b.ToTable("Shelters");
                 });
