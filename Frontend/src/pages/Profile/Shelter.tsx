@@ -1,6 +1,7 @@
 import styles from './Shelter.module.css'
+import api from '../../services/api'
 
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 import { Header } from '../../components/Header'
 import { Footer } from '../../components/Footer'
@@ -10,22 +11,53 @@ import { AboutShelter } from '../../components/Profiles/AboutShelter'
 import { ProductTable } from '../../components/Profiles/ProductTable'
 import { PartnerTable } from '../../components/Profiles/PartnerTable'
 import { Table } from '../../components/Profiles/Table'
+import { useEffect, useState } from 'react'
+
+interface Shelter {
+  id: number
+  corporateName: string
+  cnpj: string
+  uf: string
+  city: string
+  cep: string
+  street: string
+  streetNumber: string
+  district: string
+  complement: string
+}
+
+interface ShelterParams {
+  id: string
+}
 
 export function ShelterProfile() {
+  const params = useParams<string>()
+  const [shelter, setShelter] = useState<Shelter>()
+
+  useEffect(() => {
+    api.get(`shelter/${params.id}`).then(response => {
+      setShelter(response.data)
+    })
+  }, [params.id])
+
+  if (!shelter) {
+    return <p>Carregando...</p>
+  }
+
   return (
     <>
       <Header />
       <div className={`${styles.container} container`}>
         <div className={styles.imageContainer}>
-          <Breadcrumb />
+          <Breadcrumb type="Abrigos" to={shelter.corporateName} />
           <Avatar />
         </div>
         <div className={styles.profileContainer}>
           <div className={styles.profileHeader}>
-            <h1 className={styles.userName}>Abrigo Quatro Patas</h1>
+            <h1 className={styles.userName}>{shelter.corporateName}</h1>
             <p className={styles.userCity}>
-              Rua Logo Ali 320, Jardim das Flores, São José do Rio Preto - São
-              Paulo
+              {shelter.street} {shelter.streetNumber}, {shelter.district},{' '}
+              {shelter.city} - {shelter.uf}
             </p>
             <Link className={styles.button} to="editar">
               Editar perfil

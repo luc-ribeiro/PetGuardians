@@ -1,4 +1,5 @@
 import { useState, useEffect, ChangeEvent } from 'react'
+import axios from 'axios'
 
 import styles from './Donor.module.css'
 
@@ -12,6 +13,14 @@ import { Select } from '../../components/Forms/Select'
 import { Checkbox } from '../../components/Forms/Checkbox'
 import { Button } from '../../components/Forms/Button'
 
+interface IBGEUFResponse {
+  sigla: string
+}
+
+interface IBGECityResponse {
+  nome: string
+}
+
 export function DonorSignIn() {
   const [ufs, setUfs] = useState<string[]>([])
   const [cities, setCities] = useState<string[]>([])
@@ -19,45 +28,34 @@ export function DonorSignIn() {
   const [selectedCity, setSelectedCity] = useState('0')
 
   useEffect(() => {
-    fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados')
+    axios
+      .get<IBGEUFResponse[]>(
+        'https://servicodados.ibge.gov.br/api/v1/localidades/estados',
+      )
       .then(response => {
-        if (response.ok) {
-          return response.json()
-        }
-        throw response
-      })
-      .then(data => {
-        const ufInitials = data.map((uf: { sigla: string }) => uf.sigla)
+        const ufInitials = response.data.map(uf => uf.sigla)
         setUfs(ufInitials)
       })
   }, [])
 
   useEffect(() => {
+    // Carregar as cidades sempre que a UF mudar
     if (selectedUf === '0') {
       return
     }
 
-    fetch(
-      `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedUf}/municipios`,
-    )
+    axios
+      .get<IBGECityResponse[]>(
+        `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedUf}/municipios`,
+      )
       .then(response => {
-        if (response.ok) {
-          return response.json()
-        }
-        throw response
-      })
-      .then(data => {
-        const cityNames = data.map((city: { nome: string }) => city.nome)
+        const cityNames = response.data.map(city => city.nome)
         setCities(cityNames)
       })
   }, [selectedUf])
 
   function handleSelectedUf(event: ChangeEvent<HTMLSelectElement>) {
     const uf = event.target.value
-
-    if (uf == '0') {
-      return
-    }
     setSelectedUf(uf)
   }
 

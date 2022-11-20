@@ -123,3 +123,4 @@ D:\Inter\Projeto\Backend\obj\Debug\net6.0\refint\Backend.dll
 D:\Inter\Projeto\Backend\obj\Debug\net6.0\Backend.pdb
 D:\Inter\Projeto\Backend\obj\Debug\net6.0\Backend.genruntimeconfig.cache
 D:\Inter\Projeto\Backend\obj\Debug\net6.0\ref\Backend.dll
+D:\Inter\Projeto\Backend\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

@@ -34,9 +34,9 @@ export function PreSignIn() {
             {/* <Link className={styles.vet} to="veterinario">
               Sou veterinário
             </Link> */}
-            {/* <Link className={styles.partner} to="parceiro">
-              Sou parceiro de um abrigo
-            </Link> */}
+            <Link className={styles.partner} to="parceiro">
+              Quero ser parceiro
+            </Link>
           </div>
         </div>
       </div>

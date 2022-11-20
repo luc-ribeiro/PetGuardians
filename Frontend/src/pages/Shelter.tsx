@@ -1,60 +1,78 @@
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import axios from 'axios'
+import api from '../services/api'
+
 import styles from './Shelter.module.css'
 
 import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
 import { Input } from '../components/Forms/Input'
-import { ChangeEvent, useEffect, useState } from 'react'
 import { Select } from '../components/Forms/Select'
 
 import ImgShelter from '../assets/avatar-shelter-img.jpg'
-import { Link } from 'react-router-dom'
+
+interface IBGEUFResponse {
+  sigla: string
+}
+
+interface IBGECityResponse {
+  nome: string
+}
 
 export function Shelter() {
+  const [shelters, setShelters] = useState([])
+
+  const [shelterName, setShelterName] = useState('')
   const [ufs, setUfs] = useState<string[]>([])
   const [cities, setCities] = useState<string[]>([])
+
   const [selectedUf, setSelectedUf] = useState('0')
   const [selectedCity, setSelectedCity] = useState('0')
 
   useEffect(() => {
-    fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados')
+    axios
+      .get<IBGEUFResponse[]>(
+        'https://servicodados.ibge.gov.br/api/v1/localidades/estados',
+      )
       .then(response => {
-        if (response.ok) {
-          return response.json()
-        }
-        throw response
-      })
-      .then(data => {
-        const ufInitials = data.map((uf: { sigla: string }) => uf.sigla)
+        const ufInitials = response.data.map(uf => uf.sigla)
         setUfs(ufInitials)
       })
   }, [])
 
   useEffect(() => {
+    // Carregar as cidades sempre que a UF mudar
     if (selectedUf === '0') {
       return
     }
 
-    fetch(
-      `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedUf}/municipios`,
-    )
+    axios
+      .get<IBGECityResponse[]>(
+        `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedUf}/municipios`,
+      )
       .then(response => {
-        if (response.ok) {
-          return response.json()
-        }
-        throw response
-      })
-      .then(data => {
-        const cityNames = data.map((city: { nome: string }) => city.nome)
+        const cityNames = response.data.map(city => city.nome)
         setCities(cityNames)
       })
   }, [selectedUf])
 
+  async function searchShelters(e: FormEvent) {
+    e.preventDefault()
+
+    const response = await api.get('shelter', {
+      params: {
+        shelterName,
+        selectedUf,
+        selectedCity,
+      },
+    })
+
+    setShelters(response.data)
+  }
+
   function handleSelectedUf(event: ChangeEvent<HTMLSelectElement>) {
     const uf = event.target.value
-
-    if (uf == '0') {
-      return
-    }
     setSelectedUf(uf)
   }
 
@@ -62,6 +80,7 @@ export function Shelter() {
     const city = event.target.value
     setSelectedCity(city)
   }
+
   return (
     <>
       <Header />
@@ -73,8 +92,17 @@ export function Shelter() {
         </div>
 
         <div className={styles.search}>
-          <form action="">
-            <Input type="text" name="nome" label="Nome do abrigo" />
+          <form onSubmit={searchShelters}>
+            <Input
+              type="text"
+              name="nome"
+              label="Nome do abrigo"
+              value={shelterName}
+              onChange={({ target }) => {
+                setShelterName(target.value)
+              }}
+            />
+
             <Select
               name="uf"
               label="UF"
@@ -100,15 +128,21 @@ export function Shelter() {
 
       <main className={`${styles.mainWrapper} container`}>
         <div className={styles.shelter}>
-          <Link to="/">
-            <div>
-              <img src={ImgShelter} alt="" />
-            </div>
-            <div className={styles.shelterInfo}>
-              <p className={styles.shelterName}>Quatro Patas</p>
-              <p className={styles.shelterCity}>São José do Rio Preto - SP</p>
-            </div>
-          </Link>
+          {shelters.map((shelter: any) => {
+            return (
+              <Link to={`/perfil/abrigo/${shelter.id}`} key={shelter.id}>
+                <div>
+                  <img src={ImgShelter} alt="" />
+                </div>
+                <div className={styles.shelterInfo}>
+                  <p className={styles.shelterName}>{shelter.name}</p>
+                  <p className={styles.shelterCity}>
+                    {shelter.city} - {shelter.uf}
+                  </p>
+                </div>
+              </Link>
+            )
+          })}
         </div>
       </main>
 

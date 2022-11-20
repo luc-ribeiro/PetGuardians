@@ -28,9 +28,9 @@ export default function RoutesList() {
         <Route
           path="abrigos"
           element={
-            <RequireAuth>
-              <Shelter />
-            </RequireAuth>
+            <Shelter />
+            // <RequireAuth>
+            // </RequireAuth>
           }
         />
         <Route path="login" element={<Login />} />
@@ -40,33 +40,33 @@ export default function RoutesList() {
         <Route
           path="perfil/doador"
           element={
-            <RequireAuth>
-              <DonorProfile />
-            </RequireAuth>
+            <DonorProfile />
+            // <RequireAuth>
+            // </RequireAuth>
           }
         />
         <Route
           path="perfil/doador/editar"
           element={
-            <RequireAuth>
-              <EditDonorProfile />
-            </RequireAuth>
+            <EditDonorProfile />
+            // <RequireAuth>
+            // </RequireAuth>
           }
         />
         <Route
-          path="perfil/abrigo"
+          path="perfil/abrigo/:id"
           element={
-            <RequireAuth>
-              <ShelterProfile />
-            </RequireAuth>
+            <ShelterProfile />
+            // <RequireAuth>
+            // </RequireAuth>
           }
         />
         <Route
-          path="perfil/abrigo/editar"
+          path="perfil/abrigo/:id/editar"
           element={
-            <RequireAuth>
-              <EditShelterProfile />
-            </RequireAuth>
+            <EditShelterProfile />
+            // <RequireAuth>
+            // </RequireAuth>
           }
         />
         <Route path="*" element={<NotFound />} />
