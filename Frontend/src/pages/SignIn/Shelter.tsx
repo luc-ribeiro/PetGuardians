@@ -1,8 +1,10 @@
-import { useState, useEffect, ChangeEvent } from 'react'
+import { useState, useEffect, ChangeEvent, FormEvent } from 'react'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
+
+import api from '../../services/api'
 
 import styles from './Shelter.module.css'
 
-import { Link } from 'react-router-dom'
 import imgShelterSignIn from '../../assets/Sheltersignin-img.jpg'
 import { ReactComponent as IconBack } from '../../assets/icon-back.svg'
 import logo from '../../assets/logo.svg'
@@ -13,6 +15,24 @@ import { Checkbox } from '../../components/Forms/Checkbox'
 import { Button } from '../../components/Forms/Button'
 
 export function ShelterSignIn() {
+  const navigate = useNavigate()
+  const [shelterName, setShelterName] = useState('')
+  const [shelterOwnerName, setShelterOwnerName] = useState('')
+  const [shelterCNPJ, setShelterCNPJ] = useState('')
+  const [shelterOwnerCPF, setShelterOwnerCPF] = useState('')
+  const [shelterBirthday, setShelterBirthday] = useState('')
+
+  const [shelterCEP, setShelterCEP] = useState('')
+  const [shelterStreet, setShelterStreet] = useState('')
+  const [shelterStreetNumber, setShelterStreetNumber] = useState('')
+  const [shelterDistrict, setShelterDistrict] = useState('')
+  const [shelterComplement, setShelterComplement] = useState('')
+
+  const [shelterEmail, setShelterEmail] = useState('')
+  const [shelterPassword, setShelterPassword] = useState('')
+
+  const [acceptTerms, setAcceptTerms] = useState(false)
+
   const [ufs, setUfs] = useState<string[]>([])
   const [cities, setCities] = useState<string[]>([])
   const [selectedUf, setSelectedUf] = useState('0')
@@ -52,6 +72,38 @@ export function ShelterSignIn() {
       })
   }, [selectedUf])
 
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault()
+
+    const data = new FormData()
+
+    data.append('corporateName', shelterName)
+    data.append('name', shelterOwnerName)
+    data.append('cnpj', shelterCNPJ)
+    data.append('cpf', shelterOwnerCPF)
+    data.append('birthday', shelterBirthday)
+    data.append('uf', selectedUf)
+    data.append('city', selectedCity)
+    data.append('cep', shelterCEP)
+    data.append('street', shelterStreet)
+    data.append('district', shelterDistrict)
+    data.append('complement', shelterComplement)
+    data.append('email', shelterEmail)
+    data.append('password', shelterPassword)
+
+    try {
+      await api.post('shelter', data, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      alert('Cadastro realizado com sucesso')
+      navigate('/perfil/abrigo')
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   function handleSelectedUf(event: ChangeEvent<HTMLSelectElement>) {
     const uf = event.target.value
 
@@ -83,9 +135,28 @@ export function ShelterSignIn() {
             <h1>Cadastro de Abrigo</h1>
           </div>
 
-          <form className={styles.form}>
+          <form className={styles.form} onSubmit={handleSubmit}>
             <div className={styles.row}>
-              <Input label="Nome do abrigo" type="text" name="nomeAbrigo" />
+              <Input
+                label="Nome do abrigo"
+                type="text"
+                name="nomeAbrigo"
+                value={shelterName}
+                onChange={({ target }) => {
+                  setShelterName(target.value)
+                }}
+              />
+
+              <Input
+                label="CNPJ"
+                type="text"
+                name="cnpj"
+                width="100%"
+                value={shelterCNPJ}
+                onChange={({ target }) => {
+                  setShelterCNPJ(target.value)
+                }}
+              />
             </div>
 
             <div className={styles.row}>
@@ -93,6 +164,10 @@ export function ShelterSignIn() {
                 label="Nome completo do responsável pelo abrigo"
                 type="text"
                 name="nomeResponsavelAbrigo"
+                value={shelterOwnerName}
+                onChange={({ target }) => {
+                  setShelterOwnerName(target.value)
+                }}
               />
             </div>
 
@@ -102,19 +177,36 @@ export function ShelterSignIn() {
                 type="text"
                 name="cpf"
                 width="100%"
+                value={shelterOwnerCPF}
+                onChange={({ target }) => {
+                  setShelterOwnerCPF(target.value)
+                }}
               />
               <Input
                 label="Data de nascimento"
                 type="date"
                 name="dataNascimento"
                 width="40%"
+                value={shelterBirthday}
+                onChange={({ target }) => {
+                  setShelterBirthday(target.value)
+                }}
               />
             </div>
 
             <div className={styles.divider}></div>
 
             <div className={styles.row}>
-              <Input label="CEP" type="text" name="cep" width="28%" />
+              <Input
+                label="CEP"
+                type="text"
+                name="cep"
+                width="28%"
+                value={shelterCEP}
+                onChange={({ target }) => {
+                  setShelterCEP(target.value)
+                }}
+              />
 
               <Select
                 name="uf"
@@ -136,7 +228,15 @@ export function ShelterSignIn() {
             </div>
 
             <div className={styles.row}>
-              <Input label="Endereço" type="text" name="endereco" />
+              <Input
+                label="Endereço"
+                type="text"
+                name="endereco"
+                value={shelterStreet}
+                onChange={({ target }) => {
+                  setShelterStreet(target.value)
+                }}
+              />
             </div>
 
             <div className={styles.row}>
@@ -145,29 +245,62 @@ export function ShelterSignIn() {
                 type="text"
                 name="enderecoNumero"
                 width="30%"
+                value={shelterStreetNumber}
+                onChange={({ target }) => {
+                  setShelterStreetNumber(target.value)
+                }}
               />
 
-              <Input label="Bairro" type="text" name="enderecoBairro" />
+              <Input
+                label="Bairro"
+                type="text"
+                name="enderecoBairro"
+                value={shelterDistrict}
+                onChange={({ target }) => {
+                  setShelterDistrict(target.value)
+                }}
+              />
 
               <Input
                 label="Complemento"
                 type="text"
                 name="enderecoComplemento"
+                value={shelterComplement}
+                onChange={({ target }) => {
+                  setShelterComplement(target.value)
+                }}
               />
             </div>
 
             <div className={styles.divider}></div>
 
             <div className={styles.row}>
-              <Input label="E-mail" type="email" name="email" />
+              <Input
+                label="E-mail"
+                type="email"
+                name="email"
+                value={shelterEmail}
+                onChange={({ target }) => {
+                  setShelterEmail(target.value)
+                }}
+              />
 
-              <Input label="Senha" type="password" name="senha" />
+              <Input
+                label="Senha"
+                type="password"
+                name="senha"
+                value={shelterPassword}
+                onChange={({ target }) => {
+                  setShelterPassword(target.value)
+                }}
+              />
             </div>
 
             <div className={styles.row}>
               <Checkbox
                 label="Concordo com os termos e condições"
                 name="termos"
+                onClick={() => setAcceptTerms(true)}
               />
             </div>
 
