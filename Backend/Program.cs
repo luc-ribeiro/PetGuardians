@@ -59,7 +59,7 @@ public class Program
 
         // Banco Singleton ou transient
         // builder.Services.AddDbContext<DBGame>(option => option.UseInMemoryDatabase("db"));
-        
+
         // Banco SQL
         string strConn = builder.Configuration.GetConnectionString("BDPetGuardiansLocal");
 
