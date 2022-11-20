@@ -104,7 +104,7 @@ public class ShelterController : ControllerBase
         }
 
         _shelter.CorporateName = shelter.CorporateName;
-        _shelter.Slug = shelter.Slug;
+        _shelter.About = shelter.About;
         db.SaveChanges();
         return Ok();
     }

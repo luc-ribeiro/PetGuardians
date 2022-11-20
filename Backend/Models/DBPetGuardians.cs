@@ -15,7 +15,6 @@ public class DBPetGuardians : DbContext
         {
             e.Property(s => s.CorporateName).UseCollation("SQL_Latin1_General_CP1_CI_AI");
             e.HasIndex(s => s.CNPJ).IsUnique();
-            e.HasIndex(s => s.Slug).IsUnique();
         });
 
         modelBuilder.Entity<Person>(e =>

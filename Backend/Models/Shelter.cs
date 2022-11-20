@@ -12,5 +12,7 @@ public class Shelter : User
 
     [MaxLength(14)]
     public string CNPJ { get; set; }
-    
+
+    public string? About { get; set; }
+
 }
