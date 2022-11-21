@@ -16,6 +16,7 @@ public class Program
         // Adiciona os Controllers da API
         builder.Services.AddControllers();
 
+
         // Configura o Cors
         builder.Services.AddCors
         (
@@ -31,30 +32,33 @@ public class Program
                 }
             )
         );
+        
+        /* 
+                // Pega as informações para configurar o JWT
+                var jwtSection = builder.Configuration.GetSection("JWT");
+                builder.Services.Configure<JWT>(jwtSection);
+                var appSettings = jwtSection.Get<JWT>();
 
-        // Pega as informações para configurar o JWT
-        var jwtSection = builder.Configuration.GetSection("JWT");
-        builder.Services.Configure<JWT>(jwtSection);
-        var appSettings = jwtSection.Get<JWT>();
+                // Configura o JWT
+                var secret = Encoding.ASCII.GetBytes(appSettings.Secret);
+                builder.Services.AddAuthentication(x =>
+                {
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                }).AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(secret),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
+         */
 
-        // Configura o JWT
-        var secret = Encoding.ASCII.GetBytes(appSettings.Secret);
-        builder.Services.AddAuthentication(x =>
-        {
-            x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(x =>
-        {
-            x.RequireHttpsMetadata = false;
-            x.SaveToken = true;
-            x.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(secret),
-                ValidateIssuer = false,
-                ValidateAudience = false
-            };
-        });
 
 
         // Banco Singleton ou transient
@@ -65,6 +69,7 @@ public class Program
 
         // Configura o Tipo de Conexão com o Banco
         builder.Services.AddDbContext<DBPetGuardians>(option => option.UseSqlServer(strConn));
+
 
         // Adicionar o middleware Swagger:
         builder.Services.AddEndpointsApiExplorer();

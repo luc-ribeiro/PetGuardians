@@ -22,6 +22,11 @@ public class DBPetGuardians : DbContext
             e.Property(p => p.City).UseCollation("SQL_Latin1_General_CP1_CI_AI");
             e.Property(p => p.UF).UseCollation("SQL_Latin1_General_CP1_CI_AI");
         });
+        
+        modelBuilder.Entity<User>(e =>
+        {
+            e.HasIndex(u => u.Email).IsUnique();
+        });
 
         // modelBuilder.Entity<Person>()
         //     .HasMany(p => p.Addresses)

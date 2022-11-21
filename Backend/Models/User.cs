@@ -1,11 +1,16 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Backend.Models;
 
 [Table("Users")]
-public class User: Person{
-    
-    public string Email {get; set; }
+public class User : Person
+{
+    public string Email { get; set; }
 
-    public string Password {get; set;}
+    [JsonIgnore]
+    public byte[] PasswordHash { get; set; }
+
+    [JsonIgnore]
+    public byte[] PasswordSalt { get; set; }
 }
