@@ -46,7 +46,7 @@ export default function RoutesList() {
           }
         />
         <Route
-          path="perfil/doador/editar"
+          path="perfil/doador/:id/editar"
           element={
             <EditDonorProfile />
             // <RequireAuth>

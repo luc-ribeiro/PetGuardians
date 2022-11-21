@@ -62,9 +62,9 @@ export function Shelter() {
 
     const response = await api.get('shelter', {
       params: {
-        shelterName,
-        selectedUf,
-        selectedCity,
+        corporateName: shelterName,
+        uf: selectedUf,
+        city: selectedCity,
       },
     })
 
@@ -98,6 +98,7 @@ export function Shelter() {
               name="nome"
               label="Nome do abrigo"
               value={shelterName}
+              placeholder="Pesquisar"
               onChange={({ target }) => {
                 setShelterName(target.value)
               }}
@@ -135,7 +136,7 @@ export function Shelter() {
                   <img src={ImgShelter} alt="" />
                 </div>
                 <div className={styles.shelterInfo}>
-                  <p className={styles.shelterName}>{shelter.name}</p>
+                  <p className={styles.shelterName}>{shelter.corporateName}</p>
                   <p className={styles.shelterCity}>
                     {shelter.city} - {shelter.uf}
                   </p>

@@ -24,6 +24,7 @@ interface Shelter {
   streetNumber: string
   district: string
   complement: string
+  about?: string
 }
 
 interface ShelterParams {
@@ -56,8 +57,8 @@ export function ShelterProfile() {
           <div className={styles.profileHeader}>
             <h1 className={styles.userName}>{shelter.corporateName}</h1>
             <p className={styles.userCity}>
-              {shelter.street} {shelter.streetNumber}, {shelter.district},{' '}
-              {shelter.city} - {shelter.uf}
+              {shelter.street} {shelter.streetNumber}, {shelter.district}, CEP{' '}
+              {shelter.cep}, {shelter.city} - {shelter.uf}
             </p>
             <Link className={styles.button} to="editar">
               Editar perfil
@@ -68,7 +69,7 @@ export function ShelterProfile() {
               5 <span>doações recebidas</span>
             </p>
           </div>
-          <AboutShelter />
+          <AboutShelter about={shelter?.about} />
           <ProductTable />
           <PartnerTable />
           <Table />

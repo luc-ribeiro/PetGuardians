@@ -5,16 +5,17 @@ import ShelterImage2 from '../../assets/shelter-image-2.jpg'
 import ShelterImage3 from '../../assets/shelter-image-3.jpg'
 import ShelterImage4 from '../../assets/shelter-image-4.jpg'
 
-export function AboutShelter() {
+interface AboutProps {
+  about: string | undefined
+}
+
+export function AboutShelter({ about }: AboutProps) {
   return (
     <div className={styles.aboutContainer}>
       <h3>Sobre nós</h3>
 
       <p className={styles.aboutText}>
-        Abrigamos cães e gatos abandonados, nosso abrigo funciona desde 2018 e
-        estamos sempre dispostos a cuidar desses anjos de quatro patas. Temos
-        parceria com o Petshop CatDog e com a veterinária PetCare. Toda ajuda é
-        bem-vinda!
+        {about || 'Complete seu perfil em Editar Perfil'}
       </p>
 
       <div className={styles.imageContainer}>
