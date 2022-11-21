@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(DBPetGuardians))]
-    [Migration("20221118003251_remoev endereco")]
-    partial class remoevendereco
+    [Migration("20221121211246_init banco")]
+    partial class initbanco
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,7 +24,7 @@ namespace Backend.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("Backend.Models.Address", b =>
+            modelBuilder.Entity("Backend.Models.Image", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -32,44 +32,20 @@ namespace Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("CEP")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
-
-                    b.Property<string>("City")
+                    b.Property<string>("Base64")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Complement")
+                    b.Property<string>("Extension")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("District")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PersonId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Street")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UF")
-                        .IsRequired()
-                        .HasMaxLength(2)
-                        .HasColumnType("nvarchar(2)");
+                    b.Property<float>("Size")
+                        .HasColumnType("real");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PersonId");
-
-                    b.ToTable("Address");
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("Backend.Models.Person", b =>
@@ -80,18 +56,53 @@ namespace Backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("Birthday")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("CEP")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
 
                     b.Property<string>("CPF")
                         .IsRequired()
                         .HasMaxLength(11)
                         .HasColumnType("nvarchar(11)");
 
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .UseCollation("SQL_Latin1_General_CP1_CI_AI");
+
+                    b.Property<string>("Complement")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("District")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StreetNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UF")
+                        .IsRequired()
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)")
+                        .UseCollation("SQL_Latin1_General_CP1_CI_AI");
 
                     b.HasKey("Id");
 
@@ -104,11 +115,24 @@ namespace Backend.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Password")
+                    b.Property<int?>("ImageId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<byte[]>("PasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
+
+                    b.HasIndex("ImageId");
 
                     b.ToTable("Users");
                 });
@@ -116,6 +140,9 @@ namespace Backend.Migrations
             modelBuilder.Entity("Backend.Models.Shelter", b =>
                 {
                     b.HasBaseType("Backend.Models.User");
+
+                    b.Property<string>("About")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CNPJ")
                         .IsRequired()
@@ -125,20 +152,14 @@ namespace Backend.Migrations
                     b.Property<string>("CorporateName")
                         .IsRequired()
                         .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
+                        .HasColumnType("nvarchar(60)")
+                        .UseCollation("SQL_Latin1_General_CP1_CI_AI");
+
+                    b.HasIndex("CNPJ")
+                        .IsUnique()
+                        .HasFilter("[CNPJ] IS NOT NULL");
 
                     b.ToTable("Shelters");
-                });
-
-            modelBuilder.Entity("Backend.Models.Address", b =>
-                {
-                    b.HasOne("Backend.Models.Person", "Person")
-                        .WithMany("Addresses")
-                        .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Person");
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>
@@ -148,6 +169,12 @@ namespace Backend.Migrations
                         .HasForeignKey("Backend.Models.User", "Id")
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
+
+                    b.HasOne("Backend.Models.Image", "ProfilePicture")
+                        .WithMany()
+                        .HasForeignKey("ImageId");
+
+                    b.Navigation("ProfilePicture");
                 });
 
             modelBuilder.Entity("Backend.Models.Shelter", b =>
@@ -157,11 +184,6 @@ namespace Backend.Migrations
                         .HasForeignKey("Backend.Models.Shelter", "Id")
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Backend.Models.Person", b =>
-                {
-                    b.Navigation("Addresses");
                 });
 #pragma warning restore 612, 618
         }

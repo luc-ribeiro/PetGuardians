@@ -31,4 +31,6 @@ public class Person
     public string District { get; set; }
 
     public string Complement { get; set; }
+
+    public bool Active { get; set; } = true;
 }

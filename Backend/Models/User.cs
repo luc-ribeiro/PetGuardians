@@ -13,4 +13,8 @@ public class User : Person
 
     [JsonIgnore]
     public byte[] PasswordSalt { get; set; }
+
+    public Image? ProfilePicture { get; set;  }
+
+    public int? ImageId { get; set; }    
 }

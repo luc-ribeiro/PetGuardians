@@ -27,15 +27,10 @@ public class DBPetGuardians : DbContext
         {
             e.HasIndex(u => u.Email).IsUnique();
         });
-
-        // modelBuilder.Entity<Person>()
-        //     .HasMany(p => p.Addresses)
-        //     .WithOne(a => a.Person)
-        //     .IsRequired()
-        //     .OnDelete(DeleteBehavior.Cascade);
     }
 
     public DbSet<Person> Persons { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Shelter> Shelters { get; set; }
+    public DbSet<Image> Images { get; set; }
 }

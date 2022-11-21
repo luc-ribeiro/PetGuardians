@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "bx2SyCb8GkWKhRPgjDKvPsQ9nZ5Onf+sqkAbbdHmu7FJ8zCkYIWh3ztetNLpyg0jFo7S6Q5ql6ewRXRCRY0evw==",
+  "dgSpecHash": "sCoInesKVSwzEQrBSb8ROq+KnXUzZd/rf8a8tt5WvLs2Mr2PTjf9T2nWNreXwPVKS7DpuUInu8JG4aTsa+Uysw==",
   "success": true,
   "projectFilePath": "C:\\www\\PetGuardians\\Backend\\Backend.csproj",
   "expectedPackageFiles": [
@@ -54,6 +54,7 @@
     "C:\\Users\\raphs\\.nuget\\packages\\microsoft.openapi\\1.3.1\\microsoft.openapi.1.3.1.nupkg.sha512",
     "C:\\Users\\raphs\\.nuget\\packages\\microsoft.win32.registry\\4.7.0\\microsoft.win32.registry.4.7.0.nupkg.sha512",
     "C:\\Users\\raphs\\.nuget\\packages\\microsoft.win32.systemevents\\4.7.0\\microsoft.win32.systemevents.4.7.0.nupkg.sha512",
+    "C:\\Users\\raphs\\.nuget\\packages\\mimetypemapofficial\\1.0.17\\mimetypemapofficial.1.0.17.nupkg.sha512",
     "C:\\Users\\raphs\\.nuget\\packages\\scrutor\\3.3.0\\scrutor.3.3.0.nupkg.sha512",
     "C:\\Users\\raphs\\.nuget\\packages\\swashbuckle.aspnetcore\\6.4.0\\swashbuckle.aspnetcore.6.4.0.nupkg.sha512",
     "C:\\Users\\raphs\\.nuget\\packages\\swashbuckle.aspnetcore.filters\\7.0.6\\swashbuckle.aspnetcore.filters.7.0.6.nupkg.sha512",

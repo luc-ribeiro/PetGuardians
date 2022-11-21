@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Backend.Models;
 using Backend.Utils;
 using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Backend.Controllers;
 
@@ -144,9 +146,20 @@ public class ShelterController : ControllerBase
         {
             return NotFound();
         }
-        _context.Shelters.Remove(shelter);
+        shelter.Active = false;
         _context.SaveChanges();
         return Ok();
+    }
+
+
+    [HttpGet]
+    [Route("eu")]
+    [Authorize]
+    public ActionResult<string> Read()
+    {
+        var id = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+        var nome = User.FindFirstValue(ClaimTypes.Name);
+        return Ok(new {id, nome});
     }
 
 }
