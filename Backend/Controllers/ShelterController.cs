@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Backend.Models;
 using Backend.Utils;
+using Microsoft.AspNetCore.Authorization;
+
 namespace Backend.Controllers;
 
 
 [ApiController]
 [Route("shelter")]
-
 public class ShelterController : ControllerBase
 {
     private readonly DBPetGuardians _context;
@@ -22,52 +23,54 @@ public class ShelterController : ControllerBase
 
         AuthUtils.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passowordSalt);
 
+        /*  
         // Pega a data de hoje
-        DateTime today = DateTime.Today;
+         DateTime today = DateTime.Today;
 
-        // CCalcula a idade
-        int age = today.Year - request.Birthday.Year;
+         // CCalcula a idade
+         int age = today.Year - request.Birthday.Year;
 
-        // Ajusta o cálculo para ano bissexto
-        if (request.Birthday.Date > today.AddYears(-age))
-        {
-            age--;
-        }
+         // Ajusta o cálculo para ano bissexto
+         if (request.Birthday.Date > today.AddYears(-age))
+         {
+             age--;
+         }
 
-        if (age < 18)
-        {
-            return BadRequest("Responsável deve ser maior de idade.");
-        }
+         if (age < 18)
+         {
+             return BadRequest("Responsável deve ser maior de idade.");
+         }
 
-        if (!CpfCnpjUtils.isValid(request.CPF))
-        {
-            return BadRequest("CPF inválido.");
-        }
+         if (!CpfCnpjUtils.isValid(request.CPF))
+         {
+             return BadRequest("CPF inválido.");
+         }
 
-        if (!CpfCnpjUtils.isValid(request.CNPJ))
-        {
-            return BadRequest("CNPJ inválido.");
-        }
+         if (!CpfCnpjUtils.isValid(request.CNPJ))
+         {
+             return BadRequest("CNPJ inválido.");
+         }
 
-        if (!MailUtils.isValid(request.Email))
-        {
-            return BadRequest("Email inválido.");
-        }
+         if (!MailUtils.isValid(request.Email))
+         {
+             return BadRequest("Email inválido.");
+         }
 
-        if (_context.Shelters.Where(s => s.CPF == request.CPF).FirstOrDefault() != null)
-        {
-            return BadRequest("Já existe este CPF cadastrado.");
-        }
+         if (_context.Shelters.Where(s => s.CPF == request.CPF).FirstOrDefault() != null)
+         {
+             return BadRequest("Já existe este CPF cadastrado.");
+         }
 
-        if (_context.Shelters.Where(s => s.CNPJ == request.CNPJ).FirstOrDefault() != null)
-        {
-            return BadRequest("Já existe este CNPJ cadastrado.");
-        }
+         if (_context.Shelters.Where(s => s.CNPJ == request.CNPJ).FirstOrDefault() != null)
+         {
+             return BadRequest("Já existe este CNPJ cadastrado.");
+         }
 
-        if (_context.Shelters.Where(s => s.Email == request.Email).FirstOrDefault() != null)
-        {
-            return BadRequest("Já existe este Email cadastrado.");
-        }
+         if (_context.Shelters.Where(s => s.Email == request.Email).FirstOrDefault() != null)
+         {
+             return BadRequest("Já existe este Email cadastrado.");
+         } 
+         */
 
         Shelter shelter = new Shelter
         {
@@ -116,6 +119,7 @@ public class ShelterController : ControllerBase
 
     [HttpPatch]
     [Route("{id}")]
+    [Authorize]
     public ActionResult Update(int id, Shelter shelter)
     {
         Shelter? _shelter = _context.Shelters.Find(id);
@@ -132,6 +136,7 @@ public class ShelterController : ControllerBase
 
     [HttpDelete]
     [Route("{id}")]
+    [Authorize(Roles = "Shelter")]
     public ActionResult Delete(int id)
     {
         Shelter? shelter = _context.Shelters.Find(id);

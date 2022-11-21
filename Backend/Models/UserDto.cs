@@ -7,6 +7,5 @@ public class UserDto
 {
     public string Email { get; set; }
 
-    [JsonIgnore]
     public string Password { get; set; }
 }

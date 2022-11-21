@@ -39,12 +39,14 @@ public class UserController : ControllerBase
         }
 
         Shelter? shelter = context.Shelters.Find(user.Id);
+        var type = shelter ?? user;
+        var token = CreateToken(type, type.GetType().Name);
 
         var response = new
         {
             Shelter = shelter != null,
             User = user,
-            Token = CreateToken(user)
+            Token = token
         };
 
         return Ok(response);
@@ -52,10 +54,11 @@ public class UserController : ControllerBase
 
 
 
-    private string CreateToken(User user)
+    private string CreateToken(User user, string role)
     {
         List<Claim> claims = new List<Claim>{
-            new Claim(ClaimTypes.Name, user.Name)
+            new Claim(ClaimTypes.Name, user.Name),
+            new Claim(ClaimTypes.Role, role)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JWT:Key").Value));
