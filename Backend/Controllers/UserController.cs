@@ -27,37 +27,6 @@ public class UserController : ControllerBase
         this._userService = userService;
     }
 
-    [HttpPost]
-    [Route("login")]
-    public ActionResult<string> Login(UserDto request)
-    {
-
-        User? user = _context.Users.Where(u => u.Email.Equals(request.Email)).Include(user => user.ProfilePicture).FirstOrDefault();
-
-        if (user == null)
-        {
-            return NotFound("Usuário não encontrado.");
-        }
-
-        if (!AuthUtils.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
-        {
-            return BadRequest("Senha inválida.");
-        }
-
-        Shelter? shelter = _context.Shelters.Find(user.Id);
-        var type = shelter ?? user;
-        var token = CreateToken(type, type.GetType().Name);
-
-        var response = new
-        {
-            Shelter = shelter != null,
-            User = user,
-            Token = token
-        };
-
-        return Ok(response);
-    }
-
     [HttpPatch]
     [Route("{id}")]
     [Authorize]
@@ -110,25 +79,6 @@ public class UserController : ControllerBase
             return Ok(image.Id);
         }
 
-    }
-
-
-    private string CreateToken(User user, string role)
-    {
-        List<Claim> claims = new List<Claim>{
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Role, role)
-        };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JWT:Key").Value));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-        var token = new JwtSecurityToken(
-            claims: claims,
-            expires: DateTime.Now.AddDays(1),
-            signingCredentials: creds
-        );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
 }

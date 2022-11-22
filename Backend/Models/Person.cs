@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Backend.Models;
 
@@ -31,6 +32,9 @@ public class Person
     public string District { get; set; }
 
     public string Complement { get; set; }
+
+    [JsonIgnore]
+    public DateTime Created { get; set; } = DateTime.Now;
 
     public bool Active { get; set; } = true;
 }

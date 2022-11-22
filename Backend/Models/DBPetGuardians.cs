@@ -27,6 +27,7 @@ public class DBPetGuardians : DbContext
         modelBuilder.Entity<User>(e =>
         {
             e.HasIndex(u => u.Email).IsUnique();
+            e.HasOne(u => u.RefreshToken).WithOne(t => t.User).HasForeignKey<RefreshToken>(rt => rt.UserId);
         });
     }
 
@@ -34,4 +35,5 @@ public class DBPetGuardians : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Shelter> Shelters { get; set; }
     public DbSet<Image> Images { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 }
