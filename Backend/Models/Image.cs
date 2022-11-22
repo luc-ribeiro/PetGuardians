@@ -12,4 +12,7 @@ public class Image
 
     [JsonIgnore]
     public float Size { get; set; }
+
+    [JsonIgnore]
+    public List<Shelter> Shelters { get; set; }
 }

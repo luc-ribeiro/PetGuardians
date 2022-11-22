@@ -4,6 +4,8 @@ using Backend.Utils;
 using Microsoft.AspNetCore.Authorization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using MimeTypes;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Controllers;
 
@@ -104,7 +106,12 @@ public class ShelterController : ControllerBase
     [Route("{id}")]
     public ActionResult Read(int id)
     {
-        Shelter? shelter = _context.Shelters.Find(id);
+        var shelter = _context.Shelters.Where(s => s.Id == id).Select(s => new {
+            s.Id,
+            s.ProfilePicture,
+            s.Images
+        }).FirstOrDefault();
+
         if (shelter == null)
         {
             return NotFound();
@@ -136,6 +143,52 @@ public class ShelterController : ControllerBase
         return Ok();
     }
 
+    [HttpPatch]
+    [Route("{id}/images")]
+    public async Task<ActionResult> UploadImages(int id, List<IFormFile> files)
+    {
+
+        Shelter? shelter = _context.Shelters.Find(id);
+
+        if (shelter == null)
+        {
+            return NotFound("Abrigo Inválido");
+        }
+
+        using (var memoryStream = new MemoryStream())
+        {
+
+            foreach (var file in files)
+            {
+                if (file.Length <= 0)
+                {
+                    return BadRequest("Arquivo Inválido");
+                }
+
+
+                await file.CopyToAsync(memoryStream);
+
+                if (memoryStream.Length > 2097152)
+                {
+                    return BadRequest("Tamanho do arquivo muito grande");
+                }
+
+
+                Image image = new Image()
+                {
+                    Base64 = System.Convert.ToBase64String(memoryStream.ToArray()),
+                    MimeType = MimeTypeMap.GetMimeType(Path.GetExtension(file.FileName)),
+                    Size = file.Length
+                };
+
+                shelter.Images.Add(image);
+            }
+        }
+
+        _context.SaveChanges();
+        return Ok();
+    }
+
     [HttpDelete]
     [Route("{id}")]
     [Authorize(Roles = "Shelter")]
@@ -159,7 +212,7 @@ public class ShelterController : ControllerBase
     {
         var id = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
         var nome = User.FindFirstValue(ClaimTypes.Name);
-        return Ok(new {id, nome});
+        return Ok(new { id, nome });
     }
 
 }

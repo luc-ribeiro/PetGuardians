@@ -15,4 +15,6 @@ public class Shelter : User
 
     public string? About { get; set; }
 
+    public List<Image> Images { get; set; } = new List<Image>();
+
 }

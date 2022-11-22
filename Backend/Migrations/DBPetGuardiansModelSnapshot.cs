@@ -107,6 +107,21 @@ namespace Backend.Migrations
                     b.ToTable("Persons");
                 });
 
+            modelBuilder.Entity("ImageShelter", b =>
+                {
+                    b.Property<int>("ImagesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SheltersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ImagesId", "SheltersId");
+
+                    b.HasIndex("SheltersId");
+
+                    b.ToTable("ImageShelter");
+                });
+
             modelBuilder.Entity("Backend.Models.User", b =>
                 {
                     b.HasBaseType("Backend.Models.Person");
@@ -158,6 +173,21 @@ namespace Backend.Migrations
                         .HasFilter("[CNPJ] IS NOT NULL");
 
                     b.ToTable("Shelters");
+                });
+
+            modelBuilder.Entity("ImageShelter", b =>
+                {
+                    b.HasOne("Backend.Models.Image", null)
+                        .WithMany()
+                        .HasForeignKey("ImagesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.Shelter", null)
+                        .WithMany()
+                        .HasForeignKey("SheltersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>
