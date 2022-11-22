@@ -6,6 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using MimeTypes;
 using Microsoft.EntityFrameworkCore;
+using Backend.Services.UserService;
 
 namespace Backend.Controllers;
 
@@ -15,66 +16,71 @@ namespace Backend.Controllers;
 public class ShelterController : ControllerBase
 {
     private readonly DBPetGuardians _context;
+    private readonly IUserService _userService;
 
-    public ShelterController(DBPetGuardians db)
+    public ShelterController(DBPetGuardians db, IUserService userService)
     {
         this._context = db;
+        this._userService = userService;
     }
 
+    /// <summary>
+    /// Cria um `Shelter`.
+    /// </summary>
     [HttpPost]
+    [AllowAnonymous]
     public ActionResult<Shelter> Create(ShelterDto request)
     {
 
         AuthUtils.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passowordSalt);
 
-        /*  
         // Pega a data de hoje
-         DateTime today = DateTime.Today;
+        DateTime today = DateTime.Today;
 
-         // CCalcula a idade
-         int age = today.Year - request.Birthday.Year;
+        // CCalcula a idade
+        int age = today.Year - request.Birthday.Year;
 
-         // Ajusta o cálculo para ano bissexto
-         if (request.Birthday.Date > today.AddYears(-age))
-         {
-             age--;
-         }
+        // Ajusta o cálculo para ano bissexto
+        if (request.Birthday.Date > today.AddYears(-age))
+        {
+            age--;
+        }
 
-         if (age < 18)
-         {
-             return BadRequest("Responsável deve ser maior de idade.");
-         }
+        if (age < 18)
+        {
+            return BadRequest("Responsável deve ser maior de idade.");
+        }
 
-         if (!CpfCnpjUtils.isValid(request.CPF))
-         {
-             return BadRequest("CPF inválido.");
-         }
+        if (!CpfCnpjUtils.isValid(request.CPF))
+        {
+            return BadRequest("CPF inválido.");
+        }
 
-         if (!CpfCnpjUtils.isValid(request.CNPJ))
-         {
-             return BadRequest("CNPJ inválido.");
-         }
+        if (!CpfCnpjUtils.isValid(request.CNPJ))
+        {
+            return BadRequest("CNPJ inválido.");
+        }
 
-         if (!MailUtils.isValid(request.Email))
-         {
-             return BadRequest("Email inválido.");
-         }
+        if (!MailUtils.isValid(request.Email))
+        {
+            return BadRequest("Email inválido.");
+        }
 
-         if (_context.Shelters.Where(s => s.CPF == request.CPF).FirstOrDefault() != null)
-         {
-             return BadRequest("Já existe este CPF cadastrado.");
-         }
+        if (_context.Shelters.Where(s => s.CPF == request.CPF).FirstOrDefault() != null)
+        {
+            return BadRequest("Já existe este CPF cadastrado.");
+        }
 
-         if (_context.Shelters.Where(s => s.CNPJ == request.CNPJ).FirstOrDefault() != null)
-         {
-             return BadRequest("Já existe este CNPJ cadastrado.");
-         }
+        if (_context.Shelters.Where(s => s.CNPJ == request.CNPJ).FirstOrDefault() != null)
+        {
+            return BadRequest("Já existe este CNPJ cadastrado.");
+        }
 
-         if (_context.Shelters.Where(s => s.Email == request.Email).FirstOrDefault() != null)
-         {
-             return BadRequest("Já existe este Email cadastrado.");
-         } 
-         */
+        if (_context.Shelters.Where(s => s.Email == request.Email).FirstOrDefault() != null)
+        {
+            return BadRequest("Já existe este Email cadastrado.");
+        }
+
 
         Shelter shelter = new Shelter
         {
@@ -102,14 +108,29 @@ public class ShelterController : ControllerBase
     }
 
 
+    /// <summary>
+    /// Consulta um `Shelter`
+    /// </summary>
     [HttpGet]
     [Route("{id}")]
+    [AllowAnonymous]
     public ActionResult Read(int id)
     {
-        var shelter = _context.Shelters.Where(s => s.Id == id).Select(s => new {
+        var shelter = _context.Shelters.Where(s => s.Id == id).Select(s => new
+        {
             s.Id,
+            s.CorporateName,
+            s.CNPJ,
+            s.About,
+            s.Images,
             s.ProfilePicture,
-            s.Images
+            s.CEP,
+            s.City,
+            s.Complement,
+            s.District,
+            s.StreetNumber,
+            s.Street,
+            s.Active
         }).FirstOrDefault();
 
         if (shelter == null)
@@ -119,22 +140,32 @@ public class ShelterController : ControllerBase
         return Ok(shelter);
     }
 
-
+    /// <summary>
+    /// Consulta de `Shelter` por região
+    /// </summary>
     [HttpGet]
+    [AllowAnonymous]
     public ActionResult Read(string corporateName, string UF, string city)
     {
         return Ok(_context.Shelters.Where(s => s.CorporateName.Contains(corporateName) && s.UF.Equals(UF) && s.City.Equals(city)).ToList());
     }
 
+    /// <summary>
+    /// Atualiza `CorporateName` e `About`
+    /// </summary>
     [HttpPatch]
     [Route("{id}")]
-    [Authorize]
+    [Authorize(Roles = "Shelter")]
     public ActionResult Update(int id, Shelter shelter)
     {
         Shelter? _shelter = _context.Shelters.Find(id);
         if (_shelter == null)
         {
             return NotFound();
+        }
+        if (_shelter.Id != _userService.GetId())
+        {
+            return Unauthorized();
         }
 
         _shelter.CorporateName = shelter.CorporateName;
@@ -143,8 +174,12 @@ public class ShelterController : ControllerBase
         return Ok();
     }
 
+    /// <summary>
+    /// Upload de imagens do `Shelter`
+    /// </summary>
     [HttpPatch]
     [Route("{id}/images")]
+    [Authorize(Roles = "Shelter")]
     public async Task<ActionResult> UploadImages(int id, List<IFormFile> files)
     {
 
@@ -153,6 +188,11 @@ public class ShelterController : ControllerBase
         if (shelter == null)
         {
             return NotFound("Abrigo Inválido");
+        }
+
+        if (shelter.Id != _userService.GetId())
+        {
+            return Unauthorized();
         }
 
         using (var memoryStream = new MemoryStream())
@@ -186,9 +226,12 @@ public class ShelterController : ControllerBase
         }
 
         _context.SaveChanges();
-        return Ok();
+        return Ok(shelter.Images);
     }
 
+    /// <summary>
+    /// Inativa um `Shelter`
+    /// </summary>
     [HttpDelete]
     [Route("{id}")]
     [Authorize(Roles = "Shelter")]
@@ -199,20 +242,42 @@ public class ShelterController : ControllerBase
         {
             return NotFound();
         }
+        if (shelter.Id != _userService.GetId())
+        {
+            return Unauthorized();
+        }
         shelter.Active = false;
         _context.SaveChanges();
         return Ok();
     }
 
-
-    [HttpGet]
-    [Route("eu")]
-    [Authorize]
-    public ActionResult<string> Read()
+    /// <summary>
+    /// Exclui imagens do `Shelter`
+    /// </summary>
+    [HttpDelete]
+    [Route("{id}/images")]
+    [Authorize(Roles = "Shelter")]
+    public ActionResult DeleteImages(int id, List<int> imagesIds)
     {
-        var id = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-        var nome = User.FindFirstValue(ClaimTypes.Name);
-        return Ok(new { id, nome });
-    }
+        Shelter? shelter = _context.Shelters.Include(s => s.Images).Where(s => s.Id == id).FirstOrDefault();
+        if (shelter == null)
+        {
+            return NotFound();
+        }
+        if (shelter.Id != _userService.GetId())
+        {
+            return Unauthorized();
+        }
 
+        foreach (var image in shelter.Images)
+        {
+            if (imagesIds.IndexOf(image.Id) > -1)
+            {
+                _context.Images.Remove(image);
+            }
+        }
+
+        _context.SaveChanges();
+        return Ok(shelter.Images);
+    }
 }

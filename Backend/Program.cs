@@ -1,5 +1,7 @@
+using System.Reflection;
 using System.Text;
 using Backend.Models;
+using Backend.Services.UserService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -17,6 +19,10 @@ public class Program
 
         // Adiciona os Controllers da API
         builder.Services.AddControllers();
+
+        // Configura serviços
+        builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddHttpContextAccessor();
 
 
         // Configura o Cors
@@ -68,6 +74,13 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
         {
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "PetGuardiansAPI", Version = "v1" });
+            options.OperationFilter<SecurityRequirementsOperationFilter>();
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            options.IncludeXmlComments(xmlPath);
+
+
             options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
             {
                 Description = "Cabeçalho de Autorização padrão usando o esquema Bearer (\"bearer {token}\")",
@@ -75,7 +88,6 @@ public class Program
                 Name = "Authorization",
                 Type = SecuritySchemeType.ApiKey
             });
-            options.OperationFilter<SecurityRequirementsOperationFilter>(); 
         });
 
         WebApplication app = builder.Build();

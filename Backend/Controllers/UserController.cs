@@ -7,6 +7,8 @@ using System.IdentityModel.Tokens.Jwt;
 using Backend.Utils;
 using Microsoft.EntityFrameworkCore;
 using MimeTypes;
+using Microsoft.AspNetCore.Authorization;
+using Backend.Services.UserService;
 
 namespace Backend.Controllers;
 
@@ -16,11 +18,13 @@ public class UserController : ControllerBase
 {
     private readonly DBPetGuardians _context;
     private readonly IConfiguration _configuration;
+    private readonly IUserService _userService;
 
-    public UserController(DBPetGuardians db, IConfiguration configuration)
+    public UserController(DBPetGuardians db, IConfiguration configuration, IUserService userService)
     {
         this._context = db;
         this._configuration = configuration;
+        this._userService = userService;
     }
 
     [HttpPost]
@@ -55,7 +59,8 @@ public class UserController : ControllerBase
     }
 
     [HttpPatch]
-    [Route("/{id}")]
+    [Route("{id}")]
+    [Authorize]
     public async Task<ActionResult<string>> UpdateProfilePicture(int id, IFormFile file)
     {
         User? user = _context.Users.Find(id);
@@ -63,6 +68,11 @@ public class UserController : ControllerBase
         if (user == null)
         {
             return NotFound("Usuário Inválido");
+        }
+
+        if (user.Id != _userService.GetId())
+        {
+            return Unauthorized();
         }
 
         if (file.Length <= 0)
@@ -99,16 +109,15 @@ public class UserController : ControllerBase
             _context.SaveChanges();
             return Ok(image.Id);
         }
-    
+
     }
 
 
     private string CreateToken(User user, string role)
     {
         List<Claim> claims = new List<Claim>{
-            new Claim(ClaimTypes.Name, user.Name),
-            new Claim(ClaimTypes.Role, role),
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString())
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Role, role)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JWT:Key").Value));
