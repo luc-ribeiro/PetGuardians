@@ -4,9 +4,9 @@ import axios from 'axios'
 
 import api from '../../services/api'
 
-import styles from './Shelter.module.css'
+import styles from './partner.module.css'
 
-import imgSignIn from '../../assets/Sheltersignin-img.jpg'
+import imgSignIn from '../../assets/partnersignin-img.jpg'
 import { ReactComponent as IconBack } from '../../assets/icon-back.svg'
 import logo from '../../assets/logo.svg'
 
@@ -23,23 +23,21 @@ interface IBGECityResponse {
   nome: string
 }
 
-export function ShelterSignIn() {
+export function PartnerSignIn() {
   const navigate = useNavigate()
 
-  const [shelterName, setShelterName] = useState('')
-  const [shelterCNPJ, setShelterCNPJ] = useState('')
+  const [partnerName, setPartnerName] = useState('')
+  const [partnerFantasyName, setPartnerFantasyName] = useState('')
+  const [partnerCNPJ, setPartnerCNPJ] = useState('')
 
-  const [shelterOwnerName, setShelterOwnerName] = useState('')
-  const [shelterOwnerCPF, setShelterOwnerCPF] = useState('')
+  const [partnerCEP, setPartnerCEP] = useState('')
+  const [partnerStreet, setPartnerStreet] = useState('')
+  const [partnerStreetNumber, setPartnerStreetNumber] = useState('')
+  const [partnerDistrict, setPartnerDistrict] = useState('')
+  const [partnerComplement, setPartnerComplement] = useState('')
 
-  const [shelterCEP, setShelterCEP] = useState('')
-  const [shelterStreet, setShelterStreet] = useState('')
-  const [shelterStreetNumber, setShelterStreetNumber] = useState('')
-  const [shelterDistrict, setShelterDistrict] = useState('')
-  const [shelterComplement, setShelterComplement] = useState('')
-
-  const [shelterEmail, setShelterEmail] = useState('')
-  const [shelterPassword, setShelterPassword] = useState('')
+  const [partnerEmail, setPartnerEmail] = useState('')
+  const [partnerPassword, setPartnerPassword] = useState('')
 
   const [acceptTerms, setAcceptTerms] = useState(false)
 
@@ -80,31 +78,29 @@ export function ShelterSignIn() {
 
     const data = new FormData()
 
-    data.append('corporateName', shelterName)
-    data.append('cnpj', shelterCNPJ)
-
-    data.append('name', shelterOwnerName)
-    data.append('cpf', shelterOwnerCPF)
+    data.append('corporateName', partnerName)
+    data.append('nameFantasy', partnerFantasyName)
+    data.append('cnpj', partnerCNPJ)
 
     data.append('uf', selectedUf)
     data.append('city', selectedCity)
-    data.append('cep', shelterCEP)
-    data.append('street', shelterStreet)
-    data.append('streetNumber', shelterStreetNumber)
-    data.append('district', shelterDistrict)
-    data.append('complement', shelterComplement)
+    data.append('cep', partnerCEP)
+    data.append('street', partnerStreet)
+    data.append('streetNumber', partnerStreetNumber)
+    data.append('district', partnerDistrict)
+    data.append('complement', partnerComplement)
 
-    data.append('email', shelterEmail)
-    data.append('password', shelterPassword)
+    data.append('email', partnerEmail)
+    data.append('password', partnerPassword)
 
     try {
-      await api.post('shelter', data, {
+      await api.post('partner', data, {
         headers: {
           'Content-Type': 'application/json',
         },
       })
       alert('Cadastro realizado com sucesso')
-      navigate('/perfil/abrigo')
+      navigate('/perfil/parceiro')
     } catch (e) {
       console.log(e)
     }
@@ -134,18 +130,18 @@ export function ShelterSignIn() {
             <Link to="/cadastrar">
               <IconBack />
             </Link>
-            <h1>Cadastro de Abrigo</h1>
+            <h1>Cadastro de Parceiro</h1>
           </div>
 
           <form className={styles.form} onSubmit={handleSubmit}>
             <div className={styles.row}>
               <Input
-                label="Nome do abrigo"
+                label="Razão Social"
                 type="text"
-                name="nomeAbrigo"
-                value={shelterName}
+                name="nomeParceiro"
+                value={partnerName}
                 onChange={({ target }) => {
-                  setShelterName(target.value)
+                  setPartnerName(target.value)
                 }}
               />
 
@@ -154,34 +150,21 @@ export function ShelterSignIn() {
                 type="text"
                 name="cnpj"
                 width="100%"
-                value={shelterCNPJ}
+                value={partnerCNPJ}
                 onChange={({ target }) => {
-                  setShelterCNPJ(target.value)
+                  setPartnerCNPJ(target.value)
                 }}
               />
             </div>
 
-            <div className={styles.divider}></div>
-
             <div className={styles.row}>
               <Input
-                label="Nome do responsável"
+                label="Nome Fantasia"
                 type="text"
-                name="nomeResponsavelAbrigo"
-                value={shelterOwnerName}
+                name="nomeFantasia"
+                value={partnerFantasyName}
                 onChange={({ target }) => {
-                  setShelterOwnerName(target.value)
-                }}
-              />
-
-              <Input
-                label="CPF"
-                type="text"
-                name="cpf"
-                width="100%"
-                value={shelterOwnerCPF}
-                onChange={({ target }) => {
-                  setShelterOwnerCPF(target.value)
+                  setPartnerFantasyName(target.value)
                 }}
               />
             </div>
@@ -194,9 +177,9 @@ export function ShelterSignIn() {
                 type="text"
                 name="cep"
                 width="28%"
-                value={shelterCEP}
+                value={partnerCEP}
                 onChange={({ target }) => {
-                  setShelterCEP(target.value)
+                  setPartnerCEP(target.value)
                 }}
               />
 
@@ -224,9 +207,9 @@ export function ShelterSignIn() {
                 label="Endereço"
                 type="text"
                 name="endereco"
-                value={shelterStreet}
+                value={partnerStreet}
                 onChange={({ target }) => {
-                  setShelterStreet(target.value)
+                  setPartnerStreet(target.value)
                 }}
               />
             </div>
@@ -237,9 +220,9 @@ export function ShelterSignIn() {
                 type="text"
                 name="enderecoNumero"
                 width="30%"
-                value={shelterStreetNumber}
+                value={partnerStreetNumber}
                 onChange={({ target }) => {
-                  setShelterStreetNumber(target.value)
+                  setPartnerStreetNumber(target.value)
                 }}
               />
 
@@ -247,9 +230,9 @@ export function ShelterSignIn() {
                 label="Bairro"
                 type="text"
                 name="enderecoBairro"
-                value={shelterDistrict}
+                value={partnerDistrict}
                 onChange={({ target }) => {
-                  setShelterDistrict(target.value)
+                  setPartnerDistrict(target.value)
                 }}
               />
 
@@ -257,9 +240,9 @@ export function ShelterSignIn() {
                 label="Complemento"
                 type="text"
                 name="enderecoComplemento"
-                value={shelterComplement}
+                value={partnerComplement}
                 onChange={({ target }) => {
-                  setShelterComplement(target.value)
+                  setPartnerComplement(target.value)
                 }}
               />
             </div>
@@ -271,9 +254,9 @@ export function ShelterSignIn() {
                 label="E-mail"
                 type="email"
                 name="email"
-                value={shelterEmail}
+                value={partnerEmail}
                 onChange={({ target }) => {
-                  setShelterEmail(target.value)
+                  setPartnerEmail(target.value)
                 }}
               />
 
@@ -281,9 +264,9 @@ export function ShelterSignIn() {
                 label="Senha"
                 type="password"
                 name="senha"
-                value={shelterPassword}
+                value={partnerPassword}
                 onChange={({ target }) => {
-                  setShelterPassword(target.value)
+                  setPartnerPassword(target.value)
                 }}
               />
             </div>

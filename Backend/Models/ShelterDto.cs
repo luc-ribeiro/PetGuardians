@@ -1,14 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
+
 
 namespace Backend.Models;
 
-[Table("Persons")]
-public class Person
+public class ShelterDto : UserDto
 {
-    public int Id { get; set; }
-
     [MaxLength(60)]
     public string Name { get; set; }
 
@@ -33,8 +29,11 @@ public class Person
 
     public string Complement { get; set; }
 
-    [JsonIgnore]
-    public DateTime Created { get; set; } = DateTime.Now;
+    [MaxLength(60)]
+    public string CorporateName { get; set; }
 
-    public bool Active { get; set; } = true;
+    [MaxLength(14)]
+    public string CNPJ { get; set; }
+
+    public string? About { get; set; }
 }

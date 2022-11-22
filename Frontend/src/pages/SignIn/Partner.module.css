@@ -1,0 +1,62 @@
+.formWrapper {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.formImage img {
+  max-width: unset;
+}
+
+.formArea {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow-y: scroll;
+}
+
+.logoContainer {
+  margin: 45px 0 0 100px;
+}
+
+.formContainer {
+  margin: 40px auto 0 200px;
+}
+
+.formHeader {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.formHeader h1 {
+  font-family: var(--type-title);
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 60px;
+  color: var(--c10);
+}
+
+.form {
+  margin-top: 16px;
+  max-width: 450px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background-color: var(--c2);
+  margin: 24px 0;
+}
+
+.form button {
+  margin: 16px 0 40px;
+  background: linear-gradient(180deg, #1f9eac 0%, #108592 58.55%, #067380 100%);
+}
