@@ -1,6 +1,7 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import * as yup from 'yup'
 
 import { api } from '../../services/api'
 
@@ -38,42 +39,53 @@ interface IBGECityResponse {
 export function ShelterSignIn() {
   const navigate = useNavigate()
 
-  const [name, setName] = useState('')
-  const [CNPJ, setCNPJ] = useState('')
-
-  const [ownerName, setOwnerName] = useState('')
-  const [ownerCPF, setOwnerCPF] = useState('')
-
-  const [CEP, setCEP] = useState('')
-  const [street, setStreet] = useState('')
-  const [streetNumber, setStreetNumber] = useState('')
-  const [district, setDistrict] = useState('')
-  const [complement, setComplement] = useState('')
-
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-
-  const [acceptTerms, setAcceptTerms] = useState(false)
-
   const [ufs, setUfs] = useState<string[]>([])
   const [cities, setCities] = useState<string[]>([])
   const [selectedUf, setSelectedUf] = useState('0')
   const [selectedCity, setSelectedCity] = useState('0')
 
+  const [status, setStatus] = useState({
+    type: '',
+    message: '',
+  })
+
+  const [shelter, setShelter] = useState({
+    name: '',
+    CNPJ: '',
+    ownerName: '',
+    ownerCPF: '',
+    CEP: '',
+    street: '',
+    streetNumber: '',
+    district: '',
+    complement: '',
+    email: '',
+    password: '',
+    uf: selectedUf,
+    city: selectedCity,
+  })
+
+  const valueInput = (e: any) =>
+    setShelter({ ...shelter, [e.target.name]: e.target.value })
+
   useEffect(() => {
     axios
-      .get<CNPJQueryResponse>(`https://brasilapi.com.br/api/cnpj/v1/${CNPJ}`)
+      .get<CNPJQueryResponse>(
+        `https://brasilapi.com.br/api/cnpj/v1/${shelter.CNPJ}`,
+      )
       .then(response => {
-        setName(response.data.razao_social)
-        setCEP(response.data.cep)
-        setStreet(response.data.logradouro)
-        setStreetNumber(response.data.numero)
-        setDistrict(response.data.bairro)
-        setComplement(response.data.complemento)
-        setSelectedUf(response.data.uf)
-        setSelectedCity(response.data.municipio)
+        setShelter({
+          name: response.data.razao_social,
+          CEP: response.data.cep,
+          street: response.data.logradouro,
+          streetNumber: response.data.numero,
+          district: response.data.bairro,
+          complement: response.data.complemento,
+          uf: response.data.uf,
+          city: response.data.municipio,
+        } as any)
       })
-  }, [CNPJ])
+  }, [shelter.CNPJ])
 
   useEffect(() => {
     axios
@@ -102,40 +114,30 @@ export function ShelterSignIn() {
       })
   }, [selectedUf])
 
-  async function handleSubmit(event: FormEvent) {
-    if (acceptTerms) {
-      event.preventDefault()
+  async function validate() {
+    let schema = yup.object().shape({
+      password: yup
+        .string()
+        .required('Erro: Necessário preencher o campo senha')
+        .min(6, 'Erro: A senha deve ter no mínimo 6 caracteres'),
 
-      const data = new FormData()
+      email: yup
+        .string()
+        .required('Erro: Necessário preencher o campo e-mail')
+        .email('Erro: Necessário preencher o campo com e-mail válido'),
 
-      data.append('corporateName', name)
-      data.append('cnpj', CNPJ)
+      name: yup.string().required('Erro: Necessário preencher o campo nome'),
+    })
 
-      data.append('name', ownerName)
-      data.append('cpf', ownerCPF)
-
-      data.append('uf', selectedUf)
-      data.append('city', selectedCity)
-      data.append('cep', CEP)
-      data.append('street', street)
-      data.append('streetNumber', streetNumber)
-      data.append('district', district)
-      data.append('complement', complement)
-
-      data.append('email', email)
-      data.append('password', password)
-
-      try {
-        await api.post('shelter', data, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-        alert('Cadastro realizado com sucesso')
-        navigate('/login')
-      } catch (e) {
-        console.log(e)
-      }
+    try {
+      await schema.validate(shelter)
+      return true
+    } catch (err) {
+      setStatus({
+        type: 'error',
+        message: (err as any).errors,
+      })
+      return false
     }
   }
 
@@ -147,6 +149,43 @@ export function ShelterSignIn() {
   function handleSelectedCity(event: ChangeEvent<HTMLSelectElement>) {
     const city = event.target.value
     setSelectedCity(city)
+  }
+
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault()
+
+    if (!(await validate())) return
+
+    const data = new FormData()
+
+    data.append('corporateName', shelter.name)
+    data.append('cnpj', shelter.CNPJ)
+
+    data.append('name', shelter.ownerName)
+    data.append('cpf', shelter.ownerCPF)
+
+    data.append('cep', shelter.CEP)
+    data.append('street', shelter.street)
+    data.append('streetNumber', shelter.streetNumber)
+    data.append('district', shelter.district)
+    data.append('complement', shelter.complement)
+    data.append('uf', shelter.uf)
+    data.append('city', shelter.city)
+
+    data.append('email', shelter.email)
+    data.append('password', shelter.password)
+
+    try {
+      await api.post('shelter', data, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      alert('Cadastro realizado com sucesso')
+      navigate('/login')
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   return (
@@ -171,22 +210,18 @@ export function ShelterSignIn() {
               <Input
                 label="Nome do abrigo"
                 type="text"
-                name="nomeAbrigo"
-                value={name}
-                onChange={({ target }) => {
-                  setName(target.value)
-                }}
+                name="name"
+                onChange={valueInput}
+                value={shelter.name}
               />
 
               <Input
                 label="CNPJ"
                 type="text"
-                name="cnpj"
+                name="CNPJ"
                 width="100%"
-                value={CNPJ}
-                onChange={({ target }) => {
-                  setCNPJ(target.value)
-                }}
+                onChange={valueInput}
+                value={shelter.CNPJ}
               />
             </div>
 
@@ -196,22 +231,18 @@ export function ShelterSignIn() {
               <Input
                 label="Nome do responsável"
                 type="text"
-                name="nomeResponsavelAbrigo"
-                value={ownerName}
-                onChange={({ target }) => {
-                  setOwnerName(target.value)
-                }}
+                name="ownerName"
+                onChange={valueInput}
+                value={shelter.ownerName}
               />
 
               <Input
                 label="CPF"
                 type="text"
-                name="cpf"
+                name="ownerCPF"
                 width="100%"
-                value={ownerCPF}
-                onChange={({ target }) => {
-                  setOwnerCPF(target.value)
-                }}
+                onChange={valueInput}
+                value={shelter.ownerCPF}
               />
             </div>
 
@@ -221,12 +252,10 @@ export function ShelterSignIn() {
               <Input
                 label="CEP"
                 type="text"
-                name="cep"
+                name="CEP"
                 width="28%"
-                value={CEP}
-                onChange={({ target }) => {
-                  setCEP(target.value)
-                }}
+                onChange={valueInput}
+                value={shelter.CEP}
               />
 
               <Select
@@ -252,11 +281,9 @@ export function ShelterSignIn() {
               <Input
                 label="Endereço"
                 type="text"
-                name="endereco"
-                value={street}
-                onChange={({ target }) => {
-                  setStreet(target.value)
-                }}
+                name="street"
+                onChange={valueInput}
+                value={shelter.street}
               />
             </div>
 
@@ -264,32 +291,26 @@ export function ShelterSignIn() {
               <Input
                 label="Número"
                 type="text"
-                name="enderecoNumero"
+                name="streetNumber"
                 width="30%"
-                value={streetNumber}
-                onChange={({ target }) => {
-                  setStreetNumber(target.value)
-                }}
+                onChange={valueInput}
+                value={shelter.streetNumber}
               />
 
               <Input
                 label="Bairro"
                 type="text"
-                name="enderecoBairro"
-                value={district}
-                onChange={({ target }) => {
-                  setDistrict(target.value)
-                }}
+                name="district"
+                onChange={valueInput}
+                value={shelter.district}
               />
 
               <Input
                 label="Complemento"
                 type="text"
-                name="enderecoComplemento"
-                value={complement}
-                onChange={({ target }) => {
-                  setComplement(target.value)
-                }}
+                name="complement"
+                onChange={valueInput}
+                value={shelter.complement}
               />
             </div>
 
@@ -300,20 +321,16 @@ export function ShelterSignIn() {
                 label="E-mail"
                 type="email"
                 name="email"
-                value={email}
-                onChange={({ target }) => {
-                  setEmail(target.value)
-                }}
+                onChange={valueInput}
+                value={shelter.email}
               />
 
               <Input
                 label="Senha"
                 type="password"
-                name="senha"
-                value={password}
-                onChange={({ target }) => {
-                  setPassword(target.value)
-                }}
+                name="password"
+                onChange={valueInput}
+                value={shelter.password}
               />
             </div>
 
@@ -321,9 +338,20 @@ export function ShelterSignIn() {
               <Checkbox
                 label="Concordo com os termos e condições"
                 name="termos"
-                onClick={() => setAcceptTerms(true)}
+                // onClick={() => setAcceptTerms(true)}
               />
             </div>
+
+            {status.type === 'success' ? (
+              <p style={{ color: 'green' }}>{status.message}</p>
+            ) : (
+              ''
+            )}
+            {status.type === 'error' ? (
+              <p style={{ color: '#ff0000' }}>{status.message}</p>
+            ) : (
+              ''
+            )}
 
             <Button type="submit">Cadastrar</Button>
           </form>
