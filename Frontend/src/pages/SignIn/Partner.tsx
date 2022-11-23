@@ -4,7 +4,7 @@ import axios from 'axios'
 
 import { api } from '../../services/api'
 
-import styles from './partner.module.css'
+import styles from './Partner.module.css'
 
 import imgSignIn from '../../assets/partnersignin-img.jpg'
 import { ReactComponent as IconBack } from '../../assets/icon-back.svg'
@@ -14,6 +14,18 @@ import { Input } from '../../components/Forms/Input'
 import { Select } from '../../components/Forms/Select'
 import { Checkbox } from '../../components/Forms/Checkbox'
 import { Button } from '../../components/Forms/Button'
+
+interface CNPJQueryResponse {
+  razao_social: string
+  nome_fantasia: string
+  bairro: string
+  cep: string
+  complemento: string
+  logradouro: string
+  numero: string
+  uf: string
+  municipio: string
+}
 
 interface IBGEUFResponse {
   sigla: string
@@ -26,25 +38,40 @@ interface IBGECityResponse {
 export function PartnerSignIn() {
   const navigate = useNavigate()
 
-  const [partnerName, setPartnerName] = useState('')
-  const [partnerFantasyName, setPartnerFantasyName] = useState('')
-  const [partnerCNPJ, setPartnerCNPJ] = useState('')
+  const [name, setName] = useState('')
+  const [fantasyName, setFantasyName] = useState('')
+  const [CNPJ, setCNPJ] = useState('')
+  const [CEP, setCEP] = useState('')
+  const [street, setStreet] = useState('')
+  const [streetNumber, setStreetNumber] = useState('')
+  const [district, setDistrict] = useState('')
+  const [complement, setComplement] = useState('')
 
-  const [partnerCEP, setPartnerCEP] = useState('')
-  const [partnerStreet, setPartnerStreet] = useState('')
-  const [partnerStreetNumber, setPartnerStreetNumber] = useState('')
-  const [partnerDistrict, setPartnerDistrict] = useState('')
-  const [partnerComplement, setPartnerComplement] = useState('')
-
-  const [partnerEmail, setPartnerEmail] = useState('')
-  const [partnerPassword, setPartnerPassword] = useState('')
-
-  const [acceptTerms, setAcceptTerms] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   const [ufs, setUfs] = useState<string[]>([])
   const [cities, setCities] = useState<string[]>([])
   const [selectedUf, setSelectedUf] = useState('0')
   const [selectedCity, setSelectedCity] = useState('0')
+
+  const [acceptTerms, setAcceptTerms] = useState(false)
+
+  useEffect(() => {
+    axios
+      .get<CNPJQueryResponse>(`https://brasilapi.com.br/api/cnpj/v1/${CNPJ}`)
+      .then(response => {
+        setName(response.data.razao_social)
+        setFantasyName(response.data.nome_fantasia)
+        setCEP(response.data.cep)
+        setStreet(response.data.logradouro)
+        setStreetNumber(response.data.numero)
+        setDistrict(response.data.bairro)
+        setComplement(response.data.complemento)
+        setSelectedUf(response.data.uf)
+        setSelectedCity(response.data.municipio)
+      })
+  }, [CNPJ])
 
   useEffect(() => {
     axios
@@ -71,38 +98,40 @@ export function PartnerSignIn() {
         const cityNames = response.data.map(city => city.nome)
         setCities(cityNames)
       })
-  }, [selectedUf])
+  }, [selectedUf, CNPJ])
 
   async function handleSubmit(event: FormEvent) {
-    event.preventDefault()
+    if (acceptTerms) {
+      event.preventDefault()
 
-    const data = new FormData()
+      const data = new FormData()
 
-    data.append('corporateName', partnerName)
-    data.append('nameFantasy', partnerFantasyName)
-    data.append('cnpj', partnerCNPJ)
+      data.append('corporateName', name)
+      data.append('nameFantasy', fantasyName)
+      data.append('cnpj', CNPJ)
 
-    data.append('uf', selectedUf)
-    data.append('city', selectedCity)
-    data.append('cep', partnerCEP)
-    data.append('street', partnerStreet)
-    data.append('streetNumber', partnerStreetNumber)
-    data.append('district', partnerDistrict)
-    data.append('complement', partnerComplement)
+      data.append('uf', selectedUf)
+      data.append('city', selectedCity)
+      data.append('cep', CEP)
+      data.append('street', street)
+      data.append('streetNumber', streetNumber)
+      data.append('district', district)
+      data.append('complement', complement)
 
-    data.append('email', partnerEmail)
-    data.append('password', partnerPassword)
+      data.append('email', email)
+      data.append('password', password)
 
-    try {
-      await api.post('partner', data, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      alert('Cadastro realizado com sucesso')
-      navigate('/perfil/parceiro')
-    } catch (e) {
-      console.log(e)
+      try {
+        await api.post('', data, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        alert('Cadastro realizado com sucesso')
+        navigate('/perfil/parceiro')
+      } catch (e) {
+        console.log(e)
+      }
     }
   }
 
@@ -138,21 +167,19 @@ export function PartnerSignIn() {
               <Input
                 label="Razão Social"
                 type="text"
-                name="nomeParceiro"
-                value={partnerName}
+                value={name}
                 onChange={({ target }) => {
-                  setPartnerName(target.value)
+                  setName(target.value)
                 }}
               />
 
               <Input
                 label="CNPJ"
                 type="text"
-                name="cnpj"
                 width="100%"
-                value={partnerCNPJ}
+                value={CNPJ}
                 onChange={({ target }) => {
-                  setPartnerCNPJ(target.value)
+                  setCNPJ(target.value)
                 }}
               />
             </div>
@@ -161,10 +188,9 @@ export function PartnerSignIn() {
               <Input
                 label="Nome Fantasia"
                 type="text"
-                name="nomeFantasia"
-                value={partnerFantasyName}
+                value={fantasyName}
                 onChange={({ target }) => {
-                  setPartnerFantasyName(target.value)
+                  setFantasyName(target.value)
                 }}
               />
             </div>
@@ -175,16 +201,14 @@ export function PartnerSignIn() {
               <Input
                 label="CEP"
                 type="text"
-                name="cep"
                 width="28%"
-                value={partnerCEP}
+                value={CEP}
                 onChange={({ target }) => {
-                  setPartnerCEP(target.value)
+                  setCEP(target.value)
                 }}
               />
 
               <Select
-                name="uf"
                 label="UF"
                 value={selectedUf}
                 onChange={handleSelectedUf}
@@ -193,7 +217,6 @@ export function PartnerSignIn() {
               />
 
               <Select
-                name="city"
                 label="Cidade"
                 value={selectedCity}
                 onChange={handleSelectedCity}
@@ -206,10 +229,9 @@ export function PartnerSignIn() {
               <Input
                 label="Endereço"
                 type="text"
-                name="endereco"
-                value={partnerStreet}
+                value={street}
                 onChange={({ target }) => {
-                  setPartnerStreet(target.value)
+                  setStreet(target.value)
                 }}
               />
             </div>
@@ -218,31 +240,28 @@ export function PartnerSignIn() {
               <Input
                 label="Número"
                 type="text"
-                name="enderecoNumero"
                 width="30%"
-                value={partnerStreetNumber}
+                value={streetNumber}
                 onChange={({ target }) => {
-                  setPartnerStreetNumber(target.value)
+                  setStreetNumber(target.value)
                 }}
               />
 
               <Input
                 label="Bairro"
                 type="text"
-                name="enderecoBairro"
-                value={partnerDistrict}
+                value={district}
                 onChange={({ target }) => {
-                  setPartnerDistrict(target.value)
+                  setDistrict(target.value)
                 }}
               />
 
               <Input
                 label="Complemento"
                 type="text"
-                name="enderecoComplemento"
-                value={partnerComplement}
+                value={complement}
                 onChange={({ target }) => {
-                  setPartnerComplement(target.value)
+                  setComplement(target.value)
                 }}
               />
             </div>
@@ -253,20 +272,18 @@ export function PartnerSignIn() {
               <Input
                 label="E-mail"
                 type="email"
-                name="email"
-                value={partnerEmail}
+                value={email}
                 onChange={({ target }) => {
-                  setPartnerEmail(target.value)
+                  setEmail(target.value)
                 }}
               />
 
               <Input
                 label="Senha"
                 type="password"
-                name="senha"
-                value={partnerPassword}
+                value={password}
                 onChange={({ target }) => {
-                  setPartnerPassword(target.value)
+                  setPassword(target.value)
                 }}
               />
             </div>

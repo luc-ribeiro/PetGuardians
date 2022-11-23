@@ -15,5 +15,7 @@ export type User = {
 
   active: boolean
 
+  about?: string
+
   accessToken: string
 }

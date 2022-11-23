@@ -15,6 +15,18 @@ import { Select } from '../../components/Forms/Select'
 import { Checkbox } from '../../components/Forms/Checkbox'
 import { Button } from '../../components/Forms/Button'
 
+interface CNPJQueryResponse {
+  razao_social: string
+  nome_fantasia: string
+  bairro: string
+  cep: string
+  complemento: string
+  logradouro: string
+  numero: string
+  uf: string
+  municipio: string
+}
+
 interface IBGEUFResponse {
   sigla: string
 }
@@ -26,20 +38,20 @@ interface IBGECityResponse {
 export function ShelterSignIn() {
   const navigate = useNavigate()
 
-  const [shelterName, setShelterName] = useState('')
-  const [shelterCNPJ, setShelterCNPJ] = useState('')
+  const [name, setName] = useState('')
+  const [CNPJ, setCNPJ] = useState('')
 
-  const [shelterOwnerName, setShelterOwnerName] = useState('')
-  const [shelterOwnerCPF, setShelterOwnerCPF] = useState('')
+  const [ownerName, setOwnerName] = useState('')
+  const [ownerCPF, setOwnerCPF] = useState('')
 
-  const [shelterCEP, setShelterCEP] = useState('')
-  const [shelterStreet, setShelterStreet] = useState('')
-  const [shelterStreetNumber, setShelterStreetNumber] = useState('')
-  const [shelterDistrict, setShelterDistrict] = useState('')
-  const [shelterComplement, setShelterComplement] = useState('')
+  const [CEP, setCEP] = useState('')
+  const [street, setStreet] = useState('')
+  const [streetNumber, setStreetNumber] = useState('')
+  const [district, setDistrict] = useState('')
+  const [complement, setComplement] = useState('')
 
-  const [shelterEmail, setShelterEmail] = useState('')
-  const [shelterPassword, setShelterPassword] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   const [acceptTerms, setAcceptTerms] = useState(false)
 
@@ -47,6 +59,21 @@ export function ShelterSignIn() {
   const [cities, setCities] = useState<string[]>([])
   const [selectedUf, setSelectedUf] = useState('0')
   const [selectedCity, setSelectedCity] = useState('0')
+
+  useEffect(() => {
+    axios
+      .get<CNPJQueryResponse>(`https://brasilapi.com.br/api/cnpj/v1/${CNPJ}`)
+      .then(response => {
+        setName(response.data.razao_social)
+        setCEP(response.data.cep)
+        setStreet(response.data.logradouro)
+        setStreetNumber(response.data.numero)
+        setDistrict(response.data.bairro)
+        setComplement(response.data.complemento)
+        setSelectedUf(response.data.uf)
+        setSelectedCity(response.data.municipio)
+      })
+  }, [CNPJ])
 
   useEffect(() => {
     axios
@@ -76,37 +103,39 @@ export function ShelterSignIn() {
   }, [selectedUf])
 
   async function handleSubmit(event: FormEvent) {
-    event.preventDefault()
+    if (acceptTerms) {
+      event.preventDefault()
 
-    const data = new FormData()
+      const data = new FormData()
 
-    data.append('corporateName', shelterName)
-    data.append('cnpj', shelterCNPJ)
+      data.append('corporateName', name)
+      data.append('cnpj', CNPJ)
 
-    data.append('name', shelterOwnerName)
-    data.append('cpf', shelterOwnerCPF)
+      data.append('name', ownerName)
+      data.append('cpf', ownerCPF)
 
-    data.append('uf', selectedUf)
-    data.append('city', selectedCity)
-    data.append('cep', shelterCEP)
-    data.append('street', shelterStreet)
-    data.append('streetNumber', shelterStreetNumber)
-    data.append('district', shelterDistrict)
-    data.append('complement', shelterComplement)
+      data.append('uf', selectedUf)
+      data.append('city', selectedCity)
+      data.append('cep', CEP)
+      data.append('street', street)
+      data.append('streetNumber', streetNumber)
+      data.append('district', district)
+      data.append('complement', complement)
 
-    data.append('email', shelterEmail)
-    data.append('password', shelterPassword)
+      data.append('email', email)
+      data.append('password', password)
 
-    try {
-      await api.post('shelter', data, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      alert('Cadastro realizado com sucesso')
-      navigate('/login')
-    } catch (e) {
-      console.log(e)
+      try {
+        await api.post('shelter', data, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        alert('Cadastro realizado com sucesso')
+        navigate('/login')
+      } catch (e) {
+        console.log(e)
+      }
     }
   }
 
@@ -143,9 +172,9 @@ export function ShelterSignIn() {
                 label="Nome do abrigo"
                 type="text"
                 name="nomeAbrigo"
-                value={shelterName}
+                value={name}
                 onChange={({ target }) => {
-                  setShelterName(target.value)
+                  setName(target.value)
                 }}
               />
 
@@ -154,9 +183,9 @@ export function ShelterSignIn() {
                 type="text"
                 name="cnpj"
                 width="100%"
-                value={shelterCNPJ}
+                value={CNPJ}
                 onChange={({ target }) => {
-                  setShelterCNPJ(target.value)
+                  setCNPJ(target.value)
                 }}
               />
             </div>
@@ -168,9 +197,9 @@ export function ShelterSignIn() {
                 label="Nome do responsável"
                 type="text"
                 name="nomeResponsavelAbrigo"
-                value={shelterOwnerName}
+                value={ownerName}
                 onChange={({ target }) => {
-                  setShelterOwnerName(target.value)
+                  setOwnerName(target.value)
                 }}
               />
 
@@ -179,9 +208,9 @@ export function ShelterSignIn() {
                 type="text"
                 name="cpf"
                 width="100%"
-                value={shelterOwnerCPF}
+                value={ownerCPF}
                 onChange={({ target }) => {
-                  setShelterOwnerCPF(target.value)
+                  setOwnerCPF(target.value)
                 }}
               />
             </div>
@@ -194,9 +223,9 @@ export function ShelterSignIn() {
                 type="text"
                 name="cep"
                 width="28%"
-                value={shelterCEP}
+                value={CEP}
                 onChange={({ target }) => {
-                  setShelterCEP(target.value)
+                  setCEP(target.value)
                 }}
               />
 
@@ -224,9 +253,9 @@ export function ShelterSignIn() {
                 label="Endereço"
                 type="text"
                 name="endereco"
-                value={shelterStreet}
+                value={street}
                 onChange={({ target }) => {
-                  setShelterStreet(target.value)
+                  setStreet(target.value)
                 }}
               />
             </div>
@@ -237,9 +266,9 @@ export function ShelterSignIn() {
                 type="text"
                 name="enderecoNumero"
                 width="30%"
-                value={shelterStreetNumber}
+                value={streetNumber}
                 onChange={({ target }) => {
-                  setShelterStreetNumber(target.value)
+                  setStreetNumber(target.value)
                 }}
               />
 
@@ -247,9 +276,9 @@ export function ShelterSignIn() {
                 label="Bairro"
                 type="text"
                 name="enderecoBairro"
-                value={shelterDistrict}
+                value={district}
                 onChange={({ target }) => {
-                  setShelterDistrict(target.value)
+                  setDistrict(target.value)
                 }}
               />
 
@@ -257,9 +286,9 @@ export function ShelterSignIn() {
                 label="Complemento"
                 type="text"
                 name="enderecoComplemento"
-                value={shelterComplement}
+                value={complement}
                 onChange={({ target }) => {
-                  setShelterComplement(target.value)
+                  setComplement(target.value)
                 }}
               />
             </div>
@@ -271,9 +300,9 @@ export function ShelterSignIn() {
                 label="E-mail"
                 type="email"
                 name="email"
-                value={shelterEmail}
+                value={email}
                 onChange={({ target }) => {
-                  setShelterEmail(target.value)
+                  setEmail(target.value)
                 }}
               />
 
@@ -281,9 +310,9 @@ export function ShelterSignIn() {
                 label="Senha"
                 type="password"
                 name="senha"
-                value={shelterPassword}
+                value={password}
                 onChange={({ target }) => {
-                  setShelterPassword(target.value)
+                  setPassword(target.value)
                 }}
               />
             </div>

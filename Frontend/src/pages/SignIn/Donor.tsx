@@ -13,6 +13,13 @@ import { Select } from '../../components/Forms/Select'
 import { Checkbox } from '../../components/Forms/Checkbox'
 import { Button } from '../../components/Forms/Button'
 
+interface CEPQueryResponse {
+  state: string
+  city: string
+  neighborhood: string
+  street: string
+}
+
 interface IBGEUFResponse {
   sigla: string
 }
@@ -22,10 +29,34 @@ interface IBGECityResponse {
 }
 
 export function DonorSignIn() {
+  const [name, setName] = useState('')
+
+  const [CPF, setCPF] = useState('')
+  const [birthday, setBirthday] = useState('')
+  const [CEP, setCEP] = useState('')
+  const [street, setStreet] = useState('')
+  const [streetNumber, setStreetNumber] = useState('')
+  const [district, setDistrict] = useState('')
+  const [complement, setComplement] = useState('')
+
   const [ufs, setUfs] = useState<string[]>([])
   const [cities, setCities] = useState<string[]>([])
   const [selectedUf, setSelectedUf] = useState('0')
   const [selectedCity, setSelectedCity] = useState('0')
+
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  useEffect(() => {
+    axios
+      .get<CEPQueryResponse>(`https://brasilapi.com.br/api/cep/v2/${CEP}`)
+      .then(response => {
+        setStreet(response.data.street)
+        setDistrict(response.data.neighborhood)
+        setSelectedUf(response.data.state)
+        setSelectedCity(response.data.city)
+      })
+  }, [CEP])
 
   useEffect(() => {
     axios
@@ -82,25 +113,42 @@ export function DonorSignIn() {
           </div>
 
           <form className={styles.form}>
-            <Input label="Nome completo" type="text" name="nomeCompleto" />
+            <Input
+              label="Nome completo"
+              type="text"
+              value={name}
+              onChange={({ target }) => {
+                setName(target.value)
+              }}
+            />
 
             <div className={styles.row}>
               <Input label="CPF" type="text" name="cpf" width="100%" />
               <Input
                 label="Data de nascimento"
                 type="date"
-                name="dataNascimento"
                 width="40%"
+                value={birthday}
+                onChange={({ target }) => {
+                  setBirthday(target.value)
+                }}
               />
             </div>
 
             <div className={styles.divider}></div>
 
             <div className={styles.row}>
-              <Input label="CEP" type="text" name="cep" width="28%" />
+              <Input
+                label="CEP"
+                type="text"
+                width="28%"
+                value={CEP}
+                onChange={({ target }) => {
+                  setCEP(target.value)
+                }}
+              />
 
               <Select
-                name="uf"
                 label="UF"
                 value={selectedUf}
                 onChange={handleSelectedUf}
@@ -109,7 +157,6 @@ export function DonorSignIn() {
               />
 
               <Select
-                name="city"
                 label="Cidade"
                 value={selectedCity}
                 onChange={handleSelectedCity}
@@ -119,32 +166,66 @@ export function DonorSignIn() {
             </div>
 
             <div className={styles.row}>
-              <Input label="Endereço" type="text" name="endereco" />
+              <Input
+                label="Endereço"
+                type="text"
+                value={street}
+                onChange={({ target }) => {
+                  setStreet(target.value)
+                }}
+              />
             </div>
 
             <div className={styles.row}>
               <Input
                 label="Número"
                 type="text"
-                name="enderecoNumero"
                 width="30%"
+                value={streetNumber}
+                onChange={({ target }) => {
+                  setStreetNumber(target.value)
+                }}
               />
 
-              <Input label="Bairro" type="text" name="enderecoBairro" />
+              <Input
+                label="Bairro"
+                type="text"
+                value={district}
+                onChange={({ target }) => {
+                  setDistrict(target.value)
+                }}
+              />
 
               <Input
                 label="Complemento"
                 type="text"
-                name="enderecoComplemento"
+                value={complement}
+                onChange={({ target }) => {
+                  setComplement(target.value)
+                }}
               />
             </div>
 
             <div className={styles.divider}></div>
 
             <div className={styles.row}>
-              <Input label="E-mail" type="email" name="email" />
+              <Input
+                label="E-mail"
+                type="email"
+                value={email}
+                onChange={({ target }) => {
+                  setEmail(target.value)
+                }}
+              />
 
-              <Input label="Senha" type="password" name="senha" />
+              <Input
+                label="Senha"
+                type="password"
+                value={password}
+                onChange={({ target }) => {
+                  setPassword(target.value)
+                }}
+              />
             </div>
 
             <div className={styles.row}>

@@ -9,7 +9,7 @@ export function AuthProvider({ children }: { children: JSX.Element }) {
 
   useEffect(() => {
     const loggedInUser = localStorage.getItem('user')
-    if (loggedInUser) {
+    if (loggedInUser && loggedInUser !== 'undefined') {
       const foundUser = JSON.parse(loggedInUser)
       setUser(foundUser)
     }
@@ -18,7 +18,7 @@ export function AuthProvider({ children }: { children: JSX.Element }) {
   async function signIn(email: string, password: string) {
     const data = await api.signIn(email, password)
     if (data.user && data.accessToken) {
-      setUser(data.user)
+      setUser(data)
       setToken(data.accessToken)
       setUserStorage(data)
       return true

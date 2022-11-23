@@ -22,6 +22,8 @@ import { EditPartnerProfile } from './pages/Profile/Edit/EditPartner'
 
 import { NotFound } from './pages/NotFound'
 import { RequireAuth } from './contexts/Auth/RequireAuth'
+import { Profile } from './pages/Profile/Profile'
+import { EditProfile } from './pages/Profile/Edit/EditProfile'
 
 export default function RoutesList() {
   return (
@@ -95,6 +97,22 @@ export default function RoutesList() {
         element={
           <RequireAuth>
             <EditPartnerProfile />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="meuperfil"
+        element={
+          <RequireAuth>
+            <Profile />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="meuperfil/editar"
+        element={
+          <RequireAuth>
+            <EditProfile />
           </RequireAuth>
         }
       />

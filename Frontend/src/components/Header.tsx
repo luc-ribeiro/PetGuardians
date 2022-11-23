@@ -16,8 +16,6 @@ export function Header() {
     navigate('/')
   }
 
-  console.log(auth)
-
   return (
     <header className={styles.header}>
       <nav className={`${styles.nav} container`}>
@@ -60,7 +58,7 @@ export function Header() {
           </div>
         ) : (
           <div className={styles.navLogin}>
-            <Link to={`/perfil/abrigo/${auth.user.id}`}>
+            <Link to="/meuperfil">
               <div className={styles.userContainer}>
                 <img className={styles.userAvatar} src={imgPlaceholder} />
                 <p className={styles.userProfile}>Meu perfil</p>

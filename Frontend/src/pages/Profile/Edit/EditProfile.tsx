@@ -4,7 +4,7 @@ import axios from 'axios'
 import { api } from '../../../services/api'
 import * as yup from 'yup'
 
-import styles from './EditShelter.module.css'
+import styles from './EditProfile.module.css'
 
 import { ReactComponent as IconBack } from '../../../assets/icon-back.svg'
 
@@ -17,31 +17,10 @@ import { Input } from '../../../components/Forms/Input'
 import { Select } from '../../../components/Forms/Select'
 import { TextArea } from '../../../components/Forms/TextArea'
 import { Button } from '../../../components/Forms/Button'
-import { ShelterProfile } from '../Shelter'
+import { Profile } from '../Profile'
 import { useForm } from 'react-hook-form'
-
-interface Shelter {
-  id: number
-  corporateName: string
-  name: string
-  birthday: string
-  cpf: string
-  cnpj: string
-  uf: string
-  city: string
-  cep: string
-  street: string
-  streetNumber: string
-  district: string
-  complement: string
-  about: string
-  email: string
-  password: string
-}
-
-interface ShelterParams {
-  id: string
-}
+import { AuthContext } from '../../../contexts/Auth/AuthContext'
+import { Login } from '../../Login'
 
 interface IBGEUFResponse {
   sigla: string
@@ -51,47 +30,38 @@ interface IBGECityResponse {
   nome: string
 }
 
-export function EditShelterProfile() {
+export function EditProfile() {
+  const auth = useContext(AuthContext)
   const navigate = useNavigate()
-  const { id } = useParams<string>()
-  const [shelter, setShelter] = useState<Shelter>()
 
-  const [shelterName, setShelterName] = useState('')
-  const [shelterOwnerName, setShelterOwnerName] = useState('')
-  const [shelterCNPJ, setShelterCNPJ] = useState('')
-  const [shelterOwnerCPF, setShelterOwnerCPF] = useState('')
-  const [shelterBirthday, setShelterBirthday] = useState('')
+  if (!auth.user) {
+    return <Login />
+  }
 
-  const [shelterCEP, setShelterCEP] = useState('')
-  const [shelterStreet, setShelterStreet] = useState('')
-  const [shelterStreetNumber, setShelterStreetNumber] = useState('')
-  const [shelterDistrict, setShelterDistrict] = useState('')
-  const [shelterComplement, setShelterComplement] = useState('')
+  const [name, setName] = useState(auth.user.name)
+  const [nameOwner, setOwnerName] = useState('')
+  const [CNPJ, setCNPJ] = useState(auth.user.cnpj)
+  const [CPF, setCPF] = useState(auth.user.cpf)
+  const [Birthday, setBirthday] = useState('')
 
-  const [shelterEmail, setShelterEmail] = useState('')
-  const [shelterPassword, setShelterPassword] = useState('')
+  const [CEP, setCEP] = useState(auth.user.cep)
+  const [street, setStreet] = useState(auth.user.street)
+  const [streetNumber, setStreetNumber] = useState(auth.user.streetNumber)
+  const [district, setDistrict] = useState(auth.user.district)
+  const [complement, setComplement] = useState(auth.user.complement)
 
-  const [acceptTerms, setAcceptTerms] = useState(false)
+  const [email, setEmail] = useState(auth.user.email)
+  const [password, setPassword] = useState('')
 
   const [ufs, setUfs] = useState<string[]>([])
   const [cities, setCities] = useState<string[]>([])
-  const [selectedUf, setSelectedUf] = useState('0')
-  const [selectedCity, setSelectedCity] = useState('0')
+  const [selectedUf, setSelectedUf] = useState(auth.user.uf)
+  const [selectedCity, setSelectedCity] = useState(auth.user.city)
 
-  const [shelterAbout, setShelterAbout] = useState('')
+  const [about, setAbout] = useState(auth.user.about)
 
   const [images, setImages] = useState<File[]>([])
   const [previewImages, setPreviewImages] = useState<string[]>([])
-
-  useEffect(() => {
-    api.get(`shelter/${id}`).then(response => {
-      setShelter(response.data)
-      setShelterName(response.data.corporateName)
-      setShelterAbout(response.data.about)
-      setShelterCNPJ(response.data.cnpj)
-      console.log(response.data)
-    })
-  }, [id])
 
   useEffect(() => {
     axios
@@ -144,38 +114,39 @@ export function EditShelterProfile() {
     setPreviewImages(selectedImagesPreview)
   }
 
-  if (!shelter) {
-    return <p>Carregando...</p>
-  }
-
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
 
     const data = new FormData()
 
-    data.append('corporateName', shelterName)
-    data.append('name', shelterOwnerName)
-    data.append('cnpj', shelterCNPJ)
-    data.append('cpf', shelterOwnerCPF)
-    data.append('uf', selectedUf)
-    data.append('city', selectedCity)
-    data.append('cep', shelterCEP)
-    data.append('street', shelterStreet)
-    data.append('streetNumber', shelterStreetNumber)
-    data.append('district', shelterDistrict)
-    data.append('complement', shelterComplement)
-    data.append('email', shelterEmail)
-    data.append('password', shelterPassword)
-    data.append('about', shelterAbout)
+    data.append('corporateName', name)
+    data.append('name', name)
+    data.append('cnpj', CNPJ)
+    // data.append('cpf', CPF)
+    // data.append('uf', selectedUf)
+    // data.append('city', selectedCity)
+    // data.append('cep', CEP)
+    // data.append('street', street)
+    // data.append('streetNumber', streetNumber)
+    // data.append('district', district)
+    // data.append('complement', complement)
+    // data.append('email', email)
+    // data.append('password', password)
+    data.append('about', about)
+
+    const accessToken = localStorage.getItem('authToken')
 
     try {
-      await api.patch(`shelter/${id}`, data, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      alert('Atualização realizada com sucesso')
-      navigate(`/perfil/abrigo/${id}`)
+      if (auth.user) {
+        await api.patch(`shelter/${auth.user.id}`, data, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + accessToken,
+          },
+        })
+        alert('Atualização realizada com sucesso')
+        navigate('meuperfil')
+      }
     } catch (e) {
       console.log(e)
     }
@@ -186,13 +157,13 @@ export function EditShelterProfile() {
       <Header />
       <div className={`${styles.container} container`}>
         <div className={styles.imageContainer}>
-          <Breadcrumb type="Abrigos" to={shelter.corporateName} />
+          <Breadcrumb type="Abrigos" to={auth.user.name} />
           <Avatar />
           <button className={styles.button}>Trocar foto</button>
         </div>
         <div className={styles.profileContainer}>
           <div className={styles.profileHeader}>
-            <Link to={`/perfil/abrigo/${shelter.id}`}>
+            <Link to="/meuperfil">
               <IconBack />
             </Link>
             <h1>Editar perfil</h1>
@@ -204,9 +175,9 @@ export function EditShelterProfile() {
                 label="Nome do abrigo"
                 type="text"
                 name="nomeAbrigo"
-                value={shelterName}
+                value={name}
                 onChange={({ target }) => {
-                  setShelterName(target.value)
+                  setName(target.value)
                 }}
               />
 
@@ -215,9 +186,9 @@ export function EditShelterProfile() {
                 type="text"
                 name="cnpj"
                 width="100%"
-                value={shelter.cnpj}
+                value={CNPJ}
                 onChange={({ target }) => {
-                  setShelterCNPJ(target.value)
+                  setCNPJ(target.value)
                 }}
               />
             </div>
@@ -227,9 +198,9 @@ export function EditShelterProfile() {
                 label="Nome completo do responsável pelo abrigo"
                 type="text"
                 name="nomeResponsavelAbrigo"
-                value={shelter.name}
+                value={nameOwner}
                 onChange={({ target }) => {
-                  setShelterOwnerName(target.value)
+                  setOwnerName(target.value)
                 }}
               />
             </div>
@@ -240,9 +211,9 @@ export function EditShelterProfile() {
                 type="text"
                 name="cpf"
                 width="100%"
-                value={shelter.cpf}
+                value={CPF}
                 onChange={({ target }) => {
-                  setShelterOwnerCPF(target.value)
+                  setCPF(target.value)
                 }}
               />
               {/* <Input
@@ -250,9 +221,9 @@ export function EditShelterProfile() {
                 type="date"
                 name="dataNascimento"
                 width="40%"
-                value={shelter.birthday}
+                value={.birthday}
                 onChange={({ target }) => {
-                  setShelterBirthday(target.value)
+                  setBirthday(target.value)
                 }}
               /> */}
             </div>
@@ -265,16 +236,16 @@ export function EditShelterProfile() {
                 type="text"
                 name="cep"
                 width="28%"
-                value={shelter.cep}
+                value={CEP}
                 onChange={({ target }) => {
-                  setShelterCEP(target.value)
+                  setCEP(target.value)
                 }}
               />
 
               <Select
                 name="uf"
                 label="UF"
-                value={shelter.uf}
+                value={selectedUf}
                 onChange={handleSelectedUf}
                 options={ufs.map(uf => ({ label: uf, value: uf }))}
                 width="20%"
@@ -283,7 +254,7 @@ export function EditShelterProfile() {
               <Select
                 name="city"
                 label="Cidade"
-                value={shelter.city}
+                value={selectedCity}
                 onChange={handleSelectedCity}
                 options={cities.map(city => ({ label: city, value: city }))}
                 width="50%"
@@ -295,9 +266,9 @@ export function EditShelterProfile() {
                 label="Endereço"
                 type="text"
                 name="endereco"
-                value={shelter.street}
+                value={street}
                 onChange={({ target }) => {
-                  setShelterStreet(target.value)
+                  setStreet(target.value)
                 }}
               />
             </div>
@@ -308,9 +279,9 @@ export function EditShelterProfile() {
                 type="text"
                 name="enderecoNumero"
                 width="30%"
-                value={shelter.streetNumber}
+                value={streetNumber}
                 onChange={({ target }) => {
-                  setShelterStreetNumber(target.value)
+                  setStreetNumber(target.value)
                 }}
               />
 
@@ -318,9 +289,9 @@ export function EditShelterProfile() {
                 label="Bairro"
                 type="text"
                 name="enderecoBairro"
-                value={shelter.district}
+                value={district}
                 onChange={({ target }) => {
-                  setShelterDistrict(target.value)
+                  setDistrict(target.value)
                 }}
               />
 
@@ -328,9 +299,9 @@ export function EditShelterProfile() {
                 label="Complemento"
                 type="text"
                 name="enderecoComplemento"
-                value={shelter.complement}
+                value={complement}
                 onChange={({ target }) => {
-                  setShelterComplement(target.value)
+                  setComplement(target.value)
                 }}
               />
             </div>
@@ -342,9 +313,9 @@ export function EditShelterProfile() {
                 label="E-mail"
                 type="email"
                 name="email"
-                value={shelter.email}
+                value={email}
                 onChange={({ target }) => {
-                  setShelterEmail(target.value)
+                  setEmail(target.value)
                 }}
               />
 
@@ -352,9 +323,9 @@ export function EditShelterProfile() {
                 label="Senha"
                 type="password"
                 name="senha"
-                value={shelter.password}
+                value={password}
                 onChange={({ target }) => {
-                  setShelterPassword(target.value)
+                  setPassword(target.value)
                 }}
               />
             </div>
@@ -364,9 +335,9 @@ export function EditShelterProfile() {
             <TextArea
               label="Sobre"
               name="sobre"
-              value={shelterAbout}
+              value={about}
               onChange={({ target }) => {
-                setShelterAbout(target.value)
+                setAbout(target.value)
               }}
             />
 
