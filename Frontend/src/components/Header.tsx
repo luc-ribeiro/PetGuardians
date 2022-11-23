@@ -1,34 +1,43 @@
-import { useState } from "react";
+import styles from './Header.module.css'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 
-import styles from "./Header.module.css";
-import { Link, NavLink } from "react-router-dom";
-
-import { ReactComponent as Logo } from "../assets/logo.svg";
-import { ReactComponent as IconSearch } from "../assets/icon-search.svg";
+import { ReactComponent as Logo } from '../assets/logo.svg'
+import imgPlaceholder from '../assets/avatar-thumbnail.jpg'
+import { ReactComponent as IconSearch } from '../assets/icon-search.svg'
+import { useContext } from 'react'
+import { AuthContext } from '../contexts/Auth/AuthContext'
 
 export function Header() {
-	const [teste, setTeste] = useState(true);
+  const auth = useContext(AuthContext)
+  const navigate = useNavigate()
 
-	return (
-		<header className={styles.header}>
-			<nav className={`${styles.nav} container`}>
-				<Link className={styles.logo} to="/">
-					<Logo />
-				</Link>
+  function handleLogout() {
+    auth.signOut()
+    navigate('/')
+  }
 
-				<ul className={styles.navMenu}>
-					<li>
-						<NavLink to="/quem-somos">Quem somos</NavLink>
-					</li>
-					<li>
-						<NavLink to="/parceiros">Parceiros</NavLink>
-					</li>
-					<li>
-						<NavLink to="/abrigos">Abrigos</NavLink>
-					</li>
-				</ul>
+  console.log(auth)
 
-				{/* <form className={styles.navSearch}>
+  return (
+    <header className={styles.header}>
+      <nav className={`${styles.nav} container`}>
+        <Link className={styles.logo} to="/">
+          <Logo />
+        </Link>
+
+        <ul className={styles.navMenu}>
+          <li>
+            <NavLink to="/quem-somos">Quem somos</NavLink>
+          </li>
+          <li>
+            <NavLink to="/parceiros">Parceiros</NavLink>
+          </li>
+          <li>
+            <NavLink to="/abrigos">Abrigos</NavLink>
+          </li>
+        </ul>
+
+        {/* <form className={styles.navSearch}>
 					<input
 						type="text"
 						name="search"
@@ -41,22 +50,28 @@ export function Header() {
 					</button>
 				</form> */}
 
-				<div className={styles.navLogin}>
-					{teste ? (
-						<>
-							<Link to="/login">Entrar</Link>
+        {!auth.user ? (
+          <div className={styles.navLogin}>
+            <Link to="/login">Entrar</Link>
 
-							<Link className={styles.navButton} to="/cadastrar">
-								Cadastrar
-							</Link>
-						</>
-					) : (
-						<>
-							<h2>Teste</h2>
-						</>
-					)}
-				</div>
-			</nav>
-		</header>
-	);
+            <Link className={styles.navButton} to="/cadastrar">
+              Cadastrar
+            </Link>
+          </div>
+        ) : (
+          <div className={styles.navLogin}>
+            <Link to={`/perfil/abrigo/${auth.user.id}`}>
+              <div className={styles.userContainer}>
+                <img className={styles.userAvatar} src={imgPlaceholder} />
+                <p className={styles.userProfile}>Meu perfil</p>
+              </div>
+            </Link>
+            <button className={styles.logout} onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+        )}
+      </nav>
+    </header>
+  )
 }

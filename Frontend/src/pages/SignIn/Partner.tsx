@@ -2,7 +2,7 @@ import { useState, useEffect, ChangeEvent, FormEvent } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
-import api from '../../services/api'
+import { api } from '../../services/api'
 
 import styles from './partner.module.css'
 

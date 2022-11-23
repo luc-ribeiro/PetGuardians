@@ -8,7 +8,7 @@ import { Table } from '../../components/Profiles/Table'
 import { Link, useParams } from 'react-router-dom'
 import { ProductTable } from '../../components/Profiles/ProductTable'
 import { useEffect, useState } from 'react'
-import api from '../../services/api'
+import { api } from '../../services/api'
 
 interface Partner {
   id: number
@@ -28,7 +28,6 @@ interface PartnerParams {
   id: string
 }
 
-
 export function PartnerProfile() {
   const params = useParams<string>()
   const [partner, setPartner] = useState<Partner>()
@@ -42,7 +41,6 @@ export function PartnerProfile() {
   // if (!partner) {
   //   return <p>Carregando...</p>
   // }
-
 
   return (
     <>
@@ -62,7 +60,6 @@ export function PartnerProfile() {
             <Link className={styles.button} to="produtos/cadastrar">
               Cadastrar Produtos
             </Link>
-
           </div>
           <Table />
           <ProductTable />

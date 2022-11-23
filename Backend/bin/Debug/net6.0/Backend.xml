@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Backend</name>
+    </assembly>
+    <members>
+        <member name="M:Backend.Controllers.AuthController.Login(Backend.Models.UserDto)">
+            <summary>
+            Loga no sistema e cria token de acesso e de renovação
+            </summary>
+        </member>
+        <member name="M:Backend.Controllers.AuthController.RefreshToken">
+            <summary>
+            Cria um novo token de acesso e um novo token de renovação
+            </summary>
+        </member>
+        <member name="M:Backend.Controllers.ShelterController.Create(Backend.Models.ShelterDto)">
+            <summary>
+            Cria um `Shelter`.
+            </summary>
+        </member>
+        <member name="M:Backend.Controllers.ShelterController.Read(System.Int32)">
+            <summary>
+            Consulta um `Shelter`
+            </summary>
+        </member>
+        <member name="M:Backend.Controllers.ShelterController.Read(System.String,System.String,System.String)">
+            <summary>
+            Consulta de `Shelter` por região
+            </summary>
+        </member>
+        <member name="M:Backend.Controllers.ShelterController.Update(System.Int32,Backend.Models.Shelter)">
+            <summary>
+            Atualiza `CorporateName` e `About`
+            </summary>
+        </member>
+        <member name="M:Backend.Controllers.ShelterController.UploadImages(System.Int32,System.Collections.Generic.List{Microsoft.AspNetCore.Http.IFormFile})">
+            <summary>
+            Upload de imagens do `Shelter`
+            </summary>
+        </member>
+        <member name="M:Backend.Controllers.ShelterController.Delete(System.Int32)">
+            <summary>
+            Inativa um `Shelter`
+            </summary>
+        </member>
+        <member name="M:Backend.Controllers.ShelterController.DeleteImages(System.Int32,System.Collections.Generic.List{System.Int32})">
+            <summary>
+            Exclui imagens do `Shelter`
+            </summary>
+        </member>
+    </members>
+</doc>

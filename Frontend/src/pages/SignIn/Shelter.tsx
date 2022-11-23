@@ -2,7 +2,7 @@ import { useState, useEffect, ChangeEvent, FormEvent } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
-import api from '../../services/api'
+import { api } from '../../services/api'
 
 import styles from './Shelter.module.css'
 
@@ -104,7 +104,7 @@ export function ShelterSignIn() {
         },
       })
       alert('Cadastro realizado com sucesso')
-      navigate('/perfil/abrigo')
+      navigate('/login')
     } catch (e) {
       console.log(e)
     }

@@ -1,7 +1,7 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
-import api from '../../../services/api'
+import { api } from '../../../services/api'
 import * as yup from 'yup'
 
 import styles from './EditShelter.module.css'

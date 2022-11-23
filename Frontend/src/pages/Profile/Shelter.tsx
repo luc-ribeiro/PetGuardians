@@ -1,5 +1,5 @@
 import styles from './Shelter.module.css'
-import api from '../../services/api'
+import { api } from '../../services/api'
 
 import { Link, useParams } from 'react-router-dom'
 
