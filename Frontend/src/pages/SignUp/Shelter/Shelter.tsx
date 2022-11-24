@@ -1,20 +1,19 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import * as yup from 'yup'
-
-import { api } from '../../services/api'
+import { api } from '../../../services/api'
 
 import styles from './Shelter.module.css'
 
-import imgSignIn from '../../assets/Sheltersignin-img.jpg'
-import { ReactComponent as IconBack } from '../../assets/icon-back.svg'
-import logo from '../../assets/logo.svg'
+import imgSignIn from '../../../assets/Sheltersignin-img.jpg'
+import { ReactComponent as IconBack } from '../../../assets/icon-back.svg'
+import logo from '../../../assets/logo.svg'
 
-import { Input } from '../../components/Forms/Input'
-import { Select } from '../../components/Forms/Select'
-import { Checkbox } from '../../components/Forms/Checkbox'
-import { Button } from '../../components/Forms/Button'
+import { Input } from '../../../components/Forms/Input'
+import { Select } from '../../../components/Forms/Select'
+import { Checkbox } from '../../../components/Forms/Checkbox'
+import { Button } from '../../../components/Forms/Button'
 
 interface CNPJQueryResponse {
   razao_social: string
@@ -28,6 +27,13 @@ interface CNPJQueryResponse {
   municipio: string
 }
 
+interface CEPQueryResponse {
+  state: string
+  city: string
+  neighborhood: string
+  street: string
+}
+
 interface IBGEUFResponse {
   sigla: string
 }
@@ -36,13 +42,14 @@ interface IBGECityResponse {
   nome: string
 }
 
-export function ShelterSignIn() {
+export function ShelterSignUp() {
   const navigate = useNavigate()
 
   const [ufs, setUfs] = useState<string[]>([])
   const [cities, setCities] = useState<string[]>([])
   const [selectedUf, setSelectedUf] = useState('0')
   const [selectedCity, setSelectedCity] = useState('0')
+  const [cleanCnpj, setCleanCnpj] = useState('')
 
   const [status, setStatus] = useState({
     type: '',
@@ -59,10 +66,10 @@ export function ShelterSignIn() {
     streetNumber: '',
     district: '',
     complement: '',
+    uf: '',
+    city: '',
     email: '',
     password: '',
-    uf: selectedUf,
-    city: selectedCity,
   })
 
   const valueInput = (e: any) =>
@@ -71,21 +78,33 @@ export function ShelterSignIn() {
   useEffect(() => {
     axios
       .get<CNPJQueryResponse>(
-        `https://brasilapi.com.br/api/cnpj/v1/${shelter.CNPJ}`,
+        `https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`,
       )
       .then(response => {
         setShelter({
-          name: response.data.razao_social,
-          CEP: response.data.cep,
-          street: response.data.logradouro,
-          streetNumber: response.data.numero,
-          district: response.data.bairro,
-          complement: response.data.complemento,
-          uf: response.data.uf,
-          city: response.data.municipio,
+          ...shelter,
+          ['name']: response.data.razao_social,
         } as any)
       })
   }, [shelter.CNPJ])
+
+  useEffect(() => {
+    axios
+      .get<CEPQueryResponse>(
+        `https://brasilapi.com.br/api/cep/v2/${shelter.CEP}`,
+      )
+      .then(response => {
+        setShelter({
+          ...shelter,
+          ['street']: response.data.street,
+          ['district']: response.data.neighborhood,
+          ['uf']: response.data.state,
+          ['city']: response.data.city,
+        } as any)
+        setSelectedUf(response.data.state)
+        setSelectedCity(response.data.city)
+      })
+  }, [shelter.CNPJ, shelter.CEP])
 
   useEffect(() => {
     axios
@@ -141,6 +160,43 @@ export function ShelterSignIn() {
     }
   }
 
+  function handleCnpjChange(event: ChangeEvent<HTMLInputElement>) {
+    const notFormattedCnpj = event.target.value
+
+    const formattedCnpj = notFormattedCnpj
+      .replace(/\D/g, '')
+      .replace(/(\d{2})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1/$2')
+      .replace(/(\d{4})(\d)/, '$1-$2')
+      .replace(/(-\d{2})\d+?$/, '$1')
+
+    const cleanCnpj = formattedCnpj.replace(/\D/g, '')
+
+    setCleanCnpj(cleanCnpj)
+    setShelter({ ...shelter, ['CNPJ']: formattedCnpj })
+  }
+
+  function handleCpfChange(event: ChangeEvent<HTMLInputElement>) {
+    const notFormattedCpf = event.target.value
+    const formattedCpf = notFormattedCpf
+      .replace(/\D/g, '')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1-$2')
+      .replace(/(-\d{2})\d+?$/, '$1')
+    setShelter({ ...shelter, ['ownerCPF']: formattedCpf })
+  }
+
+  function handleCepChange(event: ChangeEvent<HTMLInputElement>) {
+    const notFormattedCep = event.target.value
+    const formattedCep = notFormattedCep
+      .replace(/\D/g, '')
+      .replace(/(\d{5})(\d)/, '$1-$2')
+      .replace(/(-\d{3})\d+?$/, '$1')
+    setShelter({ ...shelter, ['CEP']: formattedCep })
+  }
+
   function handleSelectedUf(event: ChangeEvent<HTMLSelectElement>) {
     const uf = event.target.value
     setSelectedUf(uf)
@@ -156,36 +212,38 @@ export function ShelterSignIn() {
 
     if (!(await validate())) return
 
-    const data = new FormData()
+    console.log(shelter)
 
-    data.append('corporateName', shelter.name)
-    data.append('cnpj', shelter.CNPJ)
+    //const data = new FormData()
 
-    data.append('name', shelter.ownerName)
-    data.append('cpf', shelter.ownerCPF)
+    // data.append('corporateName', shelter.name)
+    // data.append('cnpj', shelter.CNPJ)
 
-    data.append('cep', shelter.CEP)
-    data.append('street', shelter.street)
-    data.append('streetNumber', shelter.streetNumber)
-    data.append('district', shelter.district)
-    data.append('complement', shelter.complement)
-    data.append('uf', shelter.uf)
-    data.append('city', shelter.city)
+    // data.append('name', shelter.ownerName)
+    // data.append('cpf', shelter.ownerCPF)
 
-    data.append('email', shelter.email)
-    data.append('password', shelter.password)
+    // data.append('cep', shelter.CEP)
+    // data.append('street', shelter.street)
+    // data.append('streetNumber', shelter.streetNumber)
+    // data.append('district', shelter.district)
+    // data.append('complement', shelter.complement)
+    // data.append('uf', shelter.uf)
+    // data.append('city', shelter.city)
 
-    try {
-      await api.post('shelter', data, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      alert('Cadastro realizado com sucesso')
-      navigate('/login')
-    } catch (e) {
-      console.log(e)
-    }
+    // data.append('email', shelter.email)
+    // data.append('password', shelter.password)
+
+    // try {
+    //   await api.post('shelter', data, {
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //   })
+    //   alert('Cadastro realizado com sucesso')
+    //   navigate('/login')
+    // } catch (e) {
+    //   console.log(e)
+    // }
   }
 
   return (
@@ -220,7 +278,7 @@ export function ShelterSignIn() {
                 type="text"
                 name="CNPJ"
                 width="100%"
-                onChange={valueInput}
+                onChange={handleCnpjChange}
                 value={shelter.CNPJ}
               />
             </div>
@@ -241,7 +299,7 @@ export function ShelterSignIn() {
                 type="text"
                 name="ownerCPF"
                 width="100%"
-                onChange={valueInput}
+                onChange={handleCpfChange}
                 value={shelter.ownerCPF}
               />
             </div>
@@ -254,7 +312,7 @@ export function ShelterSignIn() {
                 type="text"
                 name="CEP"
                 width="28%"
-                onChange={valueInput}
+                onChange={handleCepChange}
                 value={shelter.CEP}
               />
 
@@ -263,7 +321,10 @@ export function ShelterSignIn() {
                 label="UF"
                 value={selectedUf}
                 onChange={handleSelectedUf}
-                options={ufs.map(uf => ({ label: uf, value: uf }))}
+                options={ufs.map(uf => ({
+                  label: uf,
+                  value: uf,
+                }))}
                 width="20%"
               />
 
@@ -272,7 +333,10 @@ export function ShelterSignIn() {
                 label="Cidade"
                 value={selectedCity}
                 onChange={handleSelectedCity}
-                options={cities.map(city => ({ label: city, value: city }))}
+                options={cities.map(city => ({
+                  label: city,
+                  value: city,
+                }))}
                 width="50%"
               />
             </div>
