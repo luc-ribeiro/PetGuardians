@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 using Backend.Models;
 using Backend.Services.UserService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -57,6 +58,10 @@ public class Program
            });
 
 
+        builder.Services.AddControllers().AddJsonOptions(opt =>
+        {
+            opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        });
 
 
 
@@ -68,6 +73,8 @@ public class Program
 
         // Configura o Tipo de Conexão com o Banco
         builder.Services.AddDbContext<DBPetGuardians>(option => option.UseSqlServer(strConn));
+
+
 
 
         // Adicionar o middleware Swagger:

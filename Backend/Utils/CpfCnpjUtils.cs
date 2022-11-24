@@ -7,7 +7,7 @@ public static class CpfCnpjUtils
         return (isCpf(cpfCnpj) || IsCnpj(cpfCnpj));
     }
 
-    private static bool isCpf(string cpf)
+    public static bool isCpf(string cpf)
     {
         cpf = cpf.Trim().Replace(".", "").Replace("-", "");
         if (cpf.Length != 11)
@@ -48,7 +48,7 @@ public static class CpfCnpjUtils
         return cpf.EndsWith(digito);
     }
 
-    private static bool IsCnpj(string cnpj)
+    public static bool IsCnpj(string cnpj)
     {
         cnpj = cnpj.Trim().Replace(".", "").Replace("-", "").Replace("/", "");
         if (cnpj.Length != 14)
