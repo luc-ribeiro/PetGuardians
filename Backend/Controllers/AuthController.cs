@@ -10,6 +10,7 @@ using MimeTypes;
 using Microsoft.AspNetCore.Authorization;
 using Backend.Services.UserService;
 using System.Security.Cryptography;
+using Backend.DTO;
 
 namespace Backend.Controllers;
 
@@ -33,30 +34,36 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost]
     [Route("login")]
-    public ActionResult<string> Login(UserDto request)
+    public ActionResult<string> Login(LoginDto request)
     {
 
-        User? user = _context.Users.Where(u => u.Email.Equals(request.Email)).Include(user => user.ProfilePicture).FirstOrDefault();
+        Person? person = _context.Persons.Where(p => p.Email.Equals(request.Email)).FirstOrDefault();
 
-        if (user == null)
+        if (person == null)
         {
             return NotFound("Usuário não encontrado.");
         }
 
-        if (!AuthUtils.VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+        if (!AuthUtils.VerifyPasswordHash(request.Password, person.PasswordHash, person.PasswordSalt))
         {
             return BadRequest("Senha inválida.");
         }
 
-        Shelter? shelter = _context.Shelters.Find(user.Id);
-        var type = shelter ?? user;
-        var token = CreateAccessToken(type);
-        CreateAndSetRefreshToken(user);
+
+        Shelter? shelter = _context.Shelters.Find(person.Id);
+        Donor? donor = _context.Donors.Find(person.Id);
+        Partner? partner = _context.Partners.Find(person.Id);
+        var type = (shelter ?? donor ?? partner ?? person);
+        string role = type.GetType().Name;
+
+        string token = CreateAccessToken(person, role);
+        CreateAndSetRefreshToken(person);
 
         var response = new
         {
-            Shelter = shelter != null,
-            User = user,
+            shelter,
+            donor,
+            partner,
             AccessToken = token
         };
 
@@ -71,29 +78,34 @@ public class AuthController : ControllerBase
     public ActionResult<string> RefreshToken()
     {
         var refreshToken = Request.Cookies["refreshToken"];
-        User? user = _context.Users.Include(u => u.RefreshToken).Where(u => u.RefreshToken != null && u.RefreshToken.Token.Equals(refreshToken)).FirstOrDefault();
+        Person? person = _context.Persons.Include(u => u.RefreshToken).Where(u => u.RefreshToken != null && u.RefreshToken.Token.Equals(refreshToken)).FirstOrDefault();
 
-        if (user == null || user.RefreshToken == null)
+        if (person == null || person.RefreshToken == null)
         {
             return Unauthorized("Token Inválido");
         }
 
-        if (user.RefreshToken.Expires < DateTime.Now)
+        if (person.RefreshToken.Expires < DateTime.Now)
         {
             return Unauthorized("Token Expirado");
         }
-
-        string token = CreateAccessToken(user);
-        CreateAndSetRefreshToken(user);
+        string token = CreateAccessToken(person);
+        CreateAndSetRefreshToken(person);
         return token;
     }
-    private string CreateAccessToken(User user)
+    private string CreateAccessToken(Person person, string? role = null)
     {
-        Shelter? shelter = _context.Shelters.Find(user.Id);
-        string role = (shelter ?? user).GetType().Name;
+        if (role == null)
+        {
+            Shelter? shelter = _context.Shelters.Find(person.Id);
+            Donor? donor = _context.Donors.Find(person.Id);
+            Partner? partner = _context.Partners.Find(person.Id);
+            var type = (shelter ?? donor ?? partner ?? person);
+            role = type.GetType().Name;
+        }
 
         List<Claim> claims = new List<Claim>{
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.NameIdentifier, person.Id.ToString()),
             new Claim(ClaimTypes.Role, role)
         };
 
@@ -108,13 +120,13 @@ public class AuthController : ControllerBase
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    private RefreshToken CreateAndSetRefreshToken(User user)
+    private RefreshToken CreateAndSetRefreshToken(Person person)
     {
         RefreshToken refreshToken = new RefreshToken
         {
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
             Expires = DateTime.Now.AddDays(7),
-            User = user
+            Person = person
         };
 
         CookieOptions cookieOptions = new CookieOptions
@@ -124,7 +136,7 @@ public class AuthController : ControllerBase
         };
         Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
 
-        RefreshToken? currentToken = _context.RefreshTokens.Find(user.Id);
+        RefreshToken? currentToken = _context.RefreshTokens.Find(person.Id);
         if (currentToken != null)
         {
             _context.RefreshTokens.Remove(currentToken);
