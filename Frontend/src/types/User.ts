@@ -1,9 +1,9 @@
 export type User = {
-  shelter: string
-
-  email: string
   id: number
   name: string
+  fantasyName: string
+  gcg: string
+  telephone: string
 
   cep: string
   uf: string
@@ -13,9 +13,10 @@ export type User = {
   district: string
   complement: string
 
-  active: boolean
+  email: string
+  password: string
 
-  about?: string
+  about?: string | null
 
-  accessToken: string
+  keyPix?: string
 }

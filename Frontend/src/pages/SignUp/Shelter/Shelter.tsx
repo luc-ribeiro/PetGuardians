@@ -57,10 +57,10 @@ export function ShelterSignUp() {
   })
 
   const [shelter, setShelter] = useState({
-    name: '',
+    corporateName: '',
+    fantasyName: '',
     CNPJ: '',
-    ownerName: '',
-    ownerCPF: '',
+    telephone: '',
     CEP: '',
     street: '',
     streetNumber: '',
@@ -83,7 +83,7 @@ export function ShelterSignUp() {
       .then(response => {
         setShelter({
           ...shelter,
-          ['name']: response.data.razao_social,
+          ['corporateName']: response.data.razao_social,
         } as any)
       })
   }, [shelter.CNPJ])
@@ -139,13 +139,20 @@ export function ShelterSignUp() {
         .string()
         .required('Erro: Necessário preencher o campo senha')
         .min(6, 'Erro: A senha deve ter no mínimo 6 caracteres'),
-
       email: yup
         .string()
         .required('Erro: Necessário preencher o campo e-mail')
         .email('Erro: Necessário preencher o campo com e-mail válido'),
-
-      name: yup.string().required('Erro: Necessário preencher o campo nome'),
+      street: yup.string().required('Erro: Necessário preencher o nome da rua'),
+      CEP: yup.string().required('Erro: Necessário preencher o CEP'),
+      telephone: yup.string().required('Erro: Necessário preencher o telefone'),
+      fantasyName: yup
+        .string()
+        .required('Erro: Necessário preencher o nome fantasia'),
+      CNPJ: yup.string().required('Erro: Necessário preencher o CNPJ'),
+      corporateName: yup
+        .string()
+        .required('Erro: Necessário preencher o campo nome'),
     })
 
     try {
@@ -177,15 +184,14 @@ export function ShelterSignUp() {
     setShelter({ ...shelter, ['CNPJ']: formattedCnpj })
   }
 
-  function handleCpfChange(event: ChangeEvent<HTMLInputElement>) {
-    const notFormattedCpf = event.target.value
-    const formattedCpf = notFormattedCpf
+  function handleTelephoneChange(event: ChangeEvent<HTMLInputElement>) {
+    const phoneNumber = event.target.value
+    const formattedPhoneNumber = phoneNumber
       .replace(/\D/g, '')
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d)/, '$1-$2')
-      .replace(/(-\d{2})\d+?$/, '$1')
-    setShelter({ ...shelter, ['ownerCPF']: formattedCpf })
+      .replace(/(\d{2})(\d)/, '($1) $2')
+      .replace(/(\d{4})(\d)/, '$1-$2')
+      .replace(/(-\d{5})\d+?$/, '$1')
+    setShelter({ ...shelter, ['telephone']: formattedPhoneNumber })
   }
 
   function handleCepChange(event: ChangeEvent<HTMLInputElement>) {
@@ -212,38 +218,49 @@ export function ShelterSignUp() {
 
     if (!(await validate())) return
 
-    console.log(shelter)
+    const saveDataForm = true
 
-    //const data = new FormData()
+    if (saveDataForm) {
+      setStatus({
+        type: 'success',
+        message: 'Cadastro realizado com sucesso',
+      })
+    } else {
+      setStatus({
+        type: 'error',
+        message: 'Erro: Cadastro não realizado',
+      })
+    }
 
-    // data.append('corporateName', shelter.name)
-    // data.append('cnpj', shelter.CNPJ)
-
-    // data.append('name', shelter.ownerName)
-    // data.append('cpf', shelter.ownerCPF)
-
-    // data.append('cep', shelter.CEP)
-    // data.append('street', shelter.street)
-    // data.append('streetNumber', shelter.streetNumber)
-    // data.append('district', shelter.district)
-    // data.append('complement', shelter.complement)
-    // data.append('uf', shelter.uf)
-    // data.append('city', shelter.city)
-
-    // data.append('email', shelter.email)
-    // data.append('password', shelter.password)
-
-    // try {
-    //   await api.post('shelter', data, {
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //   })
-    //   alert('Cadastro realizado com sucesso')
-    //   navigate('/login')
-    // } catch (e) {
-    //   console.log(e)
-    // }
+    try {
+      await api.post(
+        'shelter',
+        {
+          corporateName: shelter.corporateName,
+          fantasyName: shelter.fantasyName,
+          cnpj: shelter.CNPJ.replace(/\D/g, ''),
+          telephone: shelter.telephone.replace(/\D/g, ''),
+          cep: shelter.CEP.replace(/\D/g, ''),
+          street: shelter.street,
+          streetNumber: shelter.streetNumber,
+          district: shelter.district,
+          complement: shelter.complement,
+          uf: shelter.uf,
+          city: shelter.city,
+          email: shelter.email,
+          password: shelter.password,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      )
+      alert('Cadastro realizado com sucesso')
+      navigate('/login')
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   return (
@@ -266,11 +283,11 @@ export function ShelterSignUp() {
           <form className={styles.form} onSubmit={handleSubmit}>
             <div className={styles.row}>
               <Input
-                label="Nome do abrigo"
+                label="Razão Social"
                 type="text"
-                name="name"
+                name="corporateName"
                 onChange={valueInput}
-                value={shelter.name}
+                value={shelter.corporateName}
               />
 
               <Input
@@ -283,24 +300,21 @@ export function ShelterSignUp() {
               />
             </div>
 
-            <div className={styles.divider}></div>
-
             <div className={styles.row}>
               <Input
-                label="Nome do responsável"
+                label="Nome fantasia"
                 type="text"
-                name="ownerName"
+                name="fantasyName"
                 onChange={valueInput}
-                value={shelter.ownerName}
+                value={shelter.fantasyName}
               />
 
               <Input
-                label="CPF"
+                label="Telefone"
                 type="text"
-                name="ownerCPF"
-                width="100%"
-                onChange={handleCpfChange}
-                value={shelter.ownerCPF}
+                name="telephone"
+                onChange={handleTelephoneChange}
+                value={shelter.telephone}
               />
             </div>
 

@@ -139,8 +139,7 @@ namespace Backend.Migrations
                         .UseCollation("SQL_Latin1_General_CP1_CI_AI");
 
                     b.Property<string>("Complement")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                          .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");

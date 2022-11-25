@@ -26,6 +26,7 @@ export function TextArea({
         id={name}
         {...rest}
         value={value}
+        name={name}
         onChange={onChange}
       />
     </div>
