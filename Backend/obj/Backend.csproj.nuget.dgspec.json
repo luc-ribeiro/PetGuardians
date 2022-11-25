@@ -1,25 +1,27 @@
 {
   "format": 1,
   "restore": {
-    "C:\\www\\PetGuardians\\Backend\\Backend.csproj": {}
+    "C:\\users\\aluno\\documents\\github\\PetGuardians\\Backend\\Backend.csproj": {}
   },
   "projects": {
-    "C:\\www\\PetGuardians\\Backend\\Backend.csproj": {
+    "C:\\users\\aluno\\documents\\github\\PetGuardians\\Backend\\Backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\www\\PetGuardians\\Backend\\Backend.csproj",
+        "projectUniqueName": "C:\\users\\aluno\\documents\\github\\PetGuardians\\Backend\\Backend.csproj",
         "projectName": "Backend",
-        "projectPath": "C:\\www\\PetGuardians\\Backend\\Backend.csproj",
-        "packagesPath": "C:\\Users\\raphs\\.nuget\\packages\\",
-        "outputPath": "C:\\www\\PetGuardians\\Backend\\obj\\",
+        "projectPath": "C:\\users\\aluno\\documents\\github\\PetGuardians\\Backend\\Backend.csproj",
+        "packagesPath": "C:\\Users\\aluno\\.nuget\\packages\\",
+        "outputPath": "C:\\users\\aluno\\documents\\github\\PetGuardians\\Backend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\raphs\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\aluno\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -75,8 +77,7 @@
             "net47",
             "net471",
             "net472",
-            "net48",
-            "net481"
+            "net48"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -88,7 +89,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -69,7 +69,7 @@ public class Program
         // builder.Services.AddDbContext<DBGame>(option => option.UseInMemoryDatabase("db"));
 
         // Banco SQL
-        string strConn = builder.Configuration.GetConnectionString("BDPetGuardiansLocal");
+        string strConn = builder.Configuration.GetConnectionString("BDFatec");
 
         // Configura o Tipo de Conexão com o Banco
         builder.Services.AddDbContext<DBPetGuardians>(option => option.UseSqlServer(strConn));
