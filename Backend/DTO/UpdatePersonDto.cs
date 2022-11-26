@@ -24,8 +24,4 @@ public class UpdatePersonDto
     public string Telephone { get; set; } = String.Empty;
 
     public IFormFile? ProfilePicture{ get; set; }
-
-    public List<IFormFile> NewImages { get; set; } = new List<IFormFile>();
-
-    public List<int> RemoveImagesId { get; set; } = new List<int>();
 }

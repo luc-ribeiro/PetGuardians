@@ -14,6 +14,46 @@
             Cria um novo token de acesso e um novo token de renovação
             </summary>
         </member>
+        <member name="M:Backend.Controllers.DonorController.Create(Backend.DTO.CreateDonorDto)">
+            <summary>
+            Cria um `Donor`.
+            </summary>
+        </member>
+        <member name="M:Backend.Controllers.DonorController.Read(System.Int32)">
+            <summary>
+            Consulta um `Donor`
+            </summary>
+        </member>
+        <member name="M:Backend.Controllers.DonorController.Update(Backend.DTO.UpdateDonorDto)">
+            <summary>
+            Atualiza o `Donor`
+            </summary>
+        </member>
+        <member name="M:Backend.Controllers.DonorController.Delete">
+            <summary>
+            Inativa um `Donor`
+            </summary>
+        </member>
+        <member name="M:Backend.Controllers.PartnerController.CreatePartner(Backend.DTO.CreatePartnerDto)">
+            <summary>
+            Cria um `Partner`.
+            </summary>
+        </member>
+        <member name="M:Backend.Controllers.PartnerController.GetPartner(System.Int32)">
+            <summary>
+            Consulta um `Partner`
+            </summary>
+        </member>
+        <member name="M:Backend.Controllers.PartnerController.UpdatePartner(Backend.DTO.UpdatePartnerDto)">
+            <summary>
+            Atualiza o Abrigo
+            </summary>
+        </member>
+        <member name="M:Backend.Controllers.PartnerController.Delete">
+            <summary>
+            Inativa um `Partner`
+            </summary>
+        </member>
         <member name="M:Backend.Controllers.ShelterController.Create(Backend.DTO.CreateShelterDto)">
             <summary>
             Cria um `Shelter`.

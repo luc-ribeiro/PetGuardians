@@ -33,45 +33,25 @@ public class ShelterController : ControllerBase
 
         AuthUtils.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passowordSalt);
 
-        /* 
-        // Pega a data de hoje
-        DateTime today = DateTime.Today;
-
-        // Calcula a idade
-        int age = today.Year - request.Birthday.Year;
-
-        // Ajusta o cálculo para ano bissexto
-        if (request.Birthday.Date > today.AddYears(-age))
+        if (!CpfCnpjUtils.IsCnpj(request.CNPJ))
         {
-            age--;
+            return BadRequest("CNPJ inválido.");
         }
 
-        if (age < 18)
+        if (!MailUtils.isValid(request.Email))
         {
-            return BadRequest("Responsável deve ser maior de idade.");
-        } 
-        */
+            return BadRequest("Email inválido.");
+        }
 
-        // if (!CpfCnpjUtils.IsCnpj(request.CNPJ))
-        // {
-        //     return BadRequest("CNPJ inválido.");
-        // }
+        if (_context.Persons.Where(s => s.GCG == request.CNPJ).FirstOrDefault() != null)
+        {
+            return BadRequest("Já existe este CNPJ cadastrado.");
+        }
 
-        // if (!MailUtils.isValid(request.Email))
-        // {
-        //     return BadRequest("Email inválido.");
-        // }
-
-        // if (_context.Persons.Where(s => s.GCG == request.CNPJ).FirstOrDefault() != null)
-        // {
-        //     return BadRequest("Já existe este CNPJ cadastrado.");
-        // }
-
-        // if (_context.Persons.Where(s => s.Email == request.Email).FirstOrDefault() != null)
-        // {
-        //     return BadRequest("Já existe este Email cadastrado.");
-        // }
-
+        if (_context.Persons.Where(s => s.Email == request.Email).FirstOrDefault() != null)
+        {
+            return BadRequest("Já existe este Email cadastrado.");
+        }
 
         Shelter shelter = new Shelter
         {
@@ -105,7 +85,7 @@ public class ShelterController : ControllerBase
     [AllowAnonymous]
     public ActionResult Read(int id)
     {
-        var shelter = _context.Shelters.Where(s => s.Id == id && s.Active).Include(s => s.Images).Include(s => s.Donations).FirstOrDefault();
+        var shelter = _context.Shelters.Where(s => s.Id == id && s.Active).Include(s => s.Images).Include(s => s.Donations).ThenInclude(d => d.Donor).FirstOrDefault();
 
         if (shelter == null)
         {
@@ -150,43 +130,52 @@ public class ShelterController : ControllerBase
         _shelter.FantasyName = request.FantasyName;
         _shelter.About = request.About;
         _shelter.KeyPIX = request.KeyPIX;
-        _shelter.Images.RemoveAll(i => request.RemoveImagesId.IndexOf(i.Id) > -1);
+
+        // Remove imagens
+        if (request.RemoveImagesId != null)
+        {
+            _shelter.Images.RemoveAll(i => request.RemoveImagesId.IndexOf(i.Id) > -1);
+        }
 
 
         // Adiciona as novas imagens
-        using (var memoryStream = new MemoryStream())
+        if (request.NewImages != null)
         {
-            foreach (var file in request.NewImages)
+
+            using (var memoryStream = new MemoryStream())
             {
-                if (memoryStream.Length <= 0)
+                foreach (var file in request.NewImages)
                 {
-                    continue;
-                }
-                await file.CopyToAsync(memoryStream);
-                if (memoryStream.Length > 2097152)
-                {
-                    return BadRequest("Tamanho do arquivo muito grande");
-                }
-                Image image = new Image()
-                {
-                    Base64 = System.Convert.ToBase64String(memoryStream.ToArray()),
-                    MimeType = MimeTypeMap.GetMimeType(Path.GetExtension(file.FileName)),
-                    Size = file.Length
-                };
-                _shelter.Images.Add(image);
-            }
-
-            if (request.ProfilePicture != null && request.ProfilePicture.Length > 0)
-            {
-                await request.ProfilePicture.CopyToAsync(memoryStream);
-
-                if (memoryStream.Length > 2097152)
-                {
-                    return BadRequest("Tamanho da foto de perfil muito grande");
+                    if (memoryStream.Length <= 0)
+                    {
+                        continue;
+                    }
+                    await file.CopyToAsync(memoryStream);
+                    if (memoryStream.Length > 2097152)
+                    {
+                        return BadRequest("Tamanho do arquivo muito grande");
+                    }
+                    Image image = new Image()
+                    {
+                        Base64 = System.Convert.ToBase64String(memoryStream.ToArray()),
+                        MimeType = MimeTypeMap.GetMimeType(Path.GetExtension(file.FileName)),
+                        Size = file.Length
+                    };
+                    _shelter.Images.Add(image);
                 }
 
-                _shelter.ProfilePicture = System.Convert.ToBase64String(memoryStream.ToArray());
-                _shelter.ProfilePictureMimeType = MimeTypeMap.GetMimeType(Path.GetExtension(request.ProfilePicture.FileName));
+                if (request.ProfilePicture != null && request.ProfilePicture.Length > 0)
+                {
+                    await request.ProfilePicture.CopyToAsync(memoryStream);
+
+                    if (memoryStream.Length > 2097152)
+                    {
+                        return BadRequest("Tamanho da foto de perfil muito grande");
+                    }
+
+                    _shelter.ProfilePicture = System.Convert.ToBase64String(memoryStream.ToArray());
+                    _shelter.ProfilePictureMimeType = MimeTypeMap.GetMimeType(Path.GetExtension(request.ProfilePicture.FileName));
+                }
             }
         }
 
@@ -205,10 +194,6 @@ public class ShelterController : ControllerBase
         if (shelter == null)
         {
             return NotFound();
-        }
-        if (shelter.Id != _userService.GetId())
-        {
-            return Unauthorized();
         }
         shelter.Active = false;
         _context.SaveChanges();

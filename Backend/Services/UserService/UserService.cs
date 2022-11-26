@@ -20,4 +20,14 @@ public class UserService : IUserService
         }
         return result;
     }
+
+    public string GetRole()
+    {
+        string result = "";
+        if (_httpContextAccessor.HttpContext != null)
+        {
+            return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
+        }
+        return result;
+    }
 }
