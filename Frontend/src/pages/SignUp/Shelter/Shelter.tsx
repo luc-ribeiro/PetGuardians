@@ -232,6 +232,8 @@ export function ShelterSignUp() {
       })
     }
 
+    console.log(shelter)
+
     try {
       await api.post(
         'shelter',
@@ -261,6 +263,8 @@ export function ShelterSignUp() {
     } catch (e) {
       console.log(e)
     }
+
+    console.log(shelter)
   }
 
   return (

@@ -257,40 +257,26 @@ export function EditProfile() {
 
     const accessToken = localStorage.getItem('authToken')
 
+    const formData = new FormData()
+
+    Object.entries(shelter).forEach(([key, value]) => {
+      formData.append(key, value)
+    })
+
     try {
-      await api.patch(
-        'shelter',
-        {
-          corporateName: shelter.corporateName,
-          fantasyName: shelter.fantasyName,
-          cnpj: shelter.CNPJ.replace(/\D/g, ''),
-          telephone: shelter.telephone.replace(/\D/g, ''),
-
-          cep: shelter.CEP.replace(/\D/g, ''),
-          street: shelter.street,
-          streetNumber: shelter.streetNumber,
-          district: shelter.district,
-          complement: shelter.complement,
-          uf: shelter.uf,
-          city: shelter.city,
-
-          about: shelter.about,
-          keyPix: shelter.keyPix,
-          profilePicture: shelter.profilePicture,
-          newImages: [...shelter.newImages],
+      await api.patch('shelter', formData, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + accessToken,
         },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + accessToken,
-          },
-        },
-      )
+      })
       alert('Cadastro atualizado com sucesso')
       navigate('/meuperfil')
     } catch (e) {
       console.log(e)
     }
+
+    console.log(shelter)
   }
 
   return (
