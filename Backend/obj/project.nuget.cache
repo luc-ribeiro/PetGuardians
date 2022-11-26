@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "sCoInesKVSwzEQrBSb8ROq+KnXUzZd/rf8a8tt5WvLs2Mr2PTjf9T2nWNreXwPVKS7DpuUInu8JG4aTsa+Uysw==",
+  "dgSpecHash": "H6o5/B8JkrCYFq5OpP7LdalnCpA5HtOZgobl10xAW8PStT9Dy4ef0rUwAwCvc8U32Te/TI/TqNiFh9psJB9SAQ==",
   "success": true,
-  "projectFilePath": "C:\\www\\PetGuardians\\Backend\\Backend.csproj",
+  "projectFilePath": "C:\\www\\PetGuardians\\backend\\Backend.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\raphs\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\raphs\\.nuget\\packages\\microsoft.aspnetcore.authentication\\2.2.0\\microsoft.aspnetcore.authentication.2.2.0.nupkg.sha512",

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\www\\PetGuardians\\Backend\\Backend.csproj": {}
+    "C:\\www\\PetGuardians\\backend\\Backend.csproj": {}
   },
   "projects": {
-    "C:\\www\\PetGuardians\\Backend\\Backend.csproj": {
+    "C:\\www\\PetGuardians\\backend\\Backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\www\\PetGuardians\\Backend\\Backend.csproj",
+        "projectUniqueName": "C:\\www\\PetGuardians\\backend\\Backend.csproj",
         "projectName": "Backend",
-        "projectPath": "C:\\www\\PetGuardians\\Backend\\Backend.csproj",
+        "projectPath": "C:\\www\\PetGuardians\\backend\\Backend.csproj",
         "packagesPath": "C:\\Users\\raphs\\.nuget\\packages\\",
-        "outputPath": "C:\\www\\PetGuardians\\Backend\\obj\\",
+        "outputPath": "C:\\www\\PetGuardians\\backend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\raphs\\AppData\\Roaming\\NuGet\\NuGet.Config"

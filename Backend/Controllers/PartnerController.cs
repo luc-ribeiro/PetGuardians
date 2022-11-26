@@ -94,6 +94,17 @@ public class PartnerController : ControllerBase
 
 
     /// <summary>
+    /// Consulta de `Partner` por região
+    /// </summary>
+    [HttpGet]
+    [AllowAnonymous]
+    public ActionResult Read(string name, string uf, string city)
+    {
+        return Ok(_context.Partners.Where(s => s.Name.Contains(name) && s.UF.Equals(uf) && s.City.Equals(city) && s.Active).ToList());
+    }
+
+
+    /// <summary>
     /// Atualiza o Abrigo
     /// </summary>
     [HttpPatch]
@@ -126,7 +137,7 @@ public class PartnerController : ControllerBase
     /// Inativa um `Partner`
     /// </summary>
     [HttpDelete]
-    [Authorize(Roles = "Shelter")]
+    [Authorize(Roles = "Partner")]
     public ActionResult Delete()
     {
         Partner? _partner = _context.Partners.Find(_userService.GetId());
@@ -138,5 +149,4 @@ public class PartnerController : ControllerBase
         _context.SaveChanges();
         return Ok();
     }
-
 }
