@@ -111,8 +111,6 @@ public class ShelterController : ControllerBase
     [Authorize(Roles = "Shelter")]
     public async Task<ActionResult> Update([FromForm] UpdateShelterDto request)
     {
-        return Ok(request);
-
         Shelter? _shelter = _context.Shelters.Where(s => s.Id == _userService.GetId() && s.Active).Include(s => s.Images).FirstOrDefault();
         if (_shelter == null)
         {
