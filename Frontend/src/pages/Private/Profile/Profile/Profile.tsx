@@ -22,8 +22,6 @@ export function Profile() {
     return <Login />
   }
 
-  console.log(auth)
-
   return (
     <>
       <Header />

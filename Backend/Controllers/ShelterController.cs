@@ -131,6 +131,7 @@ public class ShelterController : ControllerBase
     [Authorize(Roles = "Shelter")]
     public async Task<ActionResult> Update([FromForm] UpdateShelterDto request)
     {
+        return Ok(request);
         Shelter? _shelter = _context.Shelters.Where(s => s.Id == _userService.GetId() && s.Active).Include(s => s.Images).FirstOrDefault();
         if (_shelter == null)
         {
@@ -150,6 +151,7 @@ public class ShelterController : ControllerBase
         _shelter.About = request.About;
         _shelter.KeyPIX = request.KeyPIX;
         _shelter.Images.RemoveAll(i => request.RemoveImagesId.IndexOf(i.Id) > -1);
+
 
         // Adiciona as novas imagens
         using (var memoryStream = new MemoryStream())

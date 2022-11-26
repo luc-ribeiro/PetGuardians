@@ -257,14 +257,20 @@ export function EditProfile() {
 
     const accessToken = localStorage.getItem('authToken')
 
-    const formData = new FormData()
+    const data = new FormData()
 
-    Object.entries(shelter).forEach(([key, value]) => {
-      formData.append(key, value)
+    Object.entries(data).forEach(([key, value]) => {
+      data.append(key, value)
     })
 
+    data.append('CorporateName', shelter.corporateName)
+
+    for (var key of data.entries()) {
+      console.log(key[0] + ', ' + key[1])
+    }
+
     try {
-      await api.patch('shelter', formData, {
+      await api.patch('shelter', data, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + accessToken,
@@ -275,8 +281,6 @@ export function EditProfile() {
     } catch (e) {
       console.log(e)
     }
-
-    console.log(shelter)
   }
 
   return (
