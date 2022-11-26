@@ -2,15 +2,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Backend.DTO;
 
-public class CreateShelterDto : CreatePersonDto
+public class CreateDonorDto : CreatePersonDto
 {
 
     public string FullName { get; set; }
+    [MaxLength(11)]
     public string CPF { get; set; }
-
-    public DateTime Birthyday { get; set; }
-
-    [MaxLength(14)]
-    public string CNPJ { get; set; }
+    public DateTime Birthday { get; set; }
 
 }

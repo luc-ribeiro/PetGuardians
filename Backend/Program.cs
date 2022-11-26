@@ -69,13 +69,10 @@ public class Program
         // builder.Services.AddDbContext<DBGame>(option => option.UseInMemoryDatabase("db"));
 
         // Banco SQL
-        string strConn = builder.Configuration.GetConnectionString("BDFatec");
+        string strConn = builder.Configuration.GetConnectionString("BDLocal");
 
         // Configura o Tipo de Conexão com o Banco
         builder.Services.AddDbContext<DBPetGuardians>(option => option.UseSqlServer(strConn));
-
-
-
 
         // Adicionar o middleware Swagger:
         builder.Services.AddEndpointsApiExplorer();

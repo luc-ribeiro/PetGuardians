@@ -6,8 +6,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Backend.Utils;
 using Microsoft.EntityFrameworkCore;
-using MimeTypes;
-using Microsoft.AspNetCore.Authorization;
 using Backend.Services.UserService;
 using System.Security.Cryptography;
 using Backend.DTO;

@@ -18,14 +18,10 @@ public class UpdatePersonDto
 
     public string District { get; set; } = String.Empty;
 
-    public string Complement { get; set; } = String.Empty;
+    public string? Complement { get; set; } = String.Empty;
 
     [MaxLength(11)]
     public string Telephone { get; set; } = String.Empty;
 
     public IFormFile? ProfilePicture{ get; set; }
-
-    public List<IFormFile> NewImages { get; set; } = new List<IFormFile>();
-
-    public List<int> RemoveImagesId { get; set; } = new List<int>();
 }
