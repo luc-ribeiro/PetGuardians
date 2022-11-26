@@ -24,6 +24,7 @@ public class DBPetGuardians : DbContext
         modelBuilder.Entity<Coupon>(e =>
         {
             e.HasOne(c => c.Partner).WithMany(p => p.Coupons).HasForeignKey(c => c.PartnerId);
+            e.HasIndex(c => new { c.Code, c.PartnerId }).IsUnique();
         });
         modelBuilder.Entity<Donation>(e =>
         {
