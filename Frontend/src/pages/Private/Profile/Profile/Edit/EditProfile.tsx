@@ -259,20 +259,14 @@ export function EditProfile() {
 
     const data = new FormData()
 
-    Object.entries(data).forEach(([key, value]) => {
+    Object.entries(shelter).forEach(([key, value]) => {
       data.append(key, value)
     })
-
-    data.append('CorporateName', shelter.corporateName)
-
-    for (var key of data.entries()) {
-      console.log(key[0] + ', ' + key[1])
-    }
 
     try {
       await api.patch('shelter', data, {
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-url-formencoded',
           Authorization: 'Bearer ' + accessToken,
         },
       })

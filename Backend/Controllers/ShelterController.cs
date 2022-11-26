@@ -33,25 +33,45 @@ public class ShelterController : ControllerBase
 
         AuthUtils.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passowordSalt);
 
-        if (!CpfCnpjUtils.IsCnpj(request.CNPJ))
+        /* 
+        // Pega a data de hoje
+        DateTime today = DateTime.Today;
+
+        // Calcula a idade
+        int age = today.Year - request.Birthday.Year;
+
+        // Ajusta o cálculo para ano bissexto
+        if (request.Birthday.Date > today.AddYears(-age))
         {
-            return BadRequest("CNPJ inválido.");
+            age--;
         }
 
-        if (!MailUtils.isValid(request.Email))
+        if (age < 18)
         {
-            return BadRequest("Email inválido.");
-        }
+            return BadRequest("Responsável deve ser maior de idade.");
+        } 
+        */
 
-        if (_context.Persons.Where(s => s.GCG == request.CNPJ).FirstOrDefault() != null)
-        {
-            return BadRequest("Já existe este CNPJ cadastrado.");
-        }
+        // if (!CpfCnpjUtils.IsCnpj(request.CNPJ))
+        // {
+        //     return BadRequest("CNPJ inválido.");
+        // }
 
-        if (_context.Persons.Where(s => s.Email == request.Email).FirstOrDefault() != null)
-        {
-            return BadRequest("Já existe este Email cadastrado.");
-        }
+        // if (!MailUtils.isValid(request.Email))
+        // {
+        //     return BadRequest("Email inválido.");
+        // }
+
+        // if (_context.Persons.Where(s => s.GCG == request.CNPJ).FirstOrDefault() != null)
+        // {
+        //     return BadRequest("Já existe este CNPJ cadastrado.");
+        // }
+
+        // if (_context.Persons.Where(s => s.Email == request.Email).FirstOrDefault() != null)
+        // {
+        //     return BadRequest("Já existe este Email cadastrado.");
+        // }
+
 
         Shelter shelter = new Shelter
         {
@@ -85,7 +105,7 @@ public class ShelterController : ControllerBase
     [AllowAnonymous]
     public ActionResult Read(int id)
     {
-        var shelter = _context.Shelters.Where(s => s.Id == id && s.Active).Include(s => s.Images).Include(s => s.Donations).ThenInclude(d => d.Donor).FirstOrDefault();
+        var shelter = _context.Shelters.Where(s => s.Id == id && s.Active).Include(s => s.Images).Include(s => s.Donations).FirstOrDefault();
 
         if (shelter == null)
         {
@@ -111,7 +131,6 @@ public class ShelterController : ControllerBase
     [Authorize(Roles = "Shelter")]
     public async Task<ActionResult> Update([FromForm] UpdateShelterDto request)
     {
-        return Ok(request);
         Shelter? _shelter = _context.Shelters.Where(s => s.Id == _userService.GetId() && s.Active).Include(s => s.Images).FirstOrDefault();
         if (_shelter == null)
         {
@@ -130,52 +149,43 @@ public class ShelterController : ControllerBase
         _shelter.FantasyName = request.FantasyName;
         _shelter.About = request.About;
         _shelter.KeyPIX = request.KeyPIX;
-
-        // Remove imagens
-        if (request.RemoveImagesId != null)
-        {
-            _shelter.Images.RemoveAll(i => request.RemoveImagesId.IndexOf(i.Id) > -1);
-        }
+        _shelter.Images.RemoveAll(i => request.RemoveImagesId.IndexOf(i.Id) > -1);
 
 
         // Adiciona as novas imagens
-        if (request.NewImages != null)
+        using (var memoryStream = new MemoryStream())
         {
-
-            using (var memoryStream = new MemoryStream())
+            foreach (var file in request.NewImages)
             {
-                foreach (var file in request.NewImages)
+                if (memoryStream.Length <= 0)
                 {
-                    if (memoryStream.Length <= 0)
-                    {
-                        continue;
-                    }
-                    await file.CopyToAsync(memoryStream);
-                    if (memoryStream.Length > 2097152)
-                    {
-                        return BadRequest("Tamanho do arquivo muito grande");
-                    }
-                    Image image = new Image()
-                    {
-                        Base64 = System.Convert.ToBase64String(memoryStream.ToArray()),
-                        MimeType = MimeTypeMap.GetMimeType(Path.GetExtension(file.FileName)),
-                        Size = file.Length
-                    };
-                    _shelter.Images.Add(image);
+                    continue;
+                }
+                await file.CopyToAsync(memoryStream);
+                if (memoryStream.Length > 2097152)
+                {
+                    return BadRequest("Tamanho do arquivo muito grande");
+                }
+                Image image = new Image()
+                {
+                    Base64 = System.Convert.ToBase64String(memoryStream.ToArray()),
+                    MimeType = MimeTypeMap.GetMimeType(Path.GetExtension(file.FileName)),
+                    Size = file.Length
+                };
+                _shelter.Images.Add(image);
+            }
+
+            if (request.ProfilePicture != null && request.ProfilePicture.Length > 0)
+            {
+                await request.ProfilePicture.CopyToAsync(memoryStream);
+
+                if (memoryStream.Length > 2097152)
+                {
+                    return BadRequest("Tamanho da foto de perfil muito grande");
                 }
 
-                if (request.ProfilePicture != null && request.ProfilePicture.Length > 0)
-                {
-                    await request.ProfilePicture.CopyToAsync(memoryStream);
-
-                    if (memoryStream.Length > 2097152)
-                    {
-                        return BadRequest("Tamanho da foto de perfil muito grande");
-                    }
-
-                    _shelter.ProfilePicture = System.Convert.ToBase64String(memoryStream.ToArray());
-                    _shelter.ProfilePictureMimeType = MimeTypeMap.GetMimeType(Path.GetExtension(request.ProfilePicture.FileName));
-                }
+                _shelter.ProfilePicture = System.Convert.ToBase64String(memoryStream.ToArray());
+                _shelter.ProfilePictureMimeType = MimeTypeMap.GetMimeType(Path.GetExtension(request.ProfilePicture.FileName));
             }
         }
 
@@ -194,6 +204,10 @@ public class ShelterController : ControllerBase
         if (shelter == null)
         {
             return NotFound();
+        }
+        if (shelter.Id != _userService.GetId())
+        {
+            return Unauthorized();
         }
         shelter.Active = false;
         _context.SaveChanges();

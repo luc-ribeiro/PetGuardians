@@ -22,7 +22,7 @@ public class Person
     public string Street { get; set; }
     public string StreetNumber { get; set; }
     public string District { get; set; }
-    public string Complement { get; set; }
+    public string? Complement { get; set; }
     public DateTime Created { get; set; } = DateTime.Now;
     [JsonIgnore]
     public bool Active { get; set; } = true;
