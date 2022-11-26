@@ -1,9 +1,19 @@
+import { Link } from 'react-router-dom'
 import styles from './Breadcrumb.module.css'
 
-export function Breadcrumb() {
+interface BreadcrumbType {
+  type: string
+  to: string
+}
+
+export function Breadcrumb({ type, to }: BreadcrumbType) {
   return (
     <div className={styles.breadcrumbWrapper}>
-      <p className={styles.breadcrumb}>Home / Elaine Silva</p>
+      <p className={styles.breadcrumb}>
+        <Link to="/">Home</Link> /{' '}
+        {type == 'Abrigos' ? <Link to="/abrigos"> Abrigos </Link> : 'Doador'} /{' '}
+        {to}
+      </p>
     </div>
   )
 }

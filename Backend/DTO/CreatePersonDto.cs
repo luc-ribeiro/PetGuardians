@@ -18,7 +18,7 @@ public class CreatePersonDto
 
     public string District { get; set; }
 
-    public string Complement { get; set; }
+    public string? Complement { get; set; }
 
     public string Email { get; set; }
 

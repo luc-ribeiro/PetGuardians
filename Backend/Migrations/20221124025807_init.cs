@@ -24,7 +24,7 @@ namespace Backend.Migrations
                     Street = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     StreetNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     District = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Complement = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Complement = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
