@@ -1,31 +1,38 @@
-import { FormEvent, useContext, useState } from 'react'
-import { AuthContext } from '../contexts/Auth/AuthContext'
-
+import { FormEvent, useState } from 'react'
 import styles from './Login.module.css'
-
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import imgLogin from '../assets/login-img.jpg'
 import { ReactComponent as IconBack } from '../assets/icon-back.svg'
 import logo from '../assets/logo.svg'
 import { Input } from '../components/Forms/Input'
 import { Button } from '../components/Forms/Button'
+import { api } from '../services/api'
+import useAuth from '../hooks/useAuth';
+import { AuthType } from '../types/Auth'
 
 export function Login() {
-  const auth = useContext(AuthContext)
+  const { setAuth } = useAuth();
   const navigate = useNavigate()
+  const location = useLocation();
+  const from = location.state?.from?.pathname || '/';
+
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   async function handleLogin(event: FormEvent) {
-    event.preventDefault()
-    if (email && password) {
-      const isLogged = await auth.signIn(email, password)
-      if (isLogged) {
-        navigate('/')
-      } else {
-        alert('Não deu certo, tente novamente')
-      }
+    event.preventDefault();
+    if (!email || !password) {
+      return;
+    }
+    try {
+
+      const response = await api.post('auth/login', { email, password });
+      const refresh: AuthType = response?.data;
+      setAuth(refresh);
+      navigate(from, { replace: true });
+    } catch (error) {
+      console.log(error)
     }
   }
 

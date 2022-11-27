@@ -32,7 +32,7 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost]
     [Route("login")]
-    public ActionResult<string> Login(LoginDto request)
+    public ActionResult<string> LogIn(LoginDto request)
     {
 
         Person? person = _context.Persons.Where(p => p.Email.Equals(request.Email)).FirstOrDefault();
@@ -47,39 +47,44 @@ public class AuthController : ControllerBase
             return BadRequest("Senha inválida.");
         }
 
-
-        Shelter? shelter = _context.Shelters.Find(person.Id);
-        Donor? donor = _context.Donors.Find(person.Id);
-        Partner? partner = _context.Partners.Find(person.Id);
-        var type = (shelter ?? donor ?? partner ?? person);
-        string role = type.GetType().Name;
-
+        string role = getPersonRole(person);
         string token = CreateAccessToken(person, role);
         CreateAndSetRefreshToken(person);
 
         var response = new
         {
-            person,
+            id = person.Id,
             role,
-            shelter = shelter == null ? null : new
-            {
-                FantasyName = shelter.FantasyName,
-                KeyPIX = shelter.KeyPIX,
-                About = shelter.About
-            },
-            donor = donor == null ? null : new
-            {
-                Birthday = donor.Birthday
-            },
-            partner = partner == null ? null : new
-            {
-                FantasyName = partner.FantasyName,
-                LinkSite = partner.LinkSite
-            },
-            AccessToken = token
+            profilePicture = person.ProfilePicture != null && person.ProfilePictureMimeType != null ? $"data:{person.ProfilePictureMimeType};base64,{person.ProfilePicture}" : null,
+            accessToken = token
         };
 
         return Ok(response);
+    }
+
+
+    [HttpPost]
+    [Route("logout")]
+    public ActionResult LogOut()
+    {
+
+        CookieOptions cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = DateTime.Now.AddDays(-1),
+            SameSite = SameSiteMode.None,
+            Secure = true
+        };
+        Response.Cookies.Append("refreshToken", "", cookieOptions);
+
+        Person? person = _context.Persons.Where(p => p.Id == _userService.GetId()).FirstOrDefault();
+        if (person == null)
+        {
+            return Ok();
+        }
+        person.RefreshToken = null;
+        _context.SaveChanges();
+        return Ok();
     }
 
     /// <summary>
@@ -87,35 +92,36 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost]
     [Route("refresh")]
-    public ActionResult<string> RefreshToken()
+    public ActionResult RefreshToken()
     {
         var refreshToken = Request.Cookies["refreshToken"];
+        if (refreshToken == null)
+        {
+            return Unauthorized("Token Expirado");
+        }
         Person? person = _context.Persons.Include(u => u.RefreshToken).Where(u => u.RefreshToken != null && u.RefreshToken.Token.Equals(refreshToken)).FirstOrDefault();
 
         if (person == null || person.RefreshToken == null)
         {
             return Unauthorized("Token Inválido");
         }
-
         if (person.RefreshToken.Expires < DateTime.Now)
         {
             return Unauthorized("Token Expirado");
         }
-        string token = CreateAccessToken(person);
+        string role = getPersonRole(person);
+        string token = CreateAccessToken(person, role);
         CreateAndSetRefreshToken(person);
-        return token;
-    }
-    private string CreateAccessToken(Person person, string? role = null)
-    {
-        if (role == null)
+        return Ok(new
         {
-            Shelter? shelter = _context.Shelters.Find(person.Id);
-            Donor? donor = _context.Donors.Find(person.Id);
-            Partner? partner = _context.Partners.Find(person.Id);
-            var type = (shelter ?? donor ?? partner ?? person);
-            role = type.GetType().Name;
-        }
-
+            id = person.Id,
+            profilePicture = person.ProfilePicture != null && person.ProfilePictureMimeType != null ? $"data:{person.ProfilePictureMimeType};base64,{person.ProfilePicture}" : null,
+            role,
+            accessToken = token
+        });
+    }
+    private string CreateAccessToken(Person person, string role)
+    {
         List<Claim> claims = new List<Claim>{
             new Claim(ClaimTypes.NameIdentifier, person.Id.ToString()),
             new Claim(ClaimTypes.Role, role)
@@ -144,7 +150,9 @@ public class AuthController : ControllerBase
         CookieOptions cookieOptions = new CookieOptions
         {
             HttpOnly = true,
-            Expires = refreshToken.Expires
+            Expires = refreshToken.Expires,
+            SameSite = SameSiteMode.None,
+            Secure = true
         };
         Response.Cookies.Append("refreshToken", refreshToken.Token, cookieOptions);
 
@@ -157,6 +165,16 @@ public class AuthController : ControllerBase
 
         _context.SaveChanges();
         return refreshToken;
+    }
+
+
+    private string getPersonRole(Person person)
+    {
+        Shelter? shelter = _context.Shelters.Find(person.Id);
+        Donor? donor = _context.Donors.Find(person.Id);
+        Partner? partner = _context.Partners.Find(person.Id);
+
+        return (shelter ?? donor ?? partner ?? person).GetType().Name;
     }
 
 }

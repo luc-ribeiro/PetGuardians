@@ -23,100 +23,52 @@ import { EditProfile } from "./pages/Private/Profile/Profile/Edit/EditProfile";
 import { Profile } from "./pages/Private/Profile/Profile/Profile";
 
 import { NotFound } from "./pages/NotFound";
-import { RequireAuth } from "./contexts/Auth/RequireAuth";
+import RequireAuth from "./layouts/RequireAuth";
+import PersistLogin from "./components/PersistLogin";
 
 export default function RoutesList() {
 	return (
 		<Routes>
-			<Route path="/" element={<Home />} />
+
+			<Route path="*" element={<NotFound />} />
+			<Route path="not-found" element={<NotFound />} />
 			<Route path="quem-somos" element={<About />} />
 			<Route path="como-ajudar" element={<HowTo />} />
-			<Route
-				path="parceiros"
-				element={
-					<RequireAuth>
-						<Partner />
-					</RequireAuth>
-				}
-			/>
-			<Route
-				path="abrigos"
-				element={
-					<RequireAuth>
-						<Shelter />
-					</RequireAuth>
-				}
-			/>
 			<Route path="login" element={<Login />} />
 			<Route path="cadastrar" element={<PreSignUp />} />
 			<Route path="cadastrar/doador" element={<DonorSignUp />} />
 			<Route path="cadastrar/abrigo" element={<ShelterSignUp />} />
 			<Route path="cadastrar/parceiro" element={<PartnerSignUp />} />
-			<Route
-				path="perfil/doador"
-				element={
-					<RequireAuth>
-						<DonorProfile />
-					</RequireAuth>
-				}
-			/>
-			<Route
-				path="perfil/doador/:id/editar"
-				element={
-					<RequireAuth>
-						<EditDonorProfile />
-					</RequireAuth>
-				}
-			/>
-			<Route
-				path="perfil/abrigo/:id"
-				element={
-					<RequireAuth>
-						<ShelterProfile />
-					</RequireAuth>
-				}
-			/>
-			<Route
-				path="perfil/abrigo/:id/editar"
-				element={
-					<RequireAuth>
-						<EditShelterProfile />
-					</RequireAuth>
-				}
-			/>
-			<Route
-				path="perfil/parceiro"
-				element={
-					<RequireAuth>
-						<PartnerProfile />
-					</RequireAuth>
-				}
-			/>
-			<Route
-				path="perfil/parceiro/:id/editar"
-				element={
-					<RequireAuth>
-						<EditPartnerProfile />
-					</RequireAuth>
-				}
-			/>
-			<Route
-				path="meuperfil"
-				element={
-					<RequireAuth>
-						<Profile />
-					</RequireAuth>
-				}
-			/>
-			<Route
-				path="meuperfil/editar"
-				element={
-					<RequireAuth>
-						<EditProfile />
-					</RequireAuth>
-				}
-			/>
-			<Route path="*" element={<NotFound />} />
+
+			<Route element={<PersistLogin />} >
+				<Route path="/" element={<Home />} />
+
+				{/* Rotas privadas globais */}
+				<Route element={<RequireAuth />}>
+					<Route path="parceiros" element={<Partner />} />
+					<Route path="abrigos" element={<Shelter />} />
+					<Route path="perfil/doador" element={<DonorProfile />} />
+					<Route path="perfil/parceiro" element={<PartnerProfile />} />
+					<Route path="perfil/abrigo/:id" element={<ShelterProfile />} />
+					<Route path="meuperfil" element={<Profile />} />
+					<Route path="meuperfil/editar" element={<EditProfile />} />
+				</Route>
+
+				{/* Rotas exclusivas de Donors */}
+				<Route element={<RequireAuth allowedRoles={["Donor"]} />}>
+					<Route path="perfil/doador/:id/editar" element={<EditDonorProfile />} />
+				</Route>
+
+				{/* Rotas exclusivas de Shelters */}
+				<Route element={<RequireAuth allowedRoles={["Shelter"]} />}>
+					<Route path="perfil/abrigo/:id/editar" element={<EditShelterProfile />} />
+				</Route>
+
+				{/* Rotas exclusivas de Partner */}
+				<Route element={<RequireAuth allowedRoles={["Partner"]} />}>
+					<Route path="perfil/parceiro/:id/editar" element={<EditPartnerProfile />} />
+				</Route>
+			</Route>
 		</Routes>
 	);
 }

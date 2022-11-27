@@ -35,9 +35,10 @@ public class Program
                 builder =>
                 {
                     builder
+                        .WithOrigins("http://127.0.0.1:5173", "http://localhost:5173")
+                        .AllowCredentials()
                         .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowAnyOrigin();
+                        .AllowAnyHeader();
                 }
             )
         );

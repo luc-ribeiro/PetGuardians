@@ -19,8 +19,8 @@ import { TextArea } from '../../../../../components/Forms/TextArea'
 import { Button } from '../../../../../components/Forms/Button'
 import { Profile } from '../Profile'
 import { useForm } from 'react-hook-form'
-import { AuthContext } from '../../../../../contexts/Auth/AuthContext'
 import { Login } from '../../../../Login'
+import useAuth from '../../../../../hooks/useAuth'
 
 interface CNPJQueryResponse {
   razao_social: string
@@ -50,7 +50,7 @@ interface IBGECityResponse {
 }
 
 export function EditProfile() {
-  const auth = useContext(AuthContext)
+  const auth = useAuth();
   const navigate = useNavigate()
 
   const [ufs, setUfs] = useState<string[]>([])
