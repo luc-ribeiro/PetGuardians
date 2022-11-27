@@ -186,7 +186,31 @@ public class ShelterController : ControllerBase
         }
 
         _context.SaveChanges();
-        return Ok();
+        return Ok(new
+        {
+            person = new
+            {
+                CEP = _shelter.CEP,
+                UF = _shelter.UF,
+                City = _shelter.City,
+                Street = _shelter.Street,
+                StreetNumber = _shelter.StreetNumber,
+                District = _shelter.District,
+                Complement = _shelter.Complement,
+                Telephone = _shelter.Telephone,
+                Name = _shelter.Name,
+                ProfilePicture = _shelter.ProfilePicture,
+                ProfilePictureMimeType = _shelter.ProfilePictureMimeType,
+            },
+            shelter = new
+            {
+                FantasyName = _shelter.FantasyName,
+                
+                KeyPIX = _shelter.KeyPIX,
+                About = _shelter.About,
+                Images = _shelter.Images
+            }
+        });
     }
 
     /// <summary>
