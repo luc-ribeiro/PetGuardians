@@ -33,44 +33,25 @@ public class ShelterController : ControllerBase
 
         AuthUtils.CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passowordSalt);
 
-        /* 
-        // Pega a data de hoje
-        DateTime today = DateTime.Today;
-
-        // Calcula a idade
-        int age = today.Year - request.Birthday.Year;
-
-        // Ajusta o cálculo para ano bissexto
-        if (request.Birthday.Date > today.AddYears(-age))
+        if (!CpfCnpjUtils.IsCnpj(request.CNPJ))
         {
-            age--;
+            return BadRequest("CNPJ inválido.");
         }
 
-        if (age < 18)
+        if (!MailUtils.isValid(request.Email))
         {
-            return BadRequest("Responsável deve ser maior de idade.");
-        } 
-        */
+            return BadRequest("Email inválido.");
+        }
 
-        // if (!CpfCnpjUtils.IsCnpj(request.CNPJ))
-        // {
-        //     return BadRequest("CNPJ inválido.");
-        // }
+        if (_context.Persons.Where(s => s.GCG == request.CNPJ).FirstOrDefault() != null)
+        {
+            return BadRequest("Já existe este CNPJ cadastrado.");
+        }
 
-        // if (!MailUtils.isValid(request.Email))
-        // {
-        //     return BadRequest("Email inválido.");
-        // }
-
-        // if (_context.Persons.Where(s => s.GCG == request.CNPJ).FirstOrDefault() != null)
-        // {
-        //     return BadRequest("Já existe este CNPJ cadastrado.");
-        // }
-
-        // if (_context.Persons.Where(s => s.Email == request.Email).FirstOrDefault() != null)
-        // {
-        //     return BadRequest("Já existe este Email cadastrado.");
-        // }
+        if (_context.Persons.Where(s => s.Email == request.Email).FirstOrDefault() != null)
+        {
+            return BadRequest("Já existe este Email cadastrado.");
+        }
 
 
         Shelter shelter = new Shelter
@@ -119,9 +100,9 @@ public class ShelterController : ControllerBase
     /// </summary>
     [HttpGet]
     [AllowAnonymous]
-    public ActionResult Read(string name, string uf, string city)
+    public ActionResult Read()
     {
-        return Ok(_context.Shelters.Where(s => s.Name.Contains(name) && s.UF.Equals(uf) && s.City.Equals(city) && s.Active).ToList());
+        return Ok(_context.Shelters.Where(s => s.Active).ToList());
     }
 
     /// <summary>
@@ -151,16 +132,11 @@ public class ShelterController : ControllerBase
         _shelter.KeyPIX = request.KeyPIX;
         _shelter.Images.RemoveAll(i => request.RemoveImagesId.IndexOf(i.Id) > -1);
 
-
         // Adiciona as novas imagens
         using (var memoryStream = new MemoryStream())
         {
             foreach (var file in request.NewImages)
             {
-                if (memoryStream.Length <= 0)
-                {
-                    continue;
-                }
                 await file.CopyToAsync(memoryStream);
                 if (memoryStream.Length > 2097152)
                 {
@@ -178,19 +154,39 @@ public class ShelterController : ControllerBase
             if (request.ProfilePicture != null && request.ProfilePicture.Length > 0)
             {
                 await request.ProfilePicture.CopyToAsync(memoryStream);
-
                 if (memoryStream.Length > 2097152)
                 {
                     return BadRequest("Tamanho da foto de perfil muito grande");
                 }
-
                 _shelter.ProfilePicture = System.Convert.ToBase64String(memoryStream.ToArray());
                 _shelter.ProfilePictureMimeType = MimeTypeMap.GetMimeType(Path.GetExtension(request.ProfilePicture.FileName));
             }
         }
-
         _context.SaveChanges();
-        return Ok();
+        return Ok(new
+        {
+            person = new
+            {
+                CEP = _shelter.CEP,
+                UF = _shelter.UF,
+                City = _shelter.City,
+                Street = _shelter.Street,
+                StreetNumber = _shelter.StreetNumber,
+                District = _shelter.District,
+                Complement = _shelter.Complement,
+                Telephone = _shelter.Telephone,
+                Name = _shelter.Name,
+                ProfilePicture = _shelter.ProfilePicture,
+                ProfilePictureMimeType = _shelter.ProfilePictureMimeType,
+            },
+            shelter = new
+            {
+                FantasyName = _shelter.FantasyName,
+                KeyPIX = _shelter.KeyPIX,
+                About = _shelter.About,
+                Images = _shelter.Images
+            }
+        });
     }
 
     /// <summary>

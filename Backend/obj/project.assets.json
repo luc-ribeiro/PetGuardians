@@ -3335,19 +3335,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Luc\\.nuget\\packages\\": {}
+    "C:\\Users\\raphs\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Inter\\Projeto\\Backend\\Backend.csproj",
+      "projectUniqueName": "C:\\www\\PetGuardians\\backend\\Backend.csproj",
       "projectName": "Backend",
-      "projectPath": "D:\\Inter\\Projeto\\Backend\\Backend.csproj",
-      "packagesPath": "C:\\Users\\Luc\\.nuget\\packages\\",
-      "outputPath": "D:\\Inter\\Projeto\\Backend\\obj\\",
+      "projectPath": "C:\\www\\PetGuardians\\backend\\Backend.csproj",
+      "packagesPath": "C:\\Users\\raphs\\.nuget\\packages\\",
+      "outputPath": "C:\\www\\PetGuardians\\backend\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Luc\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\raphs\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net6.0"
@@ -3421,7 +3421,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.403\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
       }
     }
   }

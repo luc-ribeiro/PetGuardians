@@ -98,9 +98,9 @@ public class PartnerController : ControllerBase
     /// </summary>
     [HttpGet]
     [AllowAnonymous]
-    public ActionResult Read(string name, string uf, string city)
+    public ActionResult Read()
     {
-        return Ok(_context.Partners.Where(s => s.Name.Contains(name) && s.UF.Equals(uf) && s.City.Equals(city) && s.Active).ToList());
+        return Ok(_context.Partners.Where(s => s.Active).ToList());
     }
 
     /// <summary>
