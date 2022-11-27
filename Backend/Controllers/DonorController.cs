@@ -5,6 +5,7 @@ using Backend.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Backend.Services.UserService;
+using MimeTypes;
 
 namespace Backend.Controllers;
 
@@ -133,6 +134,20 @@ public class DonorController : ControllerBase
         _donor.Complement = request.Complement ?? "";
         _donor.Telephone = request.Telephone;
         _donor.Name = request.FullName;
+
+        using (var memoryStream = new MemoryStream())
+        {
+            if (request.ProfilePicture != null && request.ProfilePicture.Length > 0)
+            {
+                await request.ProfilePicture.CopyToAsync(memoryStream);
+                if (memoryStream.Length > 2097152)
+                {
+                    return BadRequest("Tamanho da foto de perfil muito grande");
+                }
+                _donor.ProfilePicture = System.Convert.ToBase64String(memoryStream.ToArray());
+                _donor.ProfilePictureMimeType = MimeTypeMap.GetMimeType(Path.GetExtension(request.ProfilePicture.FileName));
+            }
+        }
 
         _context.SaveChanges();
         return Ok();

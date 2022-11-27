@@ -5,6 +5,7 @@ using Backend.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MimeTypes;
 
 namespace Backend.Controllers;
 
@@ -108,7 +109,7 @@ public class PartnerController : ControllerBase
     /// </summary>
     [HttpPatch]
     [Authorize(Roles = "Partner")]
-    public ActionResult UpdatePartner([FromForm] UpdatePartnerDto request)
+    public async Task<ActionResult> UpdatePartner([FromForm] UpdatePartnerDto request)
     {
         Partner? _partner = _context.Partners.Where(s => s.Id == _userService.GetId() && s.Active).Include(s => s.Images).FirstOrDefault();
         if (_partner == null)
@@ -126,6 +127,20 @@ public class PartnerController : ControllerBase
         _partner.Telephone = request.Telephone;
         _partner.FantasyName = request.FantasyName ?? "";
         _partner.LinkSite = request.LinkSite ?? "";
+
+        using (var memoryStream = new MemoryStream())
+        {
+            if (request.ProfilePicture != null && request.ProfilePicture.Length > 0)
+            {
+                await request.ProfilePicture.CopyToAsync(memoryStream);
+                if (memoryStream.Length > 2097152)
+                {
+                    return BadRequest("Tamanho da foto de perfil muito grande");
+                }
+                _partner.ProfilePicture = System.Convert.ToBase64String(memoryStream.ToArray());
+                _partner.ProfilePictureMimeType = MimeTypeMap.GetMimeType(Path.GetExtension(request.ProfilePicture.FileName));
+            }
+        }
 
         _context.SaveChanges();
         return Ok();
@@ -155,6 +170,10 @@ public class PartnerController : ControllerBase
     [Route("coupon")]
     public ActionResult CreateCoupon(CouponDto request)
     {
+        if (request.code == null)
+        {
+            return BadRequest("Campo code é obrigatório");
+        }
         int partnerId = _userService.GetId();
         Coupon? _coupon = _context.Coupons.Where(c => c.Code == request.code && c.PartnerId == partnerId).FirstOrDefault();
         if (_coupon == null)
