@@ -94,6 +94,16 @@ public class PartnerController : ControllerBase
 
 
     /// <summary>
+    /// Consulta de `Partner` por região
+    /// </summary>
+    [HttpGet]
+    [AllowAnonymous]
+    public ActionResult Read(string name, string uf, string city)
+    {
+        return Ok(_context.Partners.Where(s => s.Name.Contains(name) && s.UF.Equals(uf) && s.City.Equals(city) && s.Active).ToList());
+    }
+
+    /// <summary>
     /// Atualiza o Abrigo
     /// </summary>
     [HttpPatch]
@@ -126,8 +136,8 @@ public class PartnerController : ControllerBase
     /// Inativa um `Partner`
     /// </summary>
     [HttpDelete]
-    [Authorize(Roles = "Shelter")]
-    public ActionResult Delete()
+    [Authorize(Roles = "Partner")]
+    public ActionResult DisablePartner()
     {
         Partner? _partner = _context.Partners.Find(_userService.GetId());
         if (_partner == null)
@@ -139,4 +149,50 @@ public class PartnerController : ControllerBase
         return Ok();
     }
 
+
+    [HttpPost]
+    [Authorize(Roles = "Partner")]
+    [Route("coupon")]
+    public ActionResult CreateCoupon(string code)
+    {
+        Coupon? _coupon = _context.Coupons.Where(c => c.Code == code && c.PartnerId == _userService.GetId()).FirstOrDefault();
+        if (_coupon == null)
+        {
+            Coupon coupon = new Coupon
+            {
+                Code = code,
+                PartnerId = _userService.GetId()
+            };
+            _context.Coupons.Add(coupon);
+        }
+        else
+        {
+            _coupon.Active = true;
+            _coupon.CreatedAt = DateTime.Now;
+        }
+        _context.SaveChanges();
+        return Ok();
+    }
+
+    [HttpPatch]
+    [Authorize(Roles = "Partner")]
+    [Route("coupon/{id}")]
+    public ActionResult UpdateCoupon(int id, string code, bool active)
+    {
+        int partnerId = _userService.GetId();
+        Coupon? coupon = _context.Coupons.Where(c => c.Id == id && c.PartnerId == partnerId).FirstOrDefault();
+        if (coupon == null)
+        {
+            return NotFound("Cupom inválido");
+        }
+        Coupon? _coupon = _context.Coupons.Where(c => c.Code == code && c.PartnerId == partnerId && c.Id != id).FirstOrDefault();
+        if (_coupon != null)
+        {
+            return BadRequest("Já existe um cupom com este código cadastrado");
+        }
+        coupon.Code = code;
+        coupon.Active = active;
+        _context.SaveChanges();
+        return Ok();
+    }
 }

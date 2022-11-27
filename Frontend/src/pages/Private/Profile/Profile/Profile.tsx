@@ -22,20 +22,26 @@ export function Profile() {
     return <Login />
   }
 
+  console.log(auth.user)
+
   return (
     <>
       <Header />
       <div className={`${styles.container} container`}>
         <div className={styles.imageContainer}>
-          <Breadcrumb type="Abrigos" to={auth.user.name} />
+          <Breadcrumb type="Abrigos" to={auth.user.shelter.fantasyName} />
+
           <Avatar />
         </div>
-        <div className={styles.profileContainer}>
+        {/* <div className={styles.profileContainer}>
           <div className={styles.profileHeader}>
-            <h1 className={styles.userName}>{auth.user.name}</h1>
+            <h1 className={styles.userName}>
+              {auth.user.shelter.corporateName}
+            </h1>
             <p className={styles.userCity}>
-              {auth.user.street} {auth.user.streetNumber}, {auth.user.district},
-              CEP {auth.user.cep}, {auth.user.city} - {auth.user.uf}
+              {auth.user.shelter.street} {auth.user.shelter.streetNumber},{' '}
+              {auth.user.shelter.district}, CEP {auth.user.shelter.cep},{' '}
+              {auth.user.shelter.city} - {auth.user.shelter.uf}
             </p>
             <Link className={styles.button} to="editar">
               Editar perfil
@@ -46,8 +52,8 @@ export function Profile() {
               5 <span>doações recebidas</span>
             </p>
           </div>
-          <AboutShelter about={auth.user.about} />
-          {auth.user.name == 'Abrigo' && (
+          <AboutShelter about={auth.user.shelter.about} />
+          {auth.user.shelter.corporateName == 'Abrigo' && (
             <>
               <ProductTable />
               <PartnerTable />
@@ -55,7 +61,7 @@ export function Profile() {
           )}
 
           <Table />
-        </div>
+        </div> */}
       </div>
       <Footer />
     </>

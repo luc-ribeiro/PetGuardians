@@ -1,6 +1,7 @@
 {
   "format": 1,
   "restore": {
+<<<<<<< HEAD
     "D:\\Inter\\Projeto\\Backend\\Backend.csproj": {}
   },
   "projects": {
@@ -12,6 +13,19 @@
         "projectPath": "D:\\Inter\\Projeto\\Backend\\Backend.csproj",
         "packagesPath": "C:\\Users\\Luc\\.nuget\\packages\\",
         "outputPath": "D:\\Inter\\Projeto\\Backend\\obj\\",
+=======
+    "C:\\www\\PetGuardians\\backend\\Backend.csproj": {}
+  },
+  "projects": {
+    "C:\\www\\PetGuardians\\backend\\Backend.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\www\\PetGuardians\\backend\\Backend.csproj",
+        "projectName": "Backend",
+        "projectPath": "C:\\www\\PetGuardians\\backend\\Backend.csproj",
+        "packagesPath": "C:\\Users\\raphs\\.nuget\\packages\\",
+        "outputPath": "C:\\www\\PetGuardians\\backend\\obj\\",
+>>>>>>> origin/Backend-Dev
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Luc\\AppData\\Roaming\\NuGet\\NuGet.Config"

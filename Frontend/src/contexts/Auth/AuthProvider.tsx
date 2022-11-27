@@ -18,7 +18,7 @@ export function AuthProvider({ children }: { children: JSX.Element }) {
   async function signIn(email: string, password: string) {
     const data = await api.signIn(email, password)
     if ((data.shelter || data.donor || data.partner) && data.accessToken) {
-      setUser(data.shelter || data.donor || data.partner)
+      setUser(data)
       setToken(data.accessToken)
       setUserStorage(data.shelter || data.donor || data.partner)
       return true

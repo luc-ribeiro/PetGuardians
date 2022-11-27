@@ -17,14 +17,6 @@ import { Button } from '../../../components/Forms/Button'
 
 interface CNPJQueryResponse {
   razao_social: string
-  nome_fantasia: string
-  bairro: string
-  cep: string
-  complemento: string
-  logradouro: string
-  numero: string
-  uf: string
-  municipio: string
 }
 
 interface CEPQueryResponse {
@@ -50,6 +42,8 @@ export function ShelterSignUp() {
   const [selectedUf, setSelectedUf] = useState('0')
   const [selectedCity, setSelectedCity] = useState('0')
   const [cleanCnpj, setCleanCnpj] = useState('')
+
+  const [terms, setTerms] = useState(false)
 
   const [status, setStatus] = useState({
     type: '',
@@ -104,7 +98,7 @@ export function ShelterSignUp() {
         setSelectedUf(response.data.state)
         setSelectedCity(response.data.city)
       })
-  }, [shelter.CNPJ, shelter.CEP])
+  }, [shelter.CEP])
 
   useEffect(() => {
     axios
@@ -165,6 +159,10 @@ export function ShelterSignUp() {
       })
       return false
     }
+  }
+
+  function handleTerms(event: ChangeEvent<HTMLInputElement>) {
+    setTerms(event.target.checked)
   }
 
   function handleCnpjChange(event: ChangeEvent<HTMLInputElement>) {
@@ -232,8 +230,6 @@ export function ShelterSignUp() {
       })
     }
 
-    console.log(shelter)
-
     try {
       await api.post(
         'shelter',
@@ -261,10 +257,11 @@ export function ShelterSignUp() {
       alert('Cadastro realizado com sucesso')
       navigate('/login')
     } catch (e) {
-      console.log(e)
+      setStatus({
+        type: 'error',
+        message: 'Erro: Cadastro não realizado',
+      })
     }
-
-    console.log(shelter)
   }
 
   return (
@@ -416,13 +413,14 @@ export function ShelterSignUp() {
               />
             </div>
 
-            <div className={styles.row}>
+            {/* <div className={styles.row}>
               <Checkbox
                 label="Concordo com os termos e condições"
-                name="termos"
-                // onClick={() => setAcceptTerms(true)}
+                name="terms"
+                isChecked={terms}
+                handleChange={handleTerms}
               />
-            </div>
+            </div> */}
 
             {status.type === 'success' ? (
               <p style={{ color: 'green' }}>{status.message}</p>

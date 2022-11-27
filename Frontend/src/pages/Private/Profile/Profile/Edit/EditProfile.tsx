@@ -108,35 +108,39 @@ export function EditProfile() {
   }
 
   useEffect(() => {
-    axios
-      .get<CNPJQueryResponse>(
-        `https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`,
-      )
-      .then(response => {
-        setShelter({
-          ...shelter,
-          ['corporateName']: response.data.razao_social,
-        } as any)
-      })
+    if (cleanCnpj.length == 14) {
+      axios
+        .get<CNPJQueryResponse>(
+          `https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`,
+        )
+        .then(response => {
+          setShelter({
+            ...shelter,
+            ['corporateName']: response.data.razao_social,
+          } as any)
+        })
+    }
   }, [shelter.CNPJ])
 
   useEffect(() => {
-    axios
-      .get<CEPQueryResponse>(
-        `https://brasilapi.com.br/api/cep/v2/${shelter.CEP}`,
-      )
-      .then(response => {
-        setShelter({
-          ...shelter,
-          ['street']: response.data.street,
-          ['district']: response.data.neighborhood,
-          ['uf']: response.data.state,
-          ['city']: response.data.city,
-        } as any)
-        setSelectedUf(response.data.state)
-        setSelectedCity(response.data.city)
-      })
-  }, [shelter.CNPJ, shelter.CEP])
+    if (shelter.CEP) {
+      axios
+        .get<CEPQueryResponse>(
+          `https://brasilapi.com.br/api/cep/v2/${shelter.CEP}`,
+        )
+        .then(response => {
+          setShelter({
+            ...shelter,
+            ['street']: response.data.street,
+            ['district']: response.data.neighborhood,
+            ['uf']: response.data.state,
+            ['city']: response.data.city,
+          } as any)
+          setSelectedUf(response.data.state)
+          setSelectedCity(response.data.city)
+        })
+    }
+  }, [shelter.CEP])
 
   useEffect(() => {
     axios
@@ -271,6 +275,7 @@ export function EditProfile() {
         },
       })
       alert('Cadastro atualizado com sucesso')
+      localStorage.setItem('user', JSON.stringify(shelter))
       navigate('/meuperfil')
     } catch (e) {
       console.log(e)

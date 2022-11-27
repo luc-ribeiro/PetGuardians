@@ -59,9 +59,23 @@ public class AuthController : ControllerBase
 
         var response = new
         {
-            shelter,
-            donor,
-            partner,
+            person,
+            role,
+            shelter = shelter == null ? null : new
+            {
+                FantasyName = shelter.FantasyName,
+                KeyPIX = shelter.KeyPIX,
+                About = shelter.About
+            },
+            donor = donor == null ? null : new
+            {
+                Birthday = donor.Birthday
+            },
+            partner = partner == null ? null : new
+            {
+                FantasyName = partner.FantasyName,
+                LinkSite = partner.LinkSite
+            },
             AccessToken = token
         };
 

@@ -23,6 +23,8 @@ public class Person
     public string StreetNumber { get; set; }
     public string District { get; set; }
     public string? Complement { get; set; }
+
+    [JsonIgnore]
     public DateTime Created { get; set; } = DateTime.Now;
     [JsonIgnore]
     public bool Active { get; set; } = true;
@@ -37,6 +39,5 @@ public class Person
     public byte[] PasswordSalt { get; set; }
     [JsonIgnore]
     public RefreshToken? RefreshToken { get; set; }
-
     public List<Image> Images { get; set; } = new List<Image>();
 }

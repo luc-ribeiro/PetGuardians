@@ -1,24 +1,24 @@
 import styles from './Checkbox.module.css'
 
 interface CheckboxProps {
-  label?: string
+  label: string
+  isChecked: boolean
   name: string
-  value?: string
-  onClick?: (event: Event) => void
+  handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-export function Checkbox({ label, name, value }: CheckboxProps) {
+export function Checkbox(props: CheckboxProps) {
   return (
     <div className={styles.wrapper}>
       <input
-        id={name}
-        name={name}
-        className={styles.input}
         type="checkbox"
-        value={value}
+        name={props.name}
+        id={props.label}
+        checked={props.isChecked}
+        onChange={props.handleChange}
       />
-      <label htmlFor={name} className={styles.label}>
-        {label}
+      <label htmlFor={props.label} className={styles.label}>
+        {props.label}
       </label>
     </div>
   )

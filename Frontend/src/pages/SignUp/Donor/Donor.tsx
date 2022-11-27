@@ -39,14 +39,17 @@ export function DonorSignUp() {
   const [selectedUf, setSelectedUf] = useState('0')
   const [selectedCity, setSelectedCity] = useState('0')
 
+  const [terms, setTerms] = useState(false)
+
   const [status, setStatus] = useState({
     type: '',
     message: '',
   })
 
   const [donor, setDonor] = useState({
-    name: '',
+    fullName: '',
     CPF: '',
+    telephone: '',
     birthday: '',
     CEP: '',
     street: '',
@@ -111,13 +114,21 @@ export function DonorSignUp() {
         .string()
         .required('Erro: Necessário preencher o campo senha')
         .min(6, 'Erro: A senha deve ter no mínimo 6 caracteres'),
-
       email: yup
         .string()
         .required('Erro: Necessário preencher o campo e-mail')
         .email('Erro: Necessário preencher o campo com e-mail válido'),
-
-      name: yup.string().required('Erro: Necessário preencher o campo nome'),
+      street: yup.string().required('Erro: Necessário preencher o nome da rua'),
+      CEP: yup.string().required('Erro: Necessário preencher o CEP'),
+      telephone: yup.string().required('Erro: Necessário preencher o telefone'),
+      birthday: yup
+        .string()
+        .min(8)
+        .required('Erro: Necessário preencher a data de nascimento'),
+      CPF: yup.string().required('Erro: Necessário preencher o CPF'),
+      fullName: yup
+        .string()
+        .required('Erro: Necessário preencher o campo nome'),
     })
 
     try {
@@ -132,6 +143,10 @@ export function DonorSignUp() {
     }
   }
 
+  function handleTerms(event: ChangeEvent<HTMLInputElement>) {
+    setTerms(event.target.checked)
+  }
+
   function handleCpfChange(event: ChangeEvent<HTMLInputElement>) {
     const notFormattedCpf = event.target.value
     const formattedCpf = notFormattedCpf
@@ -141,6 +156,16 @@ export function DonorSignUp() {
       .replace(/(\d{3})(\d)/, '$1-$2')
       .replace(/(-\d{2})\d+?$/, '$1')
     setDonor({ ...donor, ['CPF']: formattedCpf })
+  }
+
+  function handleTelephoneChange(event: ChangeEvent<HTMLInputElement>) {
+    const phoneNumber = event.target.value
+    const formattedPhoneNumber = phoneNumber
+      .replace(/\D/g, '')
+      .replace(/(\d{2})(\d)/, '($1) $2')
+      .replace(/(\d{4})(\d)/, '$1-$2')
+      .replace(/(-\d{5})\d+?$/, '$1')
+    setDonor({ ...donor, ['telephone']: formattedPhoneNumber })
   }
 
   function handleCepChange(event: ChangeEvent<HTMLInputElement>) {
@@ -167,36 +192,49 @@ export function DonorSignUp() {
 
     if (!(await validate())) return
 
-    console.log(donor)
+    const saveDataForm = true
 
-    // const data = new FormData();
+    if (saveDataForm) {
+      setStatus({
+        type: 'success',
+        message: 'Cadastro realizado com sucesso',
+      })
+    } else {
+      setStatus({
+        type: 'error',
+        message: 'Erro: Cadastro não realizado',
+      })
+    }
 
-    // data.append("name", donor.name);
-    // data.append("cpf", donor.CPF);
-    // data.append("birthday", donor.birthday);
-
-    // data.append("cep", donor.CEP);
-    // data.append("street", donor.street);
-    // data.append("streetNumber", donor.streetNumber);
-    // data.append("district", donor.district);
-    // data.append("complement", donor.complement);
-    // data.append("uf", donor.uf);
-    // data.append("city", donor.city);
-
-    // data.append("email", donor.email);
-    // data.append("password", donor.password);
-
-    // try {
-    // 	await api.post("donor", data, {
-    // 		headers: {
-    // 			"Content-Type": "application/json",
-    // 		},
-    // 	});
-    // 	alert("Cadastro realizado com sucesso");
-    // 	navigate("/login");
-    // } catch (e) {
-    // 	console.log(e);
-    // }
+    try {
+      await api.post(
+        'donor',
+        {
+          fullName: donor.fullName,
+          cpf: donor.CPF.replace(/\D/g, ''),
+          birthday: donor.birthday,
+          telephone: donor.telephone.replace(/\D/g, ''),
+          cep: donor.CEP.replace(/\D/g, ''),
+          street: donor.street,
+          streetNumber: donor.streetNumber,
+          district: donor.district,
+          complement: donor.complement,
+          uf: donor.uf,
+          city: donor.city,
+          email: donor.email,
+          password: donor.password,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      )
+      alert('Cadastro realizado com sucesso')
+      navigate('/login')
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   return (
@@ -220,20 +258,21 @@ export function DonorSignUp() {
             <Input
               label="Nome completo"
               type="text"
-              name="name"
-              value={donor.name}
+              name="fullName"
+              value={donor.fullName}
               onChange={valueInput}
             />
 
+            <Input
+              label="CPF"
+              type="text"
+              width="100%"
+              name="CPF"
+              value={donor.CPF}
+              onChange={handleCpfChange}
+            />
+
             <div className={styles.row}>
-              <Input
-                label="CPF"
-                type="text"
-                width="100%"
-                name="CPF"
-                value={donor.CPF}
-                onChange={handleCpfChange}
-              />
               <Input
                 label="Data de nascimento"
                 type="date"
@@ -241,6 +280,14 @@ export function DonorSignUp() {
                 name="birthday"
                 value={donor.birthday}
                 onChange={valueInput}
+              />
+
+              <Input
+                label="Telefone"
+                type="text"
+                name="telephone"
+                onChange={handleTelephoneChange}
+                value={donor.telephone}
               />
             </div>
 
@@ -338,12 +385,14 @@ export function DonorSignUp() {
               />
             </div>
 
-            <div className={styles.row}>
+            {/* <div className={styles.row}>
               <Checkbox
                 label="Concordo com os termos e condições"
-                name="termos"
+                name="terms"
+                isChecked={terms}
+                handleChange={handleTerms}
               />
-            </div>
+            </div> */}
 
             {status.type === 'success' ? (
               <p style={{ color: 'green' }}>{status.message}</p>
