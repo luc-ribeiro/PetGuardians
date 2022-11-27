@@ -1,8 +1,19 @@
-import axios from 'axios'
+import axios from 'axios';
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const api = axios.create({
-  baseURL: 'http://localhost:5201',
-})
+  baseURL: BASE_URL,
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  }
+});
+
+export const apiPrivate = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true,
+  headers: { 'Content-Type': 'application/json' }
+});
 
 export const useApi = () => ({
   signIn: async (email: string, password: string) => {

@@ -1,7 +1,6 @@
 import styles from './Profile.module.css'
-import { api } from '../../../../services/api'
 
-import { Link, useParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import { Header } from '../../../../components/Header'
 import { Footer } from '../../../../components/Footer'
@@ -10,25 +9,38 @@ import { Avatar } from '../../../../components/Profiles/Avatar'
 import { AboutShelter } from '../../../../components/Profiles/AboutShelter'
 import { ProductTable } from '../../../../components/Profiles/ProductTable'
 import { PartnerTable } from '../../../../components/Profiles/PartnerTable'
-import { DonationsTable } from '../../../../components/Profiles/DonationsTable'
-import { useContext, useEffect, useState } from 'react'
-import { AuthContext } from '../../../../contexts/Auth/AuthContext'
-import { Login } from '../../../Login'
-import { CouponTable } from '../--Partner/Coupon/CouponTable'
-import { DonationsCounter } from '../../../../components/Profiles/DonationsCounter'
+import { Table } from '../../../../components/Profiles/Table'
+import useAuth from '../../../../hooks/useAuth'
+import { useEffect, useState } from 'react'
+import usePrivateApi from '../../../../hooks/useAxiosPrivate'
+import { PersonType } from '../../../../types/Person'
 
 export function Profile() {
-  const auth = useContext(AuthContext)
-  const { user } = auth
+  const { auth } = useAuth()
+  const api = usePrivateApi()
+  const [user, setUser] = useState({} as PersonType)
 
-  const [userShelter, setUserShelter] = useState(false)
-  const [userDonor, setUserDonor] = useState(false)
-  const [userPartner, setUserPartner] = useState(false)
-  const [type, setType] = useState('')
+  useEffect(() => {
+    var isMounted = true
+    const abortController = new AbortController()
 
-  if (!user) {
-    return <Login />
-  }
+    const fetchProfile = async () => {
+      try {
+        const response = await api.get(
+          `${auth?.role.toLowerCase()}/${auth?.id}`,
+          { signal: abortController.signal },
+        )
+        isMounted && setUser(response.data)
+      } catch (error) {}
+    }
+
+    fetchProfile()
+
+    return () => {
+      isMounted = false
+      abortController.abort()
+    }
+  }, [])
 
   useEffect(() => {
     if (user) {
@@ -52,34 +64,15 @@ export function Profile() {
       <Header />
       <div className={`${styles.container} container`}>
         <div className={styles.imageContainer}>
-          {userShelter && (
-            <Breadcrumb type={type} to={user.shelter.fantasyName} />
-          )}
-          {userDonor && <Breadcrumb type={user.role} to={user.person.name} />}
-          {userPartner && (
-            <Breadcrumb type={user.role} to={user.partner.fantasyName} />
-          )}
-          <Avatar
-            type={user.person.profilePictureMimeType}
-            src={user.person.profilePicture}
-          />
+          <Breadcrumb type="Abrigos" to={user.name} />
+          <Avatar />
         </div>
         <div className={styles.profileContainer}>
           <div className={styles.profileHeader}>
-            <h1 className={styles.userName}>
-              {userShelter && user.shelter.fantasyName}
-              {userDonor && user.person.name}
-              {userPartner && user.partner.fantasyName}
-            </h1>
+            <h1 className={styles.userName}>{user.name}</h1>
             <p className={styles.userCity}>
-              {user.person.street} {user.person.streetNumber},{' '}
-              {user.person.district}, CEP {user.person.cep}, {user.person.city}{' '}
-              - {user.person.uf}
-              {userPartner && (
-                <Link className={styles.linkPartner} to={user.partner.linkSite}>
-                  Site: {user.partner.linkSite}
-                </Link>
-              )}
+              {user.street} {user.streetNumber}, {user.district}, CEP {user.cep}
+              , {user.city} - {user.uf}
             </p>
 
             <Link className={styles.button} to="editar">
@@ -89,12 +82,14 @@ export function Profile() {
           <div className={styles.qtdDonationsContainer}>
             {!userPartner && <DonationsCounter />}
           </div>
-          {userShelter && (
-            <AboutShelter
-              about={user.shelter.about}
-              images={user.person.images}
-              // type={user.person.images.mimeType}
-            />
+
+          <AboutShelter about={user.about} />
+
+          {user.name == 'Abrigo' && (
+            <>
+              <ProductTable />
+              <PartnerTable />
+            </>
           )}
 
           {!userPartner && <DonationsTable />}

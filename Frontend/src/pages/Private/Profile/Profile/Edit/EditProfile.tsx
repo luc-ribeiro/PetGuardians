@@ -13,16 +13,44 @@ import { Footer } from '../../../../../components/Footer'
 import { Breadcrumb } from '../../../../../components/Profiles/Breadcrumb'
 import { Avatar } from '../../../../../components/Profiles/Avatar'
 
-import { AuthContext } from '../../../../../contexts/Auth/AuthContext'
-import { ShelterForm } from './Forms/ShelterForm'
-import { DonorForm } from './Forms/DonorForm'
-import { PartnerForm } from './Forms/PartnerForm'
+import { Input } from '../../../../../components/Forms/Input'
+import { Select } from '../../../../../components/Forms/Select'
+import { TextArea } from '../../../../../components/Forms/TextArea'
 import { Button } from '../../../../../components/Forms/Button'
+import { Profile } from '../Profile'
+import { useForm } from 'react-hook-form'
+import { Login } from '../../../../Login'
+import useAuth from '../../../../../hooks/useAuth'
+
+interface CNPJQueryResponse {
+  razao_social: string
+  nome_fantasia: string
+  bairro: string
+  cep: string
+  complemento: string
+  logradouro: string
+  numero: string
+  uf: string
+  municipio: string
+}
+
+interface CEPQueryResponse {
+  state: string
+  city: string
+  neighborhood: string
+  street: string
+}
+
+interface IBGEUFResponse {
+  sigla: string
+}
+
+interface IBGECityResponse {
+  nome: string
+}
 
 export function EditProfile() {
-  const auth = useContext(AuthContext)
-  const { user } = auth
-
+  const auth = useAuth()
   const navigate = useNavigate()
 
   const [userShelter, setUserShelter] = useState(false)

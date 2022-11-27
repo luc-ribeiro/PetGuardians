@@ -2,18 +2,17 @@ import styles from './Header.module.css'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 
 import { ReactComponent as Logo } from '../assets/logo.svg'
-import imgPlaceholder from '../assets/avatar-img.jpg'
-import { ReactComponent as IconSearch } from '../assets/icon-search.svg'
-import { useContext, useEffect, useState } from 'react'
-import { AuthContext } from '../contexts/Auth/AuthContext'
+import imgPlaceholder from '../assets/avatar-thumbnail.jpg'
+import useLogout from '../hooks/useLogout'
+import useAuth from '../hooks/useAuth'
 
 export function Header() {
-  const auth = useContext(AuthContext)
-  const { user } = auth
+  const logout = useLogout()
+  const { auth } = useAuth()
   const navigate = useNavigate()
 
-  function handleLogout() {
-    auth.signOut()
+  async function handleLogout() {
+    await logout()
     navigate('/')
   }
 
@@ -49,7 +48,7 @@ export function Header() {
 					</button>
 				</form> */}
 
-        {!auth.user ? (
+        {!auth ? (
           <div className={styles.navLogin}>
             <Link to="/login">Entrar</Link>
 
@@ -61,18 +60,10 @@ export function Header() {
           <div className={styles.navLogin}>
             <Link to="/meuperfil">
               <div className={styles.userContainer}>
-                <div>
-                  {}
-
-                  {auth.user.person.profilePicture ? (
-                    <img
-                      src={`data:image/jpeg;base64, ${auth.user.person.profilePicture}`}
-                      className={styles.userAvatar}
-                    />
-                  ) : (
-                    <img src={imgPlaceholder} className={styles.userAvatar} />
-                  )}
-                </div>
+                <img
+                  className={styles.userAvatar}
+                  src={auth.profilePicture || imgPlaceholder}
+                />
                 <p className={styles.userProfile}>Meu perfil</p>
               </div>
             </Link>
