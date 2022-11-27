@@ -153,17 +153,18 @@ public class PartnerController : ControllerBase
     [HttpPost]
     [Authorize(Roles = "Partner")]
     [Route("coupon")]
-    public ActionResult CreateCoupon(string code)
+    public ActionResult CreateCoupon(CouponDto request)
     {
-        Coupon? _coupon = _context.Coupons.Where(c => c.Code == code && c.PartnerId == _userService.GetId()).FirstOrDefault();
+        int partnerId = _userService.GetId();
+        Coupon? _coupon = _context.Coupons.Where(c => c.Code == request.code && c.PartnerId == partnerId).FirstOrDefault();
         if (_coupon == null)
         {
-            Coupon coupon = new Coupon
+            _coupon = new Coupon
             {
-                Code = code,
-                PartnerId = _userService.GetId()
+                Code = request.code,
+                PartnerId = partnerId
             };
-            _context.Coupons.Add(coupon);
+            _context.Coupons.Add(_coupon);
         }
         else
         {
@@ -171,27 +172,32 @@ public class PartnerController : ControllerBase
             _coupon.CreatedAt = DateTime.Now;
         }
         _context.SaveChanges();
-        return Ok();
+        return Ok(_coupon.Id);
     }
 
     [HttpPatch]
-    [Authorize(Roles = "Partner")]
     [Route("coupon/{id}")]
-    public ActionResult UpdateCoupon(int id, string code, bool active)
+    [Authorize(Roles = "Partner")]
+    public ActionResult UpdateCoupon(int id, CouponDto request)
     {
+
         int partnerId = _userService.GetId();
+        if (request.active == null)
+        {
+            return BadRequest("Active é um campo obrigatório");
+        }
         Coupon? coupon = _context.Coupons.Where(c => c.Id == id && c.PartnerId == partnerId).FirstOrDefault();
         if (coupon == null)
         {
             return NotFound("Cupom inválido");
         }
-        Coupon? _coupon = _context.Coupons.Where(c => c.Code == code && c.PartnerId == partnerId && c.Id != id).FirstOrDefault();
+        Coupon? _coupon = _context.Coupons.Where(c => c.Code == request.code && c.PartnerId == partnerId && c.Id != id).FirstOrDefault();
         if (_coupon != null)
         {
             return BadRequest("Já existe um cupom com este código cadastrado");
         }
-        coupon.Code = code;
-        coupon.Active = active;
+        coupon.Code = request.code;
+        coupon.Active = (bool)request.active;
         _context.SaveChanges();
         return Ok();
     }
