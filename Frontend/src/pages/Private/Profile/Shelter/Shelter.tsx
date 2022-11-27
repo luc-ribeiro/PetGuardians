@@ -10,7 +10,7 @@ import { Avatar } from '../../../../components/Profiles/Avatar'
 import { AboutShelter } from '../../../../components/Profiles/AboutShelter'
 import { ProductTable } from '../../../../components/Profiles/ProductTable'
 import { PartnerTable } from '../../../../components/Profiles/PartnerTable'
-import { Table } from '../../../../components/Profiles/Table'
+import { Table } from '../../../../components/Profiles/DonationsTable'
 import { useEffect, useState } from 'react'
 
 interface Shelter {

@@ -10,58 +10,89 @@ import { Avatar } from '../../../../components/Profiles/Avatar'
 import { AboutShelter } from '../../../../components/Profiles/AboutShelter'
 import { ProductTable } from '../../../../components/Profiles/ProductTable'
 import { PartnerTable } from '../../../../components/Profiles/PartnerTable'
-import { Table } from '../../../../components/Profiles/Table'
+import { DonationsTable } from '../../../../components/Profiles/DonationsTable'
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../../../contexts/Auth/AuthContext'
 import { Login } from '../../../Login'
+import { CouponTable } from '../Donor/Coupon/CouponTable'
+import { DonationsCounter } from '../../../../components/Profiles/DonationsCounter'
 
 export function Profile() {
   const auth = useContext(AuthContext)
+  const { user } = auth
 
-  if (!auth.user) {
+  const [userShelter, setUserShelter] = useState(false)
+  const [userDonor, setUserDonor] = useState(false)
+  const [userPartner, setUserPartner] = useState(false)
+  const [type, setType] = useState('')
+
+  if (!user) {
     return <Login />
   }
 
-  console.log(auth.user)
+  useEffect(() => {
+    if (user) {
+      if (user.role == 'Shelter') {
+        setUserShelter(true)
+        setType('Abrigo')
+      } else if (user.role == 'Donor') {
+        setUserDonor(true)
+        setType('Doador')
+      } else if (user.role == 'Partner') {
+        setUserPartner(true)
+        setType('Parceiro')
+      }
+    }
+  }, [])
 
+  console.log(user)
   return (
     <>
       <Header />
       <div className={`${styles.container} container`}>
         <div className={styles.imageContainer}>
-          <Breadcrumb type="Abrigos" to={auth.user.shelter.fantasyName} />
-
-          <Avatar />
+          {userShelter && (
+            <Breadcrumb type={type} to={user.shelter.fantasyName} />
+          )}
+          {userDonor && <Breadcrumb type={user.role} to={user.person.name} />}
+          {userPartner && (
+            <Breadcrumb type={user.role} to={user.partner.fantasyName} />
+          )}
+          <Avatar
+            type={user.person.profilePictureMimeType}
+            src={user.person.profilePicture}
+          />
         </div>
-        {/* <div className={styles.profileContainer}>
+        <div className={styles.profileContainer}>
           <div className={styles.profileHeader}>
             <h1 className={styles.userName}>
-              {auth.user.shelter.corporateName}
+              {userShelter && user.shelter.fantasyName}
+              {userDonor && user.person.name}
+              {userPartner && user.partner.fantasyName}
             </h1>
             <p className={styles.userCity}>
-              {auth.user.shelter.street} {auth.user.shelter.streetNumber},{' '}
-              {auth.user.shelter.district}, CEP {auth.user.shelter.cep},{' '}
-              {auth.user.shelter.city} - {auth.user.shelter.uf}
+              {user.person.street} {user.person.streetNumber},{' '}
+              {user.person.district}, CEP {user.person.cep}, {user.person.city}{' '}
+              - {user.person.uf}
+              {userPartner && (
+                <Link className={styles.linkPartner} to={user.partner.linkSite}>
+                  Site: {user.partner.linkSite}
+                </Link>
+              )}
             </p>
+
             <Link className={styles.button} to="editar">
               Editar perfil
             </Link>
           </div>
           <div className={styles.qtdDonationsContainer}>
-            <p className={styles.totalDonations}>
-              5 <span>doações recebidas</span>
-            </p>
+            {!userPartner && <DonationsCounter />}
           </div>
-          <AboutShelter about={auth.user.shelter.about} />
-          {auth.user.shelter.corporateName == 'Abrigo' && (
-            <>
-              <ProductTable />
-              <PartnerTable />
-            </>
-          )}
+          {userShelter && <AboutShelter about={user.shelter.about} />}
 
-          <Table />
-        </div> */}
+          {!userPartner && <DonationsTable />}
+          {userPartner && <CouponTable />}
+        </div>
       </div>
       <Footer />
     </>

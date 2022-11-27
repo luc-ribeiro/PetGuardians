@@ -1,63 +1,34 @@
 export type User = {
-  shelter?: {
+  role: string
+
+  shelter: {
     fantasyName: string
-    id: number
-    gcg: string
-    telephone: string
-
-    cep: string
-    uf: string
-    city: string
-    street: string
-    streetNumber: string
-    district: string
-    complement: string
-
-    email: string
-    password: string
-
-    about?: string | null
-
-    keyPix?: string
+    about: string
+    keyPIX: string
   }
 
-  donor?: {
-    id: number
-    fullName: string
-    gcg: string
-    telephone: string
-    birthday: string
-
-    cep: string
-    uf: string
-    city: string
-    street: string
-    streetNumber: string
-    district: string
-    complement: string
-
-    email: string
-    password: string
+  donor: {
+    birthday: string | null
   }
 
-  partner?: {
-    id: number
-    corporateName: string
+  partner: {
     fantasyName: string
+    linkSite: string
+  }
+
+  person: {
+    name: string
     gcg: string
     telephone: string
-
+    street: string
+    streetNumber: string
+    complement: string
+    district: string
     cep: string
     uf: string
     city: string
-    street: string
-    streetNumber: string
-    district: string
-    complement: string
-
-    email: string
-    password: string
-
-    linkSite?: string
+    profilePicture: string
+    profilePictureMimeType: string
+    images: []
   }
 }

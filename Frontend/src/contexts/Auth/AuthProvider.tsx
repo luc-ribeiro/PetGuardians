@@ -12,6 +12,7 @@ export function AuthProvider({ children }: { children: JSX.Element }) {
     if (loggedInUser) {
       const foundUser = JSON.parse(loggedInUser)
       setUser(foundUser)
+      console.log(foundUser)
     }
   }, [])
 
@@ -20,7 +21,7 @@ export function AuthProvider({ children }: { children: JSX.Element }) {
     if ((data.shelter || data.donor || data.partner) && data.accessToken) {
       setUser(data)
       setToken(data.accessToken)
-      setUserStorage(data.shelter || data.donor || data.partner)
+      setUserStorage(data)
       return true
     }
     return false

@@ -54,7 +54,7 @@ export function PartnerSignUp() {
     corporateName: '',
     fantasyName: '',
     telephone: '',
-    urlSite: '',
+    linkSite: '',
     CNPJ: '',
     CEP: '',
     street: '',
@@ -242,7 +242,7 @@ export function PartnerSignUp() {
           fantasyName: partner.fantasyName,
           cnpj: partner.CNPJ.replace(/\D/g, ''),
           telephone: partner.telephone.replace(/\D/g, ''),
-          linkSite: partner.urlSite,
+          linkSite: partner.linkSite,
           cep: partner.CEP.replace(/\D/g, ''),
           street: partner.street,
           streetNumber: partner.streetNumber,
@@ -328,9 +328,9 @@ export function PartnerSignUp() {
               <Input
                 label="URL do seu site"
                 type="url"
-                name="urlSite"
+                name="linkSite"
                 onChange={valueInput}
-                value={partner.urlSite}
+                value={partner.linkSite}
               />
             </div>
 

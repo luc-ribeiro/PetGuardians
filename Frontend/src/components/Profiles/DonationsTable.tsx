@@ -1,6 +1,6 @@
-import styles from './Table.module.css'
+import styles from './DonationsTable.module.css'
 
-export function Table() {
+export function DonationsTable() {
   return (
     <div className={styles.tableContainer}>
       <h3>Últimas doações</h3>
