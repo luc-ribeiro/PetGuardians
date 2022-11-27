@@ -182,6 +182,7 @@ public class ShelterController : ControllerBase
             shelter = new
             {
                 FantasyName = _shelter.FantasyName,
+                
                 KeyPIX = _shelter.KeyPIX,
                 About = _shelter.About,
                 Images = _shelter.Images
