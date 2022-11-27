@@ -1,4 +1,4 @@
-import { FormEvent, useContext, useState } from 'react'
+import { FormEvent, useContext, useEffect, useState } from 'react'
 import Modal from 'react-modal'
 import { Button } from '../../../../../components/Forms/Button'
 import { Input } from '../../../../../components/Forms/Input'
@@ -8,6 +8,7 @@ import styles from './CouponTable.module.css'
 import { api } from '../../../../../services/api'
 import { AuthContext } from '../../../../../contexts/Auth/AuthContext'
 import { Select } from '../../../../../components/Forms/Select'
+import axios from 'axios'
 
 export function CouponTable() {
   const auth = useContext(AuthContext)
@@ -17,9 +18,11 @@ export function CouponTable() {
   const [editModalIsOpen, setEditIsOpen] = useState(false)
   const [couponCode, setCouponCode] = useState('')
   const [isActive, setIsActive] = useState(false)
+  const [coupons, setCoupons] = useState('')
 
   function openModal() {
     setIsOpen(true)
+    console.log(user?.partner)
   }
 
   function openEditModal() {
@@ -38,8 +41,6 @@ export function CouponTable() {
     event.preventDefault()
 
     const accessToken = localStorage.getItem('authToken')
-
-    console.log(couponCode)
 
     try {
       await api.post(
@@ -104,6 +105,7 @@ export function CouponTable() {
           isOpen={modalIsOpen}
           onRequestClose={closeModal}
           className={styles.modal}
+          ariaHideApp={false}
         >
           <div className={styles.headerModal}>
             <h2>Cadastrar Cupom</h2>
@@ -130,6 +132,7 @@ export function CouponTable() {
           isOpen={editModalIsOpen}
           onRequestClose={closeEditModal}
           className={styles.modal}
+          ariaHideApp={false}
         >
           <div className={styles.headerModal}>
             <h2>Editar Cupom</h2>
