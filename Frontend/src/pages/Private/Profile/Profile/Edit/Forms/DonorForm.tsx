@@ -219,6 +219,9 @@ export function DonorForm() {
     const data = new FormData()
 
     Object.entries(donor).forEach(([key, value]) => {
+      if (['CPF', 'CEP', 'telephone'].includes(key)) {
+        value = value.replace(/\D/g, '')
+      }
       data.append(key, value)
     })
 

@@ -12,7 +12,6 @@ export function AuthProvider({ children }: { children: JSX.Element }) {
     if (loggedInUser) {
       const foundUser = JSON.parse(loggedInUser)
       setUser(foundUser)
-      console.log(foundUser)
     }
   }, [])
 

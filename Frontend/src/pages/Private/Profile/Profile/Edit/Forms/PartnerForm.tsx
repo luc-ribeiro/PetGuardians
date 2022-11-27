@@ -257,6 +257,9 @@ export function PartnerForm() {
     const data = new FormData()
 
     Object.entries(partner).forEach(([key, value]) => {
+      if (['CNPJ', 'CEP', 'telephone'].includes(key)) {
+        value = value.replace(/\D/g, '')
+      }
       data.append(key, value)
     })
 

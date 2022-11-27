@@ -157,10 +157,6 @@ public class ShelterController : ControllerBase
         {
             foreach (var file in request.NewImages)
             {
-                if (memoryStream.Length <= 0)
-                {
-                    continue;
-                }
                 await file.CopyToAsync(memoryStream);
                 if (memoryStream.Length > 2097152)
                 {

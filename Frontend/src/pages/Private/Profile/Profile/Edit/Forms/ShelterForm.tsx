@@ -51,6 +51,9 @@ export function ShelterForm() {
   const [selectedCity, setSelectedCity] = useState('0')
   const [cleanCnpj, setCleanCnpj] = useState('')
 
+  const [images, setImages] = useState<File[]>([])
+  const [previewImages, setPreviewImages] = useState<string[]>([])
+
   if (!user) {
     return <Login />
   }
@@ -78,14 +81,22 @@ export function ShelterForm() {
 
     profilePicture: user.person.profilePicture,
     images: user.person.images,
-    newImages: '',
+    newImages: [],
   })
+
+  // useEffect(() => {
+  //   await api.get('')
+  // })
+
+  useEffect(() => {
+    const selectedImagesPreview = images.map(image => {
+      return URL.createObjectURL(image)
+    })
+    setPreviewImages(selectedImagesPreview)
+  }, [images])
 
   const valueInput = (e: any) =>
     setShelter({ ...shelter, [e.target.name]: e.target.value })
-
-  const [images, setImages] = useState<File[]>([])
-  const [previewImages, setPreviewImages] = useState<string[]>([])
 
   function handleSelectImages(event: ChangeEvent<HTMLInputElement>) {
     if (!event.target.files) {
@@ -93,12 +104,7 @@ export function ShelterForm() {
     }
     const selectedImages = Array.from(event.target.files)
 
-    setImages(selectedImages)
-
-    const selectedImagesPreview = selectedImages.map(image => {
-      return URL.createObjectURL(image)
-    })
-    setPreviewImages(selectedImagesPreview)
+    setImages([...selectedImages, ...images])
   }
 
   useEffect(() => {
@@ -258,7 +264,16 @@ export function ShelterForm() {
     const data = new FormData()
 
     Object.entries(shelter).forEach(([key, value]) => {
+      if (['CNPJ', 'CEP', 'telephone'].includes(key)) {
+        value = value.replace(/\D/g, '')
+      }
       data.append(key, value)
+    })
+
+    // data.append('profilePicture', images[0])
+
+    images.forEach(image => {
+      data.append('newImages', image)
     })
 
     try {
@@ -269,6 +284,7 @@ export function ShelterForm() {
         },
       })
       alert('Cadastro atualizado com sucesso')
+
       navigate('/meuperfil')
     } catch (e) {
       console.log(e)

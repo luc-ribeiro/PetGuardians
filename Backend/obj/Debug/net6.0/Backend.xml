@@ -44,12 +44,17 @@
             Consulta um `Partner`
             </summary>
         </member>
+        <member name="M:Backend.Controllers.PartnerController.Read(System.String,System.String,System.String)">
+            <summary>
+            Consulta de `Partner` por região
+            </summary>
+        </member>
         <member name="M:Backend.Controllers.PartnerController.UpdatePartner(Backend.DTO.UpdatePartnerDto)">
             <summary>
             Atualiza o Abrigo
             </summary>
         </member>
-        <member name="M:Backend.Controllers.PartnerController.Delete">
+        <member name="M:Backend.Controllers.PartnerController.DisablePartner">
             <summary>
             Inativa um `Partner`
             </summary>
