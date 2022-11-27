@@ -153,7 +153,7 @@ public class PartnerController : ControllerBase
     [HttpPost]
     [Authorize(Roles = "Partner")]
     [Route("coupon")]
-    public ActionResult CreateCoupon(string code)
+   public ActionResult CreateCoupon([FromBody] string code)
     {
         Coupon? _coupon = _context.Coupons.Where(c => c.Code == code && c.PartnerId == _userService.GetId()).FirstOrDefault();
         if (_coupon == null)

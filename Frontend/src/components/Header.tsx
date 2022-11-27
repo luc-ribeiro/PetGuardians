@@ -2,13 +2,14 @@ import styles from './Header.module.css'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 
 import { ReactComponent as Logo } from '../assets/logo.svg'
-import imgPlaceholder from '../assets/avatar-thumbnail.jpg'
+import imgPlaceholder from '../assets/avatar-img.jpg'
 import { ReactComponent as IconSearch } from '../assets/icon-search.svg'
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../contexts/Auth/AuthContext'
 
 export function Header() {
   const auth = useContext(AuthContext)
+  const { user } = auth
   const navigate = useNavigate()
 
   function handleLogout() {
@@ -60,7 +61,18 @@ export function Header() {
           <div className={styles.navLogin}>
             <Link to="/meuperfil">
               <div className={styles.userContainer}>
-                <img className={styles.userAvatar} src={imgPlaceholder} />
+                <div>
+                  {}
+
+                  {auth.user.person.profilePicture ? (
+                    <img
+                      src={`data:image/jpeg;base64, ${auth.user.person.profilePicture}`}
+                      className={styles.userAvatar}
+                    />
+                  ) : (
+                    <img src={imgPlaceholder} className={styles.userAvatar} />
+                  )}
+                </div>
                 <p className={styles.userProfile}>Meu perfil</p>
               </div>
             </Link>

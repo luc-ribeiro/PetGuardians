@@ -8,9 +8,11 @@ import ShelterImage4 from '../../assets/shelter-image-4.jpg'
 interface AboutProps {
   about: string | undefined | null
   images: []
+  type: string
+  src: string
 }
 
-export function AboutShelter({ about, images }: AboutProps) {
+export function AboutShelter({ about, images, type, src }: AboutProps) {
   return (
     <div className={styles.aboutContainer}>
       <h3>Sobre nós</h3>
@@ -20,9 +22,9 @@ export function AboutShelter({ about, images }: AboutProps) {
       </p>
 
       <div className={styles.imageContainer}>
-        {images.forEach(image => {
-          ;<img src={`data:${type};base64, ${src}`} alt="" />
-        })}
+        {images.forEach(image => (
+          <img src={`data:${type};base64, ${src}`} alt="" />
+        ))}
       </div>
     </div>
   )

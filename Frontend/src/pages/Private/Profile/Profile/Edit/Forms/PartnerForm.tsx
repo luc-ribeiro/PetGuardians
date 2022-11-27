@@ -76,28 +76,26 @@ export function PartnerForm() {
     linkSite: user.partner.linkSite,
 
     profilePicture: user.person.profilePicture,
-    images: user.person.images,
-    newImages: '',
   })
 
   const valueInput = (e: any) =>
     setPartner({ ...partner, [e.target.name]: e.target.value })
 
-  const [images, setImages] = useState<File[]>([])
-  const [previewImages, setPreviewImages] = useState<string[]>([])
+  const [image, setImage] = useState<File[]>([])
+  const [previewImage, setPreviewImage] = useState<string[]>([])
 
-  function handleSelectImages(event: ChangeEvent<HTMLInputElement>) {
+  function handleSelectImage(event: ChangeEvent<HTMLInputElement>) {
     if (!event.target.files) {
       return
     }
-    const selectedImages = Array.from(event.target.files)
+    const selectedImage = Array.from(event.target.files)
 
-    setImages(selectedImages)
+    setImage(selectedImage)
 
-    const selectedImagesPreview = selectedImages.map(image => {
+    const selectedImagesPreview = selectedImage.map(image => {
       return URL.createObjectURL(image)
     })
-    setPreviewImages(selectedImagesPreview)
+    setPreviewImage(selectedImagesPreview)
   }
 
   useEffect(() => {
@@ -263,6 +261,8 @@ export function PartnerForm() {
       data.append(key, value)
     })
 
+    data.append('profilePicture', image[0])
+
     try {
       await api.patch('partner', data, {
         headers: {
@@ -397,6 +397,33 @@ export function PartnerForm() {
           name="complement"
           value={partner.complement}
           onChange={valueInput}
+        />
+      </div>
+
+      <div className={styles.divider}></div>
+
+      <div className="input-block">
+        <label className={styles.label} htmlFor="images">
+          Foto de perfil
+        </label>
+
+        <div className={styles.imageContainer}>
+          {previewImage.map(image => {
+            return <img key={image} src={image} alt=""></img>
+          })}
+          {previewImage.length < 1 && (
+            <label htmlFor="image[]" className={styles.newImage}>
+              +
+            </label>
+          )}
+        </div>
+        <input
+          multiple
+          onChange={handleSelectImage}
+          type="file"
+          name="image"
+          accept=".jpeg, .png, .jpg"
+          id="image[]"
         />
       </div>
 

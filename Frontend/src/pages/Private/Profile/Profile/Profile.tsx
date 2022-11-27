@@ -14,7 +14,7 @@ import { DonationsTable } from '../../../../components/Profiles/DonationsTable'
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../../../contexts/Auth/AuthContext'
 import { Login } from '../../../Login'
-import { CouponTable } from '../Donor/Coupon/CouponTable'
+import { CouponTable } from '../--Partner/Coupon/CouponTable'
 import { DonationsCounter } from '../../../../components/Profiles/DonationsCounter'
 
 export function Profile() {
@@ -93,7 +93,7 @@ export function Profile() {
             <AboutShelter
               about={user.shelter.about}
               images={user.person.images}
-              type={user.person.mimeType}
+              // type={user.person.images.mimeType}
             />
           )}
 

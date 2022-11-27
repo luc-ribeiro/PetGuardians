@@ -427,7 +427,7 @@ export function ShelterForm() {
 
       <div className="input-block">
         <label className={styles.label} htmlFor="images">
-          Fotos
+          Fotos do abrigo
         </label>
 
         <div className={styles.imageContainer}>

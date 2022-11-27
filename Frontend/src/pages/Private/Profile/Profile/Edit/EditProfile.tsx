@@ -17,6 +17,7 @@ import { AuthContext } from '../../../../../contexts/Auth/AuthContext'
 import { ShelterForm } from './Forms/ShelterForm'
 import { DonorForm } from './Forms/DonorForm'
 import { PartnerForm } from './Forms/PartnerForm'
+import { Button } from '../../../../../components/Forms/Button'
 
 export function EditProfile() {
   const auth = useContext(AuthContext)
@@ -60,7 +61,6 @@ export function EditProfile() {
             type={user.person.profilePictureMimeType}
             src={user.person.profilePicture}
           />
-          <button className={styles.button}>Trocar foto</button>
         </div>
         <div className={styles.profileContainer}>
           <div className={styles.profileHeader}>

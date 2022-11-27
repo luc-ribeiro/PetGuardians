@@ -5,7 +5,7 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   name?: string
   label: string
   options: Array<{
-    value: string
+    value: string | boolean
     label: string
   }>
   width?: string

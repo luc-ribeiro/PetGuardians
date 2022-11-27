@@ -201,6 +201,8 @@ public class ShelterController : ControllerBase
                 Name = _shelter.Name,
                 ProfilePicture = _shelter.ProfilePicture,
                 ProfilePictureMimeType = _shelter.ProfilePictureMimeType,
+                Images = _shelter.Images
+
             },
             shelter = new
             {
@@ -208,7 +210,6 @@ public class ShelterController : ControllerBase
                 
                 KeyPIX = _shelter.KeyPIX,
                 About = _shelter.About,
-                Images = _shelter.Images
             }
         });
     }
