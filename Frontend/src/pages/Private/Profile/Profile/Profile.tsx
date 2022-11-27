@@ -46,6 +46,7 @@ export function Profile() {
   }, [])
 
   console.log(user)
+
   return (
     <>
       <Header />
@@ -88,7 +89,13 @@ export function Profile() {
           <div className={styles.qtdDonationsContainer}>
             {!userPartner && <DonationsCounter />}
           </div>
-          {userShelter && <AboutShelter about={user.shelter.about} />}
+          {userShelter && (
+            <AboutShelter
+              about={user.shelter.about}
+              images={user.person.images}
+              type={user.person.mimeType}
+            />
+          )}
 
           {!userPartner && <DonationsTable />}
           {userPartner && <CouponTable />}
