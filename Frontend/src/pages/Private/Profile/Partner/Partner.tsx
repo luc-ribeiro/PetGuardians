@@ -14,6 +14,7 @@ import usePrivateApi from '../../../../hooks/useAxiosPrivate'
 import { PersonType } from '../../../../types/Person'
 import { CouponTable } from './Coupon/CouponTable'
 import { PartnerType } from '../../../../types/Partner'
+import { CouponType } from '../../../../types/Coupon'
 
 export function PartnerProfile() {
   const { auth } = useAuth()
@@ -31,7 +32,7 @@ export function PartnerProfile() {
           { signal: abortController.signal },
         )
         isMounted && setUser(response.data)
-      } catch (error) {}
+      } catch (error) { }
     }
 
     fetchProfile()
@@ -40,7 +41,37 @@ export function PartnerProfile() {
       isMounted = false
       abortController.abort()
     }
-  }, [])
+  }, []);
+
+  const updateCoupon = (coupon: CouponType) => {
+    if (!user) {
+      return;
+    }
+
+    // Procura um cupom da tabela
+    const index = user.coupons.findIndex(_coupon => _coupon.id === coupon.id);
+
+    console.log('editar', index > -1);
+    console.log('cupom', coupon);
+
+    // Atualizando um cupom na tabela
+    if (index > -1) {
+      const coupons = user.coupons;
+      coupons[index] = coupon;
+      setUser(prev => prev && {
+        ...prev,
+        coupons
+      });
+    }
+
+    // Inserindo um cupom na tabela
+    else {
+      setUser(prev => prev && {
+        ...prev,
+        coupons: [...prev.coupons, coupon]
+      });
+    }
+  }
 
   return (
     <>
@@ -68,7 +99,7 @@ export function PartnerProfile() {
             )}
           </div>
 
-          {user && <CouponTable user={user} />}
+          {user && <CouponTable coupons={user.coupons} onSuccess={updateCoupon} />}
         </div>
       </div>
       <Footer />

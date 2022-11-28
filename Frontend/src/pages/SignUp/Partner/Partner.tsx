@@ -141,7 +141,7 @@ export function PartnerSignUp() {
       street: yup.string().required('Erro: Necessário preencher o nome da rua'),
       CEP: yup.string().required('Erro: Necessário preencher o CEP'),
       telephone: yup.string().required('Erro: Necessário preencher o telefone'),
-      urlSite: yup
+      linkSite: yup
         .string()
         .required('Erro: Necessário preencher a URL do site'),
       fantasyName: yup
