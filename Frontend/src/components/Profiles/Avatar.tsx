@@ -11,7 +11,7 @@ export function Avatar({ src }: AvatarProps) {
     <div className={styles.avatarWrapper}>
       {src ? (
         <img
-          src={`data:image/jpeg;base64,${src}`}
+          src={src}
           className={styles.avatarImg}
         />
       ) : (

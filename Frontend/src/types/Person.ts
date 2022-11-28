@@ -12,5 +12,6 @@ export interface PersonType {
   complement: string
   email: string
   profilePicture?: string
+  profilePictureMimeType?: string
   createdAt: string
 }

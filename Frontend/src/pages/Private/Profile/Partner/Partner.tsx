@@ -51,9 +51,6 @@ export function PartnerProfile() {
     // Procura um cupom da tabela
     const index = user.coupons.findIndex(_coupon => _coupon.id === coupon.id);
 
-    console.log('editar', index > -1);
-    console.log('cupom', coupon);
-
     // Atualizando um cupom na tabela
     if (index > -1) {
       const coupons = user.coupons;
@@ -73,13 +70,15 @@ export function PartnerProfile() {
     }
   }
 
+  console.log(user?.profilePicture)
+
   return (
     <>
       <Header />
       <div className={`${styles.container} container`}>
         <div className={styles.imageContainer}>
           <Breadcrumb type="Parceiros" to={user?.fantasyName} />
-          <Avatar src={user?.profilePicture} />
+          <Avatar src={`data:${user?.profilePictureMimeType};base64,${user?.profilePicture}`} />
         </div>
         <div className={styles.profileContainer}>
           <div className={styles.profileHeader}>
@@ -87,7 +86,7 @@ export function PartnerProfile() {
             <p className={styles.userCity}>
               {user?.street} {user?.streetNumber}, {user?.district}, CEP{' '}
               {user?.cep}, {user?.city} - {user?.uf}
-              <Link className={styles.linkPartner} to={user?.linkSite}>
+              <Link className={styles.linkPartner} to={user?.linkSite || ''}>
                 Site: {user?.linkSite}
               </Link>
             </p>

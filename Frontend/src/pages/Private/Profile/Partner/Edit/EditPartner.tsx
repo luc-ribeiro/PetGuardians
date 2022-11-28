@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import * as yup from 'yup'
@@ -26,139 +26,116 @@ import { formatCnpj } from '../../../../../utils/CNPJ'
 import { formatTelephone } from '../../../../../utils/Telephone'
 import { formatCep } from '../../../../../utils/cep'
 
+
+interface Cities {
+  [key: string]: string[]
+}
 export function EditPartnerProfile() {
-  const { auth } = useAuth()
-  const api = usePrivateApi()
-  const navigate = useNavigate()
+  const { auth } = useAuth();
+  const api = usePrivateApi();
+  const profileRef = useRef<HTMLInputElement>(null);
 
-  const [user, setUser] = useState({} as PartnerType)
+  const navigate = useNavigate();
 
-  const [ufs, setUfs] = useState<string[]>([])
-  const [cities, setCities] = useState<string[]>([])
-  const [selectedUf, setSelectedUf] = useState('0')
-  const [selectedCity, setSelectedCity] = useState('0')
-  const [cleanCnpj, setCleanCnpj] = useState('')
+  const [partner, setPartner] = useState({} as PartnerType);
 
-  const [image, setImage] = useState<File[]>([])
-  const [previewImage, setPreviewImage] = useState<string[]>([])
+  const [ufs, setUfs] = useState<string[]>([]);
+  const [cities, setCities] = useState<Cities>({});
+
+  const [cleanCnpj, setCleanCnpj] = useState('');
+  const [cleanCep, setCleanCep] = useState('');
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+
+  const [previewImage, setPreviewImage] = useState('');
 
   const [status, setStatus] = useState({
     type: '',
     message: '',
   })
 
-  const [partner, setPartner] = useState({
-    fantasyName: user.fantasyName,
-    name: user.name,
-    gcg: user.gcg,
-    telephone: user.telephone,
-    cep: user.cep,
-    street: user.street,
-    streetNumber: user.streetNumber,
-    district: user.district,
-    complement: user.complement,
-    uf: user.uf,
-    city: user.city,
-
-    linkSite: user.linkSite,
-
-    profilePicture: user.profilePicture,
-  })
-
-  console.log(user)
-  console.log(partner)
-
   useEffect(() => {
     var isMounted = true
-    const abortController = new AbortController()
-
+    const abortController = new AbortController();
     const fetchProfile = async () => {
       try {
-        const response = await api.get(
-          `${auth?.role.toLowerCase()}/${auth?.id}`,
-          { signal: abortController.signal },
-        )
-        setUser(response.data)
-      } catch (error) {}
+        const response = await api.get(`partner/${auth?.id}`, { signal: abortController.signal })
+        isMounted && setPartner(response.data);
+      } catch (error) { }
     }
-
-    fetchProfile()
-
+    const fetchEstados = async () => {
+      const response = (await axios.get<IBGEUFResponse[]>('https://servicodados.ibge.gov.br/api/v1/localidades/estados', { signal: abortController.signal })).data;
+      isMounted && setUfs(response.map(uf => uf.sigla));
+    }
+    fetchProfile();
+    fetchEstados();
     return () => {
-      isMounted = false
-      abortController.abort()
+      isMounted = false;
+      abortController.abort();
     }
   }, [])
 
-  const valueInput = (e: any) =>
-    setPartner({ ...partner, [e.target.name]: e.target.value })
+  const valueInput = (e: any) => setPartner({ ...partner, [e.target.name]: e.target.value })
 
   useEffect(() => {
-    if (cleanCnpj.length == 14) {
-      axios
-        .get<CNPJQueryResponse>(
-          `https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`,
-        )
-        .then(response => {
-          setPartner({
-            ...partner,
-            ['name']: response.data.razao_social,
-          } as any)
-        })
+    var isMounted = true;
+    const abort = new AbortController();
+    const fetchRazaoSocial = async () => {
+      const response = (await axios.get<CNPJQueryResponse>(`https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`, { signal: abort.signal })).data;
+      isMounted && setPartner(prev => ({ ...prev, name: response?.razao_social, fantasyName: response?.nome_fantasia }));
     }
-  }, [partner.gcg])
-
-  useEffect(() => {
-    if (user.cep?.length == 9) {
-      axios
-        .get<CEPQueryResponse>(
-          `https://brasilapi.com.br/api/cep/v2/${user.cep}`,
-        )
-        .then(response => {
-          setPartner({
-            ...partner,
-            ['street']: response.data.street,
-            ['district']: response.data.neighborhood,
-            ['uf']: response.data.state,
-            ['city']: response.data.city,
-          } as any)
-          setSelectedUf(response.data.state)
-          setSelectedCity(response.data.city)
-        })
+    cleanCnpj.length == 14 && fetchRazaoSocial();
+    return () => {
+      isMounted = false;
+      abort.abort();
     }
-  }, [partner.cep])
+  }, [cleanCnpj])
 
   useEffect(() => {
-    axios
-      .get<IBGEUFResponse[]>(
-        'https://servicodados.ibge.gov.br/api/v1/localidades/estados',
-      )
-      .then(response => {
-        const ufInitials = response.data.map(uf => uf.sigla)
-        setUfs(ufInitials)
-      })
-  }, [])
-
-  useEffect(() => {
-    if (selectedUf === '0') {
-      return
+    var isMounted = true;
+    const abort = new AbortController();
+    const fetchAddress = async () => {
+      const response = (await axios.get<CEPQueryResponse>(`https://brasilapi.com.br/api/cep/v2/${cleanCep}`, { signal: abort.signal })).data;
+      isMounted && setPartner(prev => ({
+        ...prev,
+        street: response.street,
+        district: response.neighborhood,
+        uf: response.state,
+        city: response.city
+      }));
     }
+    cleanCep.length == 8 && fetchAddress();
+    return () => {
+      isMounted = false;
+      abort.abort();
+    }
+  }, [cleanCep]);
 
-    axios
-      .get<IBGECityResponse[]>(
-        `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedUf}/municipios`,
-      )
-      .then(response => {
-        const cityNames = response.data.map(city => city.nome)
-        setCities(cityNames)
-      })
-  }, [selectedUf])
+  useEffect(() => {
+    if (!partner.uf || cities[partner.uf]) {
+      return;
+    }
+    var isMounted = true;
+    const abort = new AbortController();
+    const fetchCities = async () => {
+      const response = (await axios.get<IBGECityResponse[]>(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${partner.uf}/municipios`, { signal: abort.signal })).data;
+      isMounted && setCities(prev => ({ ...prev, [partner.uf]: response.map(city => city.nome) }));
+    }
+    fetchCities();
+    return () => {
+      isMounted = false;
+      abort.abort();
+    }
+  }, [partner.uf]);
 
   function handleCnpjChange(event: ChangeEvent<HTMLInputElement>) {
     const [cleanCnpj, formattedCnpj] = formatCnpj(event.target.value)
-
     setCleanCnpj(cleanCnpj)
-    setPartner({ ...partner, ['gcg']: formattedCnpj })
+    setPartner({ ...partner, gcg: formattedCnpj })
+  }
+  function handleCepChange(event: ChangeEvent<HTMLInputElement>) {
+    const [cleanCep, formatetedCep] = formatCep(event.target.value)
+    setCleanCep(cleanCep);
+    setPartner(prev => ({ ...prev, cep: formatetedCep }));
   }
 
   function handleTelephoneChange(event: ChangeEvent<HTMLInputElement>) {
@@ -166,33 +143,24 @@ export function EditPartnerProfile() {
     setPartner({ ...partner, ['telephone']: formattedTelephone })
   }
 
-  function handleCepChange(event: ChangeEvent<HTMLInputElement>) {
-    const formattedCep = formatCep(event.target.value)
-    setPartner({ ...partner, ['cep']: formattedCep })
-  }
-
   function handleSelectedUf(event: ChangeEvent<HTMLSelectElement>) {
-    const uf = event.target.value
-    setSelectedUf(uf)
+    setPartner(prev => ({ ...prev, uf: event.target.value }));
   }
 
   function handleSelectedCity(event: ChangeEvent<HTMLSelectElement>) {
-    const city = event.target.value
-    setSelectedCity(city)
+    setPartner(prev => ({ ...prev, city: event.target.value }))
   }
 
   function handleSelectImage(event: ChangeEvent<HTMLInputElement>) {
     if (!event.target.files) {
       return
     }
-    const selectedImage = Array.from(event.target.files)
-
-    setImage(selectedImage)
-
-    const selectedImagesPreview = selectedImage.map(image => {
-      return URL.createObjectURL(image)
-    })
-    setPreviewImage(selectedImagesPreview)
+    const selectedImage = event.target.files.item(0);
+    if (selectedImage) {
+      setProfilePicture(selectedImage)
+      setPreviewImage(URL.createObjectURL(selectedImage));
+      console.log(URL.createObjectURL(selectedImage));
+    }
   }
 
   async function validate() {
@@ -222,54 +190,59 @@ export function EditPartnerProfile() {
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
 
-    if (!(await validate())) return
-
-    const saveDataForm = true
-
-    if (saveDataForm) {
-      setStatus({
-        type: 'success',
-        message: 'Cadastro atualizado com sucesso',
-      })
-    } else {
-      setStatus({
-        type: 'error',
-        message: 'Erro: Cadastro não atualizado',
-      })
-    }
+    if (!(await validate()))
+      return
 
     const data = new FormData()
 
     Object.entries(partner).forEach(([key, value]) => {
+      if (![
+        'cep',
+        'uf',
+        'city',
+        'street',
+        'streetNumber',
+        'district',
+        'complement',
+        'telephone',
+        'fantasyName',
+        'linkSite'
+      ].includes(key)) {
+        return;
+      }
       if (['gcg', 'cep', 'telephone'].includes(key)) {
         value = value.replace(/\D/g, '')
       }
       data.append(key, value)
     })
-
-    data.append('profilePicture', image[0])
+    data.append('profilePicture', profilePicture as Blob);
 
     try {
-      await api.patch('partner', data)
+      await api.patch('partner', data, { headers: { 'Content-Type': 'application/x-www-url-formencoded' } });
       alert('Cadastro atualizado com sucesso')
-      navigate(`profile/${auth.role}/${auth.id}`)
+      navigate(`/profile/partner/${auth?.id}`)
     } catch (e) {
       console.log(e)
     }
-  }
-
-  if (!user) {
-    return <Login />
   }
 
   return (
     <>
       <Header />
       <div className={`${styles.container} container`}>
-        <div className={styles.imageContainer}>
-          <Breadcrumb type="Parceiros" to={user.fantasyName} />
 
-          <Avatar src={user.profilePicture} />
+        <div className={styles.imageContainer}>
+          <Breadcrumb type="Abrigos" to={partner.fantasyName} />
+          <Avatar src={previewImage || partner.profilePicture} />
+          <input
+            ref={profileRef}
+            onChange={handleSelectImage}
+            style={{ display: 'none' }}
+            type="file"
+            id='input_profile_picture'
+            accept=".jpeg, .png, .jpg"
+          />
+          <button className={styles.button} onClick={() => profileRef?.current?.click()}>Trocar foto</button>
         </div>
         <div className={styles.profileContainer}>
           <div className={styles.profileHeader}>
@@ -341,7 +314,7 @@ export function EditPartnerProfile() {
               <Select
                 label="UF"
                 name="uf"
-                value={selectedUf}
+                value={partner.uf}
                 onChange={handleSelectedUf}
                 options={ufs.map(uf => ({
                   label: uf,
@@ -353,12 +326,16 @@ export function EditPartnerProfile() {
               <Select
                 label="Cidade"
                 name="city"
-                value={selectedCity}
+                value={partner.city}
                 onChange={handleSelectedCity}
-                options={cities.map(city => ({
-                  label: city,
-                  value: city,
-                }))}
+                options={
+                  !cities[partner.uf]
+                    ? [{ value: '', label: 'Selecione um Estado' }]
+                    : cities[partner.uf].map(city => ({
+                      label: city,
+                      value: city,
+                    }))
+                }
                 width="50%"
               />
             </div>
@@ -401,31 +378,6 @@ export function EditPartnerProfile() {
             </div>
 
             <div className={styles.divider}></div>
-
-            <div className="input-block">
-              <label className={styles.label} htmlFor="images">
-                Foto de perfil
-              </label>
-
-              <div className={styles.imageContainer}>
-                {previewImage.map(image => {
-                  return <img key={image} src={image} alt=""></img>
-                })}
-                {previewImage.length < 1 && (
-                  <label htmlFor="image[]" className={styles.newImage}>
-                    +
-                  </label>
-                )}
-              </div>
-              <input
-                multiple
-                onChange={handleSelectImage}
-                type="file"
-                name="image"
-                accept=".jpeg, .png, .jpg"
-                id="image[]"
-              />
-            </div>
 
             {status.type === 'success' ? (
               <p style={{ color: 'green' }}>{status.message}</p>
