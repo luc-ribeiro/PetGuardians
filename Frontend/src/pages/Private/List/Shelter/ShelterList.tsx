@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { api } from '../../../../services/api'
 
-import styles from './Shelter.module.css'
+import styles from './ShelterList.module.css'
 
 import { Header } from '../../../../components/Header'
 import { Footer } from '../../../../components/Footer'
@@ -18,7 +18,7 @@ interface IBGECityResponse {
   nome: string
 }
 
-export function Shelter() {
+export function ShelterList() {
   const [shelters, setShelters] = useState([])
 
   const [shelterName, setShelterName] = useState('')

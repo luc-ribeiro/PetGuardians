@@ -3,7 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import { Home } from './pages/Home'
 import { About } from './pages/Site/About'
 import { HowTo } from './pages/Site/HowTo'
-import { Shelter } from './pages/Private/List/Shelter/Shelter'
+import { ShelterList } from './pages/Private/List/Shelter/ShelterList'
 import { Partner } from './pages/Private/List/Partner/Partner'
 import { Login } from './pages/Login'
 
@@ -25,6 +25,7 @@ import { Profile } from './pages/Private/Profile/--Profile/Profile'
 import { NotFound } from './pages/NotFound'
 import RequireAuth from './layouts/RequireAuth'
 import PersistLogin from './contexts/PersistLogin'
+import { ViewShelterProfile } from './pages/Private/List/Shelter/ViewShelterProfile'
 
 export default function RoutesList() {
   return (
@@ -45,10 +46,9 @@ export default function RoutesList() {
         {/* Rotas privadas globais */}
         <Route element={<RequireAuth />}>
           <Route path="partners" element={<Partner />} />
-          <Route path="shelters" element={<Shelter />} />
-          <Route path="profile/donor/:id" element={<DonorProfile />} />
+          <Route path="shelters" element={<ShelterList />} />
           <Route path="profile/partner/:id" element={<PartnerProfile />} />
-          <Route path="profile/shelter/:id" element={<ShelterProfile />} />
+          <Route path="profile/shelter/:id" element={<ViewShelterProfile />} />
           <Route path="meuperfil" element={<Profile />} />
           <Route path="meuperfil/edit" element={<EditProfile />} />
         </Route>
@@ -56,6 +56,7 @@ export default function RoutesList() {
         {/* Rotas exclusivas de Donors */}
         <Route element={<RequireAuth allowedRoles={['Donor']} />}>
           <Route path="profile/donor/:id/edit" element={<EditDonorProfile />} />
+          <Route path="profile/donor/:id" element={<DonorProfile />} />
         </Route>
 
         {/* Rotas exclusivas de Shelters */}
@@ -64,6 +65,7 @@ export default function RoutesList() {
             path="profile/shelter/:id/edit"
             element={<EditShelterProfile />}
           />
+          <Route path="profile/shelter/:id" element={<ShelterProfile />} />
         </Route>
 
         {/* Rotas exclusivas de Partner */}
@@ -72,6 +74,7 @@ export default function RoutesList() {
             path="profile/partner/:id/edit"
             element={<EditPartnerProfile />}
           />
+          <Route path="profile/partner/:id" element={<PartnerProfile />} />
         </Route>
       </Route>
     </Routes>

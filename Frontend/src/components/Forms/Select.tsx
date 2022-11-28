@@ -4,7 +4,6 @@ import styles from './Select.module.css'
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   name?: string
   label: string
-  value: string
   options: Array<{
     value: string | boolean
     label: string
@@ -16,7 +15,6 @@ export function Select({
   label,
   name,
   options,
-  value,
   width = '100%',
   ...rest
 }: SelectProps) {
