@@ -1,4 +1,4 @@
-import styles from './Shelter.module.css'
+import styles from './Partner.module.css'
 
 import { Header } from '../../../../components/Header'
 import { Footer } from '../../../../components/Footer'
@@ -12,14 +12,13 @@ import useAuth from '../../../../hooks/useAuth'
 
 import usePrivateApi from '../../../../hooks/useAxiosPrivate'
 import { PersonType } from '../../../../types/Person'
-import { ShelterType } from '../../../../types/Shelter'
-import { AboutShelter } from '../../../../components/Profiles/AboutShelter'
-import { DonationsCounter } from '../../../../components/Profiles/DonationsCounter'
+import { CouponTable } from './Coupon/CouponTable'
+import { PartnerType } from '../../../../types/Partner'
 
-export function ShelterProfile() {
+export function PartnerProfile() {
   const { auth } = useAuth()
   const api = usePrivateApi()
-  const [user, setUser] = useState<ShelterType>()
+  const [user, setUser] = useState<PartnerType>()
 
   useEffect(() => {
     var isMounted = true
@@ -43,15 +42,13 @@ export function ShelterProfile() {
     }
   }, [])
 
-  console.log(auth)
-
   return (
     <>
       <Header />
       <div className={`${styles.container} container`}>
         <div className={styles.imageContainer}>
-          <Breadcrumb type="Abrigos" to={user?.fantasyName} />
-          <Avatar src={auth?.profilePicture} />
+          <Breadcrumb type="Parceiros" to={user?.fantasyName} />
+          <Avatar src={user?.profilePicture} />
         </div>
         <div className={styles.profileContainer}>
           <div className={styles.profileHeader}>
@@ -59,6 +56,9 @@ export function ShelterProfile() {
             <p className={styles.userCity}>
               {user?.street} {user?.streetNumber}, {user?.district}, CEP{' '}
               {user?.cep}, {user?.city} - {user?.uf}
+              <Link className={styles.linkPartner} to={user?.linkSite}>
+                Site: {user?.linkSite}
+              </Link>
             </p>
 
             {auth?.id == user?.id && (
@@ -67,12 +67,8 @@ export function ShelterProfile() {
               </Link>
             )}
           </div>
-          <div className={styles.qtdDonationsContainer}>
-            {user && <DonationsCounter />}
-          </div>
 
-          {/* {user && <AboutShelter />} */}
-          {user && <DonationsTable />}
+          {user && <CouponTable user={user} />}
         </div>
       </div>
       <Footer />

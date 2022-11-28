@@ -7,30 +7,28 @@ import logo from '../assets/logo.svg'
 import { Input } from '../components/Forms/Input'
 import { Button } from '../components/Forms/Button'
 import { api } from '../services/api'
-import useAuth from '../hooks/useAuth';
+import useAuth from '../hooks/useAuth'
 import { AuthType } from '../types/Auth'
 
 export function Login() {
-  const { setAuth } = useAuth();
+  const { setAuth } = useAuth()
   const navigate = useNavigate()
-  const location = useLocation();
-  const from = location.state?.from?.pathname || '/';
-
+  const location = useLocation()
+  const from = location.state?.from?.pathname || '/'
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   async function handleLogin(event: FormEvent) {
-    event.preventDefault();
+    event.preventDefault()
     if (!email || !password) {
-      return;
+      return
     }
     try {
-
-      const response = await api.post('auth/login', { email, password });
-      const refresh: AuthType = response?.data;
-      setAuth(refresh);
-      navigate(from, { replace: true });
+      const response = await api.post('auth/login', { email, password })
+      const refresh: AuthType = response?.data
+      setAuth(refresh)
+      navigate('/')
     } catch (error) {
       console.log(error)
     }

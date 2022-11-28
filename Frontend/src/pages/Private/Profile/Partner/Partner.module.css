@@ -16,7 +16,7 @@
 
 .userCity {
   font: 600 14px/20px var(--type-text);
-  color: var(--c8);
+  color: var(--a5);
 }
 
 .button {
@@ -32,15 +32,9 @@
   margin-top: 16px;
 }
 
-.qtdDonationsContainer {
-  margin-top: 24px;
-}
-
-.totalDonations {
-  font: 700 32px/48px var(--type-title);
-  color: var(--c8);
-}
-
-.totalDonations span {
-  font: 400 20px/30px var(--type-text);
+.linkPartner {
+  display: block;
+  margin-top: 8px;
+  font-size: 16px;
+  color: var(--c12);
 }

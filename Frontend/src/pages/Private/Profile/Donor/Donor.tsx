@@ -1,4 +1,4 @@
-import styles from './Shelter.module.css'
+import styles from './Donor.module.css'
 
 import { Header } from '../../../../components/Header'
 import { Footer } from '../../../../components/Footer'
@@ -12,14 +12,13 @@ import useAuth from '../../../../hooks/useAuth'
 
 import usePrivateApi from '../../../../hooks/useAxiosPrivate'
 import { PersonType } from '../../../../types/Person'
-import { ShelterType } from '../../../../types/Shelter'
-import { AboutShelter } from '../../../../components/Profiles/AboutShelter'
+import { DonorType } from '../../../../types/Donor'
 import { DonationsCounter } from '../../../../components/Profiles/DonationsCounter'
 
-export function ShelterProfile() {
+export function DonorProfile() {
   const { auth } = useAuth()
   const api = usePrivateApi()
-  const [user, setUser] = useState<ShelterType>()
+  const [user, setUser] = useState<DonorType>()
 
   useEffect(() => {
     var isMounted = true
@@ -43,19 +42,19 @@ export function ShelterProfile() {
     }
   }, [])
 
-  console.log(auth)
+  console.log(user)
 
   return (
     <>
       <Header />
       <div className={`${styles.container} container`}>
         <div className={styles.imageContainer}>
-          <Breadcrumb type="Abrigos" to={user?.fantasyName} />
-          <Avatar src={auth?.profilePicture} />
+          <Breadcrumb type="Doador" to={user?.name} />
+          <Avatar src={user?.profilePicture} />
         </div>
         <div className={styles.profileContainer}>
           <div className={styles.profileHeader}>
-            <h1 className={styles.userName}>{user?.fantasyName}</h1>
+            <h1 className={styles.userName}>{user?.name}</h1>
             <p className={styles.userCity}>
               {user?.street} {user?.streetNumber}, {user?.district}, CEP{' '}
               {user?.cep}, {user?.city} - {user?.uf}
@@ -71,7 +70,6 @@ export function ShelterProfile() {
             {user && <DonationsCounter />}
           </div>
 
-          {/* {user && <AboutShelter />} */}
           {user && <DonationsTable />}
         </div>
       </div>

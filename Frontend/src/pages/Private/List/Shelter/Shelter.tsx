@@ -10,8 +10,6 @@ import { Footer } from '../../../../components/Footer'
 import { Input } from '../../../../components/Forms/Input'
 import { Select } from '../../../../components/Forms/Select'
 
-import ImgShelter from '../../../../assets/avatar-shelter-img.jpg'
-
 interface IBGEUFResponse {
   sigla: string
 }
@@ -57,6 +55,16 @@ export function Shelter() {
       })
   }, [selectedUf])
 
+  function handleSelectedUf(event: ChangeEvent<HTMLSelectElement>) {
+    const uf = event.target.value
+    setSelectedUf(uf)
+  }
+
+  function handleSelectedCity(event: ChangeEvent<HTMLSelectElement>) {
+    const city = event.target.value
+    setSelectedCity(city)
+  }
+
   async function searchShelters(e: FormEvent) {
     e.preventDefault()
 
@@ -69,16 +77,6 @@ export function Shelter() {
     })
 
     setShelters(response.data)
-  }
-
-  function handleSelectedUf(event: ChangeEvent<HTMLSelectElement>) {
-    const uf = event.target.value
-    setSelectedUf(uf)
-  }
-
-  function handleSelectedCity(event: ChangeEvent<HTMLSelectElement>) {
-    const city = event.target.value
-    setSelectedCity(city)
   }
 
   return (
@@ -137,12 +135,15 @@ export function Shelter() {
         <div className={styles.shelter}>
           {shelters.map((shelter: any) => {
             return (
-              <Link to={`/perfil/abrigo/${shelter.id}`} key={shelter.id}>
+              <Link to={`/profile/shelter/${shelter.id}`} key={shelter.id}>
                 <div>
-                  <img src={ImgShelter} alt="" />
+                  <img
+                    src={`data:${shelter.profilePictureMimeType};base64,${shelter.profilePicture}`}
+                    alt=""
+                  />
                 </div>
                 <div className={styles.shelterInfo}>
-                  <p className={styles.shelterName}>{shelter.name}</p>
+                  <p className={styles.shelterName}>{shelter.fantasyName}</p>
                   <p className={styles.shelterCity}>
                     {shelter.city} - {shelter.uf}
                   </p>

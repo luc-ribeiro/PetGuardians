@@ -3,7 +3,7 @@ import styles from './Breadcrumb.module.css'
 
 interface BreadcrumbType {
   type: string
-  to: string
+  to?: string
 }
 
 export function Breadcrumb({ type, to }: BreadcrumbType) {

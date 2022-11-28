@@ -6,8 +6,6 @@ import styles from './EditProfile.module.css'
 
 import { ReactComponent as IconBack } from '../../../../../assets/icon-back.svg'
 
-import { Login } from '../../../../Login'
-
 import { Header } from '../../../../../components/Header'
 import { Footer } from '../../../../../components/Footer'
 import { Breadcrumb } from '../../../../../components/Profiles/Breadcrumb'

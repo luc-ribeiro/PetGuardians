@@ -1,28 +1,26 @@
-import { FormEvent, useContext, useEffect, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import Modal from 'react-modal'
 import { Button } from '../../../../../components/Forms/Button'
 import { Input } from '../../../../../components/Forms/Input'
 import { ReactComponent as CloseIcon } from '../../../../../assets/Close-Icon.svg'
 import { ReactComponent as EditIcon } from '../../../../../assets/Edit-Icon.svg'
 import styles from './CouponTable.module.css'
-import { api } from '../../../../../services/api'
-import { AuthContext } from '../../../../../contexts/Auth/AuthContext'
 import { Select } from '../../../../../components/Forms/Select'
-import axios from 'axios'
+import usePrivateApi from '../../../../../hooks/useAxiosPrivate'
+import useAuth from '../../../../../hooks/useAuth'
+import { PartnerType } from '../../../../../types/Partner'
 
-export function CouponTable() {
-  const auth = useContext(AuthContext)
-  const { user } = auth
-
+export function CouponTable({ user }: { user: PartnerType }) {
+  const { auth } = useAuth()
   const [modalIsOpen, setIsOpen] = useState(false)
   const [editModalIsOpen, setEditIsOpen] = useState(false)
   const [couponCode, setCouponCode] = useState('')
   const [isActive, setIsActive] = useState(false)
   const [coupons, setCoupons] = useState('')
+  const api = usePrivateApi()
 
   function openModal() {
     setIsOpen(true)
-    console.log(user?.partner)
   }
 
   function openEditModal() {
@@ -40,19 +38,23 @@ export function CouponTable() {
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
 
-    const accessToken = localStorage.getItem('authToken')
+    try {
+      await api.post(`${auth?.role}/coupon`, { code: couponCode })
+      alert('Cadastro de cupom realizado com sucesso')
+      closeModal()
+    } catch (e) {
+      console.log('Cadastro de cupom não realizado')
+    }
+  }
+
+  async function handleEditSubmit(event: FormEvent) {
+    event.preventDefault()
 
     try {
-      await api.post(
-        'partner/coupon',
-        { code: couponCode },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + accessToken,
-          },
-        },
-      )
+      await api.patch(`${auth?.role}/coupon/${coupons}`, {
+        code: couponCode,
+        active: isActive,
+      })
       alert('Cadastro de cupom realizado com sucesso')
       closeModal()
     } catch (e) {
@@ -72,31 +74,22 @@ export function CouponTable() {
         <thead>
           <tr>
             <th>Código</th>
-
             <th>Ativo</th>
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>ABRIGO2022</td>
-
-            <td>Sim</td>
-            <td>
-              <button className={styles.iconButton} onClick={openEditModal}>
-                <EditIcon />
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td>DESCONTO10</td>
-
-            <td>Não</td>
-            <td>
-              <button className={styles.iconButton} onClick={openEditModal}>
-                <EditIcon />
-              </button>
-            </td>
-          </tr>
+          {user.coupons &&
+            user.coupons.map(coupon => (
+              <tr key={coupon.id}>
+                <td>{coupon.code}</td>
+                <td>{coupon.active ? 'Ativo' : 'Inativo'}</td>
+                <td>
+                  <button className={styles.iconButton} onClick={openEditModal}>
+                    <EditIcon />
+                  </button>
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
 
@@ -141,7 +134,7 @@ export function CouponTable() {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleEditSubmit}>
             <Input
               label="Código Cupom"
               type="text"

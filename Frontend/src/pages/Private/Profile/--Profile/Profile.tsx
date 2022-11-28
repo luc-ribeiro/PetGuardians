@@ -42,23 +42,6 @@ export function Profile() {
     }
   }, [])
 
-  useEffect(() => {
-    if (user) {
-      if (user.role == 'Shelter') {
-        setUserShelter(true)
-        setType('Abrigo')
-      } else if (user.role == 'Donor') {
-        setUserDonor(true)
-        setType('Doador')
-      } else if (user.role == 'Partner') {
-        setUserPartner(true)
-        setType('Parceiro')
-      }
-    }
-  }, [])
-
-  console.log(user)
-
   return (
     <>
       <Header />

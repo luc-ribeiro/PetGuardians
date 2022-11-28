@@ -6,10 +6,10 @@ import ShelterImage3 from '../../assets/shelter-image-3.jpg'
 import ShelterImage4 from '../../assets/shelter-image-4.jpg'
 
 interface AboutProps {
-  about: string | undefined | null
-  images: []
-  type: string
-  src: string
+  about?: string | undefined | null
+  images?: []
+  type?: string
+  src?: string
 }
 
 export function AboutShelter({ about, images, type, src }: AboutProps) {

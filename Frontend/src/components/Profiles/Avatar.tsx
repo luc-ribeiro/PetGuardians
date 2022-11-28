@@ -3,15 +3,14 @@ import styles from './Avatar.module.css'
 import avatarImg from '../../assets/avatar-img.jpg'
 
 interface AvatarProps {
-  type: string
-  src: string
+  src?: string
 }
 
-export function Avatar({ type, src }: AvatarProps) {
+export function Avatar({ src }: AvatarProps) {
   return (
     <div className={styles.avatarWrapper}>
       {src ? (
-        <img src={`data:${type};base64, ${src}`} className={styles.avatarImg} />
+        <img src={src} className={styles.avatarImg} />
       ) : (
         <img src={avatarImg} className={styles.avatarImg} />
       )}

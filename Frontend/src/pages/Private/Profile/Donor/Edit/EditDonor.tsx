@@ -2,37 +2,38 @@ import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import * as yup from 'yup'
+
 import useAuth from '../../../../../hooks/useAuth'
 import usePrivateApi from '../../../../../hooks/useAxiosPrivate'
 
-import styles from './EditShelter.module.css'
+import styles from './EditDonor.module.css'
 
+import { ReactComponent as IconBack } from '../../../../../assets/icon-back.svg'
 import { Header } from '../../../../../components/Header'
+import { Footer } from '../../../../../components/Footer'
 import { Breadcrumb } from '../../../../../components/Profiles/Breadcrumb'
 import { Avatar } from '../../../../../components/Profiles/Avatar'
-import { ReactComponent as IconBack } from '../../../../../assets/icon-back.svg'
 import { Input } from '../../../../../components/Forms/Input'
 import { Select } from '../../../../../components/Forms/Select'
 import { Button } from '../../../../../components/Forms/Button'
-import { Footer } from '../../../../../components/Footer'
+
 import { Login } from '../../../../Login'
 
-import { ShelterType } from '../../../../../types/Shelter'
-import { CEPQueryResponse } from '../../../../../types/CEP'
+import { DonorType } from '../../../../../types/Donor'
 import { CNPJQueryResponse } from '../../../../../types/CNPJ'
+import { CEPQueryResponse } from '../../../../../types/CEP'
 import { IBGEUFResponse } from '../../../../../types/UF'
 import { IBGECityResponse } from '../../../../../types/City'
-import { formatCnpj } from '../../../../../utils/CNPJ'
 import { formatTelephone } from '../../../../../utils/Telephone'
 import { formatCep } from '../../../../../utils/cep'
-import { TextArea } from '../../../../../components/Forms/TextArea'
+import { formatCpf } from '../../../../../utils/cpf'
 
-export function EditShelterProfile() {
+export function EditDonorProfile() {
   const { auth } = useAuth()
   const api = usePrivateApi()
   const navigate = useNavigate()
 
-  const [user, setUser] = useState({} as ShelterType)
+  const [user, setUser] = useState({} as DonorType)
 
   const [ufs, setUfs] = useState<string[]>([])
   const [cities, setCities] = useState<string[]>([])
@@ -40,19 +41,19 @@ export function EditShelterProfile() {
   const [selectedCity, setSelectedCity] = useState('0')
   const [cleanCnpj, setCleanCnpj] = useState('')
 
-  const [images, setImages] = useState<File[]>([])
-  const [previewImages, setPreviewImages] = useState<string[]>([])
+  const [image, setImage] = useState<File[]>([])
+  const [previewImage, setPreviewImage] = useState<string[]>([])
 
   const [status, setStatus] = useState({
     type: '',
     message: '',
   })
 
-  const [shelter, setShelter] = useState({
-    fantasyName: user.fantasyName,
+  const [donor, setDonor] = useState({
     name: user.name,
-    gcg: user.gcg,
     telephone: user.telephone,
+    gcg: user.gcg,
+    birthday: user.birthday,
     cep: user.cep,
     street: user.street,
     streetNumber: user.streetNumber,
@@ -60,11 +61,9 @@ export function EditShelterProfile() {
     complement: user.complement,
     uf: user.uf,
     city: user.city,
-    about: user.about,
-
-    keyPix: user.keyPix,
-
     profilePicture: user.profilePicture,
+    // image: user.image,
+    // newImage: '',
   })
 
   useEffect(() => {
@@ -90,7 +89,7 @@ export function EditShelterProfile() {
   }, [])
 
   const valueInput = (e: any) =>
-    setShelter({ ...shelter, [e.target.name]: e.target.value })
+    setDonor({ ...donor, [e.target.name]: e.target.value })
 
   useEffect(() => {
     if (cleanCnpj.length == 14) {
@@ -99,13 +98,13 @@ export function EditShelterProfile() {
           `https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`,
         )
         .then(response => {
-          setShelter({
-            ...shelter,
+          setDonor({
+            ...donor,
             ['name']: response.data.razao_social,
           } as any)
         })
     }
-  }, [shelter.gcg])
+  }, [donor.gcg])
 
   useEffect(() => {
     if (user.cep?.length == 9) {
@@ -114,8 +113,8 @@ export function EditShelterProfile() {
           `https://brasilapi.com.br/api/cep/v2/${user.cep}`,
         )
         .then(response => {
-          setShelter({
-            ...shelter,
+          setDonor({
+            ...donor,
             ['street']: response.data.street,
             ['district']: response.data.neighborhood,
             ['uf']: response.data.state,
@@ -125,7 +124,7 @@ export function EditShelterProfile() {
           setSelectedCity(response.data.city)
         })
     }
-  }, [shelter.cep])
+  }, [donor.cep])
 
   useEffect(() => {
     axios
@@ -153,21 +152,19 @@ export function EditShelterProfile() {
       })
   }, [selectedUf])
 
-  function handleCnpjChange(event: ChangeEvent<HTMLInputElement>) {
-    const [cleanCnpj, formattedCnpj] = formatCnpj(event.target.value)
-
-    setCleanCnpj(cleanCnpj)
-    setShelter({ ...shelter, ['gcg']: formattedCnpj })
+  function handleCpfChange(event: ChangeEvent<HTMLInputElement>) {
+    const formattedCpf = formatCpf(event.target.value)
+    setDonor({ ...donor, ['gcg']: formattedCpf })
   }
 
   function handleTelephoneChange(event: ChangeEvent<HTMLInputElement>) {
     const formattedTelephone = formatTelephone(event.target.value)
-    setShelter({ ...shelter, ['telephone']: formattedTelephone })
+    setDonor({ ...donor, ['telephone']: formattedTelephone })
   }
 
   function handleCepChange(event: ChangeEvent<HTMLInputElement>) {
     const formattedCep = formatCep(event.target.value)
-    setShelter({ ...shelter, ['cep']: formattedCep })
+    setDonor({ ...donor, ['cep']: formattedCep })
   }
 
   function handleSelectedUf(event: ChangeEvent<HTMLSelectElement>) {
@@ -180,18 +177,18 @@ export function EditShelterProfile() {
     setSelectedCity(city)
   }
 
-  function handleSelectImages(event: ChangeEvent<HTMLInputElement>) {
+  function handleSelectImage(event: ChangeEvent<HTMLInputElement>) {
     if (!event.target.files) {
       return
     }
-    const selectedImages = Array.from(event.target.files)
+    const selectedImage = Array.from(event.target.files)
 
-    setImages(selectedImages)
+    setImage(selectedImage)
 
-    const selectedImagesPreview = selectedImages.map(image => {
+    const selectedImagePreview = selectedImage.map(image => {
       return URL.createObjectURL(image)
     })
-    setPreviewImages(selectedImagesPreview)
+    setPreviewImage(selectedImagePreview)
   }
 
   async function validate() {
@@ -207,7 +204,7 @@ export function EditShelterProfile() {
     })
 
     try {
-      await schema.validate(shelter)
+      await schema.validate(donor)
       return true
     } catch (err) {
       setStatus({
@@ -239,7 +236,7 @@ export function EditShelterProfile() {
 
     const data = new FormData()
 
-    Object.entries(shelter).forEach(([key, value]) => {
+    Object.entries(donor).forEach(([key, value]) => {
       if (['gcg', 'cep', 'telephone'].includes(key)) {
         value = value.replace(/\D/g, '')
       }
@@ -249,7 +246,7 @@ export function EditShelterProfile() {
     data.append('profilePicture', image[0])
 
     try {
-      await api.patch('shelter', data)
+      await api.patch('donor', data)
       alert('Cadastro atualizado com sucesso')
       navigate(`profile/${auth?.role}/${auth?.id}`)
     } catch (e) {
@@ -266,9 +263,9 @@ export function EditShelterProfile() {
       <Header />
       <div className={`${styles.container} container`}>
         <div className={styles.imageContainer}>
-          <Breadcrumb type="Abrigos" to={user.fantasyName} />
-
-          <Avatar src={auth?.profilePicture} />
+          <Breadcrumb type="Doador" to={user.name} />
+          <Avatar />
+          <button className={styles.button}>Trocar foto</button>
         </div>
         <div className={styles.profileContainer}>
           <div className={styles.profileHeader}>
@@ -277,33 +274,33 @@ export function EditShelterProfile() {
             </Link>
             <h1>Editar perfil</h1>
           </div>
+
           <form className={styles.form} onSubmit={handleSubmit}>
-            <div className={styles.row}>
-              <Input
-                label="Razão Social"
-                type="text"
-                name="name"
-                onChange={valueInput}
-                value={shelter.name}
-              />
+            <Input
+              label="Nome completo"
+              type="text"
+              name="name"
+              value={donor.name}
+              onChange={valueInput}
+            />
 
-              <Input
-                label="CNPJ"
-                type="text"
-                name="gcg"
-                width="100%"
-                onChange={handleCnpjChange}
-                value={shelter.gcg}
-              />
-            </div>
+            <Input
+              label="CPF"
+              type="text"
+              width="100%"
+              name="gcg"
+              value={donor.gcg}
+              onChange={handleCpfChange}
+            />
 
             <div className={styles.row}>
               <Input
-                label="Nome fantasia"
-                type="text"
-                name="fantasyName"
+                label="Data de nascimento"
+                type="date"
+                width="40%"
+                name="birthday"
+                value={donor.birthday}
                 onChange={valueInput}
-                value={shelter.fantasyName}
               />
 
               <Input
@@ -311,7 +308,7 @@ export function EditShelterProfile() {
                 type="text"
                 name="telephone"
                 onChange={handleTelephoneChange}
-                value={shelter.telephone}
+                value={donor.telephone}
               />
             </div>
 
@@ -321,15 +318,15 @@ export function EditShelterProfile() {
               <Input
                 label="CEP"
                 type="text"
-                name="cep"
                 width="28%"
-                onChange={handleCepChange}
-                value={shelter.cep}
+                name="cep"
+                value={donor.cep}
+                onChange={valueInput}
               />
 
               <Select
-                name="uf"
                 label="UF"
+                name="UF"
                 value={selectedUf}
                 onChange={handleSelectedUf}
                 options={ufs.map(uf => ({
@@ -340,8 +337,8 @@ export function EditShelterProfile() {
               />
 
               <Select
-                name="city"
                 label="Cidade"
+                name="city"
                 value={selectedCity}
                 onChange={handleSelectedCity}
                 options={cities.map(city => ({
@@ -357,8 +354,8 @@ export function EditShelterProfile() {
                 label="Endereço"
                 type="text"
                 name="street"
+                value={donor.street}
                 onChange={valueInput}
-                value={shelter.street}
               />
             </div>
 
@@ -366,66 +363,49 @@ export function EditShelterProfile() {
               <Input
                 label="Número"
                 type="text"
-                name="streetNumber"
                 width="30%"
+                name="streetNumber"
+                value={donor.streetNumber}
                 onChange={valueInput}
-                value={shelter.streetNumber}
               />
 
               <Input
                 label="Bairro"
                 type="text"
                 name="district"
+                value={donor.district}
                 onChange={valueInput}
-                value={shelter.district}
               />
 
               <Input
                 label="Complemento"
                 type="text"
                 name="complement"
+                value={donor.complement}
                 onChange={valueInput}
-                value={shelter.complement}
               />
             </div>
 
             <div className={styles.divider}></div>
-
-            <div className={styles.row}>
-              <Input
-                label="Chave PIX"
-                type="text"
-                name="keyPix"
-                onChange={valueInput}
-                value={shelter.keyPix}
-              />
-            </div>
-
-            <div className={styles.divider}></div>
-
-            <TextArea
-              label="Sobre"
-              name="about"
-              value={shelter.about}
-              onChange={valueInput}
-            />
 
             <div className="input-block">
               <label className={styles.label} htmlFor="images">
-                Fotos do abrigo
+                Foto de perfil
               </label>
 
               <div className={styles.imageContainer}>
-                {previewImages.map(image => {
+                {previewImage.map(image => {
                   return <img key={image} src={image} alt=""></img>
                 })}
-                <label htmlFor="image[]" className={styles.newImage}>
-                  +
-                </label>
+                {previewImage.length < 1 && (
+                  <label htmlFor="image[]" className={styles.newImage}>
+                    +
+                  </label>
+                )}
               </div>
               <input
                 multiple
-                onChange={handleSelectImages}
+                onChange={handleSelectImage}
                 type="file"
                 name="image"
                 accept=".jpeg, .png, .jpg"

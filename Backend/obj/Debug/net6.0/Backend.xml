@@ -4,7 +4,7 @@
         <name>Backend</name>
     </assembly>
     <members>
-        <member name="M:Backend.Controllers.AuthController.Login(Backend.DTO.LoginDto)">
+        <member name="M:Backend.Controllers.AuthController.LogIn(Backend.DTO.LoginDto)">
             <summary>
             Loga no sistema e cria token de acesso e de renovação
             </summary>

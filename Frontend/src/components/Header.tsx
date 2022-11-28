@@ -2,14 +2,42 @@ import styles from './Header.module.css'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 
 import { ReactComponent as Logo } from '../assets/logo.svg'
-import imgPlaceholder from '../assets/avatar-thumbnail.jpg'
+import imgPlaceholder from '../assets/avatar-img.jpg'
 import useLogout from '../hooks/useLogout'
 import useAuth from '../hooks/useAuth'
+import usePrivateApi from '../hooks/useAxiosPrivate'
+import { useEffect, useState } from 'react'
+import { PersonType } from '../types/Person'
 
 export function Header() {
-  const logout = useLogout()
   const { auth } = useAuth()
+  const api = usePrivateApi()
   const navigate = useNavigate()
+  const logout = useLogout()
+
+  const [user, setUser] = useState({} as PersonType)
+
+  useEffect(() => {
+    var isMounted = true
+    const abortController = new AbortController()
+
+    const fetchProfile = async () => {
+      try {
+        const response = await api.get(
+          `${auth?.role.toLowerCase()}/${auth?.id}`,
+          { signal: abortController.signal },
+        )
+        isMounted && setUser(response.data)
+      } catch (error) {}
+    }
+
+    fetchProfile()
+
+    return () => {
+      isMounted = false
+      abortController.abort()
+    }
+  }, [])
 
   async function handleLogout() {
     await logout()
@@ -28,25 +56,12 @@ export function Header() {
             <NavLink to="/quem-somos">Quem somos</NavLink>
           </li>
           <li>
-            <NavLink to="/parceiros">Parceiros</NavLink>
+            <NavLink to="/partners">Parceiros</NavLink>
           </li>
           <li>
-            <NavLink to="/abrigos">Abrigos</NavLink>
+            <NavLink to="/shelters">Abrigos</NavLink>
           </li>
         </ul>
-
-        {/* <form className={styles.navSearch}>
-					<input
-						type="text"
-						name="search"
-						id="search"
-						placeholder="Pesquisar"
-						className={styles.searchInput}
-					/>
-					<button className={styles.buttonSearch} type="submit">
-						<IconSearch />
-					</button>
-				</form> */}
 
         {!auth ? (
           <div className={styles.navLogin}>
@@ -58,7 +73,7 @@ export function Header() {
           </div>
         ) : (
           <div className={styles.navLogin}>
-            <Link to="/meuperfil">
+            <Link to={`/profile/${auth.role}/${auth.id}`}>
               <div className={styles.userContainer}>
                 <img
                   className={styles.userAvatar}
