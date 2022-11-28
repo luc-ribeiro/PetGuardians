@@ -22,9 +22,9 @@ export function AboutShelter({ about, images, type, src }: AboutProps) {
       </p>
 
       <div className={styles.imageContainer}>
-        {images.forEach(image => (
+        {/* {images.forEach(image => (
           <img src={`data:${type};base64, ${src}`} alt="" />
-        ))}
+        ))} */}
       </div>
     </div>
   )

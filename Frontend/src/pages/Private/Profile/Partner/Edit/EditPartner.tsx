@@ -65,6 +65,9 @@ export function EditPartnerProfile() {
     profilePicture: user.profilePicture,
   })
 
+  console.log(user)
+  console.log(partner)
+
   useEffect(() => {
     var isMounted = true
     const abortController = new AbortController()
@@ -75,7 +78,7 @@ export function EditPartnerProfile() {
           `${auth?.role.toLowerCase()}/${auth?.id}`,
           { signal: abortController.signal },
         )
-        isMounted && setUser(response.data)
+        setUser(response.data)
       } catch (error) {}
     }
 

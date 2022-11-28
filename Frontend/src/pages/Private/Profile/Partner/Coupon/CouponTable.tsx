@@ -12,12 +12,12 @@ import { PartnerType } from '../../../../../types/Partner'
 
 export function CouponTable({ user }: { user: PartnerType }) {
   const { auth } = useAuth()
+  const api = usePrivateApi()
   const [modalIsOpen, setIsOpen] = useState(false)
   const [editModalIsOpen, setEditIsOpen] = useState(false)
   const [couponCode, setCouponCode] = useState('')
   const [isActive, setIsActive] = useState(false)
   const [coupons, setCoupons] = useState('')
-  const api = usePrivateApi()
 
   function openModal() {
     setIsOpen(true)
@@ -35,6 +35,14 @@ export function CouponTable({ user }: { user: PartnerType }) {
     setEditIsOpen(false)
   }
 
+  function handleChange({ target }: any) {
+    if (target.checked) {
+      setIsActive(true)
+    } else {
+      setIsActive(false)
+    }
+  }
+
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
 
@@ -47,18 +55,18 @@ export function CouponTable({ user }: { user: PartnerType }) {
     }
   }
 
-  async function handleEditSubmit(event: FormEvent) {
+  async function handleEditSubmit(event: any) {
     event.preventDefault()
 
     try {
-      await api.patch(`${auth?.role}/coupon/${coupons}`, {
-        code: couponCode,
-        active: isActive,
+      await api.patch(`${auth?.role}/coupon/${event.target[0].value}`, {
+        code: event.target[1].value,
+        active: event.target[2].value,
       })
-      alert('Cadastro de cupom realizado com sucesso')
+      alert('Cupom alterado com sucesso')
       closeModal()
     } catch (e) {
-      console.log('Cadastro de cupom não realizado')
+      console.log('Cupom não alterado')
     }
   }
 
@@ -80,15 +88,59 @@ export function CouponTable({ user }: { user: PartnerType }) {
         <tbody>
           {user.coupons &&
             user.coupons.map(coupon => (
-              <tr key={coupon.id}>
-                <td>{coupon.code}</td>
-                <td>{coupon.active ? 'Ativo' : 'Inativo'}</td>
-                <td>
-                  <button className={styles.iconButton} onClick={openEditModal}>
-                    <EditIcon />
-                  </button>
-                </td>
-              </tr>
+              <>
+                <tr key={coupon.id}>
+                  <td>{coupon.code}</td>
+                  <td>{coupon.active ? 'Ativo' : 'Inativo'}</td>
+                  <td>
+                    <button
+                      className={styles.iconButton}
+                      onClick={openEditModal}
+                    >
+                      <EditIcon />
+                    </button>
+                  </td>
+                </tr>
+                {console.log(coupon)}
+
+                <Modal
+                  isOpen={editModalIsOpen}
+                  onRequestClose={closeEditModal}
+                  className={styles.modal}
+                  ariaHideApp={false}
+                >
+                  <div className={styles.headerModal}>
+                    <h2>Editar Cupom</h2>
+                    <button
+                      className={styles.iconButton}
+                      onClick={closeEditModal}
+                    >
+                      <CloseIcon />
+                    </button>
+                  </div>
+
+                  <form onSubmit={handleEditSubmit}>
+                    <input type="hidden" name="id" value={coupon.id} />
+                    <Input
+                      label="Código Cupom"
+                      type="text"
+                      name="code"
+                      onChange={event => setCouponCode(event.target.value)}
+                      value={couponCode}
+                    />
+                    <label>
+                      <input
+                        type="checkbox"
+                        value="active"
+                        checked={isActive}
+                        onChange={handleChange}
+                      />
+                      Ativo
+                    </label>
+                    <Button type="submit">Alterar</Button>
+                  </form>
+                </Modal>
+              </>
             ))}
         </tbody>
       </table>
@@ -111,8 +163,8 @@ export function CouponTable({ user }: { user: PartnerType }) {
             <Input
               label="Código Cupom"
               type="text"
-              name="couponCode"
-              onChange={({ target }) => setCouponCode(target.value)}
+              name="code"
+              onChange={event => setCouponCode(event.target.value)}
               value={couponCode}
             />
             <Button type="submit">Cadastrar</Button>
@@ -120,43 +172,7 @@ export function CouponTable({ user }: { user: PartnerType }) {
         </Modal>
       </div>
 
-      <div>
-        <Modal
-          isOpen={editModalIsOpen}
-          onRequestClose={closeEditModal}
-          className={styles.modal}
-          ariaHideApp={false}
-        >
-          <div className={styles.headerModal}>
-            <h2>Editar Cupom</h2>
-            <button className={styles.iconButton} onClick={closeEditModal}>
-              <CloseIcon />
-            </button>
-          </div>
-
-          <form onSubmit={handleEditSubmit}>
-            <Input
-              label="Código Cupom"
-              type="text"
-              name="couponCode"
-              onChange={({ target }) => setCouponCode(target.value)}
-              value={couponCode}
-            />
-
-            <Select
-              name="active"
-              label="Ativo"
-              value={isActive}
-              onChange={({ target }) => setIsActive(target.value)}
-              options={[
-                { value: true, label: 'Sim' },
-                { value: false, label: 'Não' },
-              ]}
-            />
-            <Button type="submit">Alterar</Button>
-          </form>
-        </Modal>
-      </div>
+      <div></div>
     </div>
   )
 }
