@@ -24,13 +24,15 @@ import { IBGEUFResponse } from '../../../../../types/UF'
 import { IBGECityResponse } from '../../../../../types/City'
 import { formatTelephone, formatCep, formatCpf, cleanFormat, formatDate } from '../../../../../utils/stringFormatter'
 import { CitiesType } from '../../../../../types/Cities'
+import moment from 'moment'
 
 export function EditDonorProfile() {
   const { auth, setAuth } = useAuth();
   const profileRef = useRef<HTMLInputElement>(null);
-  const api = usePrivateApi()
-  const navigate = useNavigate()
+  const api = usePrivateApi();
+  const navigate = useNavigate();
 
+  const [name, setName] = useState('');
   const [donor, setDonor] = useState({} as DonorType)
   const [ufs, setUfs] = useState<string[]>([])
   const [cities, setCities] = useState<CitiesType>({});
@@ -49,7 +51,8 @@ export function EditDonorProfile() {
     const fetchProfile = async () => {
       try {
         const response = await api.get(`donor/${auth?.id}`, { signal: abort.signal });
-        isMounted && setDonor(response.data);
+        isMounted && setDonor({ ...response.data, birthday: moment(response.data.birthday).format('YYYY-MM-DD') });
+        isMounted && setName(response.data.name);
       } catch (error) { }
     }
     const fetchEstados = async () => {
@@ -171,7 +174,7 @@ export function EditDonorProfile() {
     data.append('complement', donor.complement);
     data.append('telephone', donor.telephone);
     data.append('profilePicture', profilePicture as Blob);
-    
+
     data.append('fullName', donor.name);
     data.append('birthday', donor.birthday);
 
@@ -190,7 +193,7 @@ export function EditDonorProfile() {
       <Header />
       <div className={`${styles.container} container`}>
         <div className={styles.imageContainer}>
-          <Breadcrumb type="Doador" to={donor.name} />
+          <Breadcrumb type="Doador" to={name} />
           <Avatar src={previewImage || pfp} />
           <input
             ref={profileRef}
@@ -226,6 +229,7 @@ export function EditDonorProfile() {
               name="gcg"
               value={cpf || formatCpf(donor.gcg || '')}
               onChange={handleCpfChange}
+              disabled={true}
             />
 
             <div className={styles.row}>
@@ -234,8 +238,9 @@ export function EditDonorProfile() {
                 type="date"
                 width="40%"
                 name="birthday"
-                value={donor.birthday || donor.birthday ? formatDate(new Date(donor.birthday)) : formatDate(new Date())}
+                value={donor.birthday}
                 onChange={handleInputChange}
+                disabled={true}
               />
 
               <Input
@@ -338,7 +343,7 @@ export function EditDonorProfile() {
               ''
             )}
 
-            <Button type="submit">Cadastrar</Button>
+            <Button type="submit">Atualizar</Button>
           </form>
         </div>
       </div>

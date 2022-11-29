@@ -103,7 +103,31 @@ public class DonorController : ControllerBase
     [AllowAnonymous]
     public ActionResult Read(int id)
     {
-        var _donor = _context.Donors.Where(s => s.Id == id && s.Active).Include(s => s.Donations).ThenInclude(d => d.Shelter).FirstOrDefault();
+        var _donor = _context.Donors.Where(d => d.Id == id && d.Active).Select(d => new
+        {
+            id = d.Id,
+            name = d.Name,
+            gcg = d.GCG,
+            telephone = d.Telephone,
+            cep = d.CEP,
+            uf = d.UF,
+            city = d.City,
+            street = d.Street,
+            streetNumber = d.StreetNumber,
+            district = d.District,
+            complement = d.Complement,
+            email = d.Email,
+            profilePicture = d.ProfilePicture,
+            profilePictureMimeType = d.ProfilePictureMimeType,
+            Donations = d.Donations.Select(d => new
+            {
+                shelter = d.Shelter.Name,
+                approved = d.Approved,
+                approvedAt = d.ApprovedAt,
+                value = d.Value,
+                keyPIX = d.KeyPix
+            }).ToList()
+        });
 
         if (_donor == null)
         {

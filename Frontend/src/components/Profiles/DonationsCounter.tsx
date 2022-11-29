@@ -3,12 +3,13 @@ import styles from './DonationsCounter.module.css'
 
 interface DonationCounterProps {
   donations: DonationType[]
+  type: 'recebidas' | 'realizadas'
 }
 
-export function DonationsCounter({ donations }: DonationCounterProps) {
+export function DonationsCounter({ donations, type }: DonationCounterProps) {
   return (
     <p className={styles.totalDonations}>
-      {donations?.length ?? '0'} <span>doações recebidas</span>
+      {donations?.length ?? '0'} <span>doações {type}</span>
     </p>
   )
 }
