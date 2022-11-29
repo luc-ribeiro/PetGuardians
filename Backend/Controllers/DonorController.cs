@@ -125,8 +125,9 @@ public class DonorController : ControllerBase
                 approved = d.Approved,
                 approvedAt = d.ApprovedAt,
                 value = d.Value / 100,
-                keyPIX = d.KeyPix
-            }).ToList()
+                keyPIX = d.KeyPix,
+                createdAt = d.CreatedAt
+            }).OrderByDescending(d => d.createdAt).ToList()
         }).FirstOrDefault();
 
         if (_donor == null)
