@@ -60,7 +60,7 @@ export function ShelterProfile() {
             <div className={styles.buttonsContainer}>
               {auth?.id == user?.id && (
                 <Link className={styles.button} to="edit">
-                  Editar perfil profile
+                  Editar perfil
                 </Link>
               )}
             </div>

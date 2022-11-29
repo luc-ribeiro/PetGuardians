@@ -1,10 +1,14 @@
 import { DonationType } from '../../types/Donation'
 import styles from './DonationsCounter.module.css'
 
-export function DonationsCounter(total: DonationType[]) {
+interface DonationCounterProps {
+  donations: DonationType[]
+}
+
+export function DonationsCounter({ donations }: DonationCounterProps) {
   return (
     <p className={styles.totalDonations}>
-      {total.length ?? '0'} <span>doações recebidas</span>
+      {donations?.length ?? '0'} <span>doações recebidas</span>
     </p>
   )
 }
