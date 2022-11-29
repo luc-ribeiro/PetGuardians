@@ -13,6 +13,7 @@ import { PersonType } from '../../../../types/Person'
 import { CouponTable } from './Coupon/CouponTable'
 import { PartnerType } from '../../../../types/Partner'
 import { CouponType } from '../../../../types/Coupon'
+import { formatCep } from '../../../../utils/stringFormatter'
 
 export function PartnerProfile() {
   const { auth } = useAuth()
@@ -92,7 +93,7 @@ export function PartnerProfile() {
             <h1 className={styles.userName}>{user?.fantasyName}</h1>
             <p className={styles.userCity}>
               {user?.street} {user?.streetNumber}, {user?.district}, CEP{' '}
-              {user?.cep}, {user?.city} - {user?.uf}
+              {formatCep(user?.cep || '')}, {user?.city} - {user?.uf}
               <Link className={styles.linkPartner} to={user?.linkSite || ''}>
                 Site: {user?.linkSite}
               </Link>

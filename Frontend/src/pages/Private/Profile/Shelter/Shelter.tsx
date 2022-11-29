@@ -15,6 +15,7 @@ import { ShelterType } from '../../../../types/Shelter'
 import { AboutShelter } from '../../../../components/Profiles/AboutShelter'
 import { DonationsCounter } from '../../../../components/Profiles/DonationsCounter'
 import { DonationType } from '../../../../types/Donation'
+import { formatCep } from '../../../../utils/stringFormatter'
 
 export function ShelterProfile() {
   const { auth } = useAuth()
@@ -90,7 +91,7 @@ export function ShelterProfile() {
             <h1 className={styles.userName}>{user?.fantasyName}</h1>
             <p className={styles.userCity}>
               {user?.street} {user?.streetNumber}, {user?.district}, CEP{' '}
-              {user?.cep}, {user?.city} - {user?.uf}
+              {formatCep(user?.cep || '')}, {user?.city} - {user?.uf}
             </p>
 
             <div className={styles.buttonsContainer}>

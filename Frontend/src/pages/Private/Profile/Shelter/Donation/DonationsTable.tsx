@@ -28,12 +28,13 @@ export function DonationsTable({ donations, onSuccess }: DonationTableProps) {
       return
     }
 
-    const value = Number(donation?.value) * 100
+    const value = Number(donation?.value)
 
     try {
       await api.patch(`/donation/${donation?.id}`, value)
       alert('Doação aprovada com sucesso')
       onSuccess(donation)
+      setDonation(null)
     } catch (e) {
       console.log('Doação não aprovada')
     }
@@ -47,6 +48,7 @@ export function DonationsTable({ donations, onSuccess }: DonationTableProps) {
         <thead>
           <tr>
             <th></th>
+            <th>Nome do doador</th>
             <th>Data</th>
             <th>Valor</th>
             <th>Status</th>
@@ -59,9 +61,9 @@ export function DonationsTable({ donations, onSuccess }: DonationTableProps) {
             donations.map(donation => (
               <tr key={donation.id}>
                 <td>{donation.id}</td>
-                {/* <td>{donation.donor.name}</td> */}
+                <td>{donation.donor}</td>
                 <td>{moment(donation.createdAt).format('DD/MM/YYYY HH:mm')}</td>
-                <td>{donation.value / 100}</td>
+                <td>R$ {donation.value}</td>
                 <td>{donation.approved ? 'Aprovada' : 'Pendente'}</td>
                 <td>
                   <button

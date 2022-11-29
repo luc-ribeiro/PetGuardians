@@ -9,11 +9,6 @@ interface DonationCounterProps {
 }
 
 export function DonationsCounter({ donations, type }: DonationCounterProps) {
-<<<<<<< HEAD
-  const { auth } = useAuth()
-
-=======
->>>>>>> origin/Backend-Dev
   return (
     <p className={styles.totalDonations}>
       {donations?.length ?? '0'} <span>doações {type}</span>

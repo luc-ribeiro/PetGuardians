@@ -7,6 +7,8 @@ interface DonationTableProps {
 }
 
 export function DonationsTable({ donations }: DonationTableProps) {
+  console.log(donations)
+
   return (
     <div className={styles.tableContainer}>
       <h3>Últimas doações</h3>
@@ -15,7 +17,7 @@ export function DonationsTable({ donations }: DonationTableProps) {
         <thead>
           <tr>
             <th></th>
-            <th>Nome</th>
+            <th>Nome do abrigo</th>
             <th>Data</th>
             <th>Valor</th>
           </tr>
@@ -30,9 +32,9 @@ export function DonationsTable({ donations }: DonationTableProps) {
                 donation.approved && (
                   <tr>
                     <td>{donation.id}</td>
-                    {/* <td>{donation.shelter.name}</td> */}
+                    <td>{donation.shelter}</td>
                     <td>
-                      {moment(donation.createdAt).format('DD/MM/YYYY HH:mm')}
+                      {moment(donation.approvedAt).format('DD/MM/YYYY HH:mm')}
                     </td>
                     <td>R$ {donation.value}</td>
                   </tr>
