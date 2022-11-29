@@ -122,7 +122,14 @@ public class ShelterController : ControllerBase
             profilePicture = s.ProfilePicture,
             profilePictureMimeType = s.ProfilePictureMimeType,
             fantasyName = s.FantasyName,
-            Donations = s.Donations.Select(d => new
+            about = s.About,
+            keyPIX = s.KeyPIX,
+            images = s.Images.Select(i => new{
+                id = i.Id,
+                mimeType = i.MimeType,
+                base64 = i.Base64
+            }),
+            donations = s.Donations.Select(d => new
             {
                 id = d.Id,
                 donor = d.Donor.Name,
