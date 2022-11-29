@@ -281,6 +281,7 @@ export function EditPartnerProfile() {
                 name="gcg"
                 value={cnpj || formatCnpj(partner.gcg || '')}
                 onChange={handleCnpjChange}
+                disabled={true}
               />
             </div>
 
