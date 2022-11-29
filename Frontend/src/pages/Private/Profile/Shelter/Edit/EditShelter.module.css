@@ -72,6 +72,26 @@
   gap: 16px;
 }
 
+
+
+.form .imageContainer div{
+  position: relative;
+}
+.form .imageContainer .remove::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.24);
+  background-image: url('/src/assets/delete.svg');
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 20px;
+
+}
+
 .form .imageContainer img {
   width: 100%;
   height: 90px;

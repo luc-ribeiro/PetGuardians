@@ -15,86 +15,76 @@ import { Input } from '../../../../../components/Forms/Input'
 import { Select } from '../../../../../components/Forms/Select'
 import { Button } from '../../../../../components/Forms/Button'
 import { Footer } from '../../../../../components/Footer'
-import { Login } from '../../../../Login'
 
 import { PartnerType } from '../../../../../types/Partner'
 import { CEPQueryResponse } from '../../../../../types/CEP'
 import { CNPJQueryResponse } from '../../../../../types/CNPJ'
 import { IBGEUFResponse } from '../../../../../types/UF'
 import { IBGECityResponse } from '../../../../../types/City'
-import { formatCnpj } from '../../../../../utils/CNPJ'
-import { formatTelephone } from '../../../../../utils/Telephone'
-import { formatCep } from '../../../../../utils/cep'
+import { CitiesType } from '../../../../../types/Cities'
+import { cleanFormat, formatCep, formatCnpj, formatTelephone } from '../../../../../utils/stringFormatter'
 
 
-interface Cities {
-  [key: string]: string[]
-}
+
 export function EditPartnerProfile() {
-  const { auth } = useAuth();
+  const { auth, setAuth } = useAuth();
   const api = usePrivateApi();
   const profileRef = useRef<HTMLInputElement>(null);
-
   const navigate = useNavigate();
 
   const [partner, setPartner] = useState({} as PartnerType);
-
   const [ufs, setUfs] = useState<string[]>([]);
-  const [cities, setCities] = useState<Cities>({});
-
-  const [cleanCnpj, setCleanCnpj] = useState('');
-  const [cleanCep, setCleanCep] = useState('');
+  const [cities, setCities] = useState<CitiesType>({});
+  const [cep, setCep] = useState('');
+  const [cnpj, setCnpj] = useState('');
+  const [telephone, setTelephone] = useState('');
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
-
   const [previewImage, setPreviewImage] = useState('');
+  const [status, setStatus] = useState({ type: '', message: '' });
 
-  const [status, setStatus] = useState({
-    type: '',
-    message: '',
-  })
+  const pfp = partner.profilePicture ? `data:${partner.profilePictureMimeType};base64,${partner.profilePicture}` : undefined;
 
   useEffect(() => {
     var isMounted = true
-    const abortController = new AbortController();
+    const abort = new AbortController();
     const fetchProfile = async () => {
       try {
-        const response = await api.get(`partner/${auth?.id}`, { signal: abortController.signal })
+        const response = await api.get(`partner/${auth?.id}`, { signal: abort.signal });
         isMounted && setPartner(response.data);
       } catch (error) { }
     }
     const fetchEstados = async () => {
-      const response = (await axios.get<IBGEUFResponse[]>('https://servicodados.ibge.gov.br/api/v1/localidades/estados', { signal: abortController.signal })).data;
+      const response = (await axios.get<IBGEUFResponse[]>('https://servicodados.ibge.gov.br/api/v1/localidades/estados', { signal: abort.signal })).data;
       isMounted && setUfs(response.map(uf => uf.sigla));
     }
     fetchProfile();
     fetchEstados();
     return () => {
       isMounted = false;
-      abortController.abort();
+      abort.abort();
     }
-  }, [])
+  }, []);
 
-  const valueInput = (e: any) => setPartner({ ...partner, [e.target.name]: e.target.value })
-
+  /* Consultar Razão Social e Nome Fantasia */
   useEffect(() => {
     var isMounted = true;
     const abort = new AbortController();
     const fetchRazaoSocial = async () => {
-      const response = (await axios.get<CNPJQueryResponse>(`https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`, { signal: abort.signal })).data;
+      const response = (await axios.get<CNPJQueryResponse>(`https://brasilapi.com.br/api/cnpj/v1/${cleanFormat(cnpj)}`, { signal: abort.signal })).data;
       isMounted && setPartner(prev => ({ ...prev, name: response?.razao_social, fantasyName: response?.nome_fantasia }));
     }
-    cleanCnpj.length == 14 && fetchRazaoSocial();
+    cleanFormat(cnpj).length == 14 && fetchRazaoSocial();
     return () => {
       isMounted = false;
       abort.abort();
     }
-  }, [cleanCnpj])
-
+  }, [cnpj]);
+  /* Consultar Endereço */
   useEffect(() => {
     var isMounted = true;
     const abort = new AbortController();
     const fetchAddress = async () => {
-      const response = (await axios.get<CEPQueryResponse>(`https://brasilapi.com.br/api/cep/v2/${cleanCep}`, { signal: abort.signal })).data;
+      const response = (await axios.get<CEPQueryResponse>(`https://brasilapi.com.br/api/cep/v2/${cleanFormat(cep)}`, { signal: abort.signal })).data;
       isMounted && setPartner(prev => ({
         ...prev,
         street: response.street,
@@ -103,13 +93,13 @@ export function EditPartnerProfile() {
         city: response.city
       }));
     }
-    cleanCep.length == 8 && fetchAddress();
+    cleanFormat(cep).length == 8 && fetchAddress();
     return () => {
       isMounted = false;
       abort.abort();
     }
-  }, [cleanCep]);
-
+  }, [cep]);
+  /* Consultar Cidades */
   useEffect(() => {
     if (!partner.uf || cities[partner.uf]) {
       return;
@@ -127,31 +117,10 @@ export function EditPartnerProfile() {
     }
   }, [partner.uf]);
 
-  function handleCnpjChange(event: ChangeEvent<HTMLInputElement>) {
-    const [cleanCnpj, formattedCnpj] = formatCnpj(event.target.value)
-    setCleanCnpj(cleanCnpj)
-    setPartner({ ...partner, gcg: formattedCnpj })
-  }
-  function handleCepChange(event: ChangeEvent<HTMLInputElement>) {
-    const [cleanCep, formatetedCep] = formatCep(event.target.value)
-    setCleanCep(cleanCep);
-    setPartner(prev => ({ ...prev, cep: formatetedCep }));
-  }
-
-  function handleTelephoneChange(event: ChangeEvent<HTMLInputElement>) {
-    const formattedTelephone = formatTelephone(event.target.value)
-    setPartner({ ...partner, ['telephone']: formattedTelephone })
-  }
-
-  function handleSelectedUf(event: ChangeEvent<HTMLSelectElement>) {
-    setPartner(prev => ({ ...prev, uf: event.target.value }));
-  }
-
-  function handleSelectedCity(event: ChangeEvent<HTMLSelectElement>) {
-    setPartner(prev => ({ ...prev, city: event.target.value }))
-  }
-
-  function handleSelectImage(event: ChangeEvent<HTMLInputElement>) {
+  const handleInputChange = (e: any) => {
+    setPartner(prev => ({ ...prev, [e.target.name]: e.target.value }))
+  };
+  const handleProfilePicture = (event: ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) {
       return
     }
@@ -159,18 +128,27 @@ export function EditPartnerProfile() {
     if (selectedImage) {
       setProfilePicture(selectedImage)
       setPreviewImage(URL.createObjectURL(selectedImage));
-      console.log(URL.createObjectURL(selectedImage));
     }
-  }
+  };
+  const handleCepChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setCep(formatCep(e.target.value));
+    setPartner(prev => ({ ...prev, cep: cleanFormat(e.target.value) }));
+  };
+  const handleCnpjChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setCnpj(formatCnpj(e.target.value));
+    setPartner(prev => ({ ...prev, gcg: cleanFormat(e.target.value) }));
+  };
+  const handleTelephoneChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setTelephone(formatTelephone(e.target.value));
+    setPartner(prev => ({ ...prev, telephone: cleanFormat(e.target.value) }));
+  };
 
   async function validate() {
     let schema = yup.object().shape({
       street: yup.string().required('Erro: Necessário preencher o nome da rua'),
       cep: yup.string().required('Erro: Necessário preencher o CEP'),
       telephone: yup.string().required('Erro: Necessário preencher o telefone'),
-      fantasyName: yup
-        .string()
-        .required('Erro: Necessário preencher o nome fantasia'),
+      fantasyName: yup.string().required('Erro: Necessário preencher o nome fantasia'),
       gcg: yup.string().required('Erro: Necessário preencher o CNPJ'),
       name: yup.string().required('Erro: Necessário preencher o campo nome'),
     })
@@ -193,50 +171,41 @@ export function EditPartnerProfile() {
     if (!(await validate()))
       return
 
-    const data = new FormData()
+    const data = new FormData();
+    data.append('cep', partner.cep);
+    data.append('uf', partner.uf);
+    data.append('city', partner.city);
+    data.append('street', partner.street);
+    data.append('streetNumber', partner.streetNumber);
+    data.append('district', partner.district);
+    data.append('complement', partner.complement);
+    data.append('telephone', partner.telephone);
 
-    Object.entries(partner).forEach(([key, value]) => {
-      if (![
-        'cep',
-        'uf',
-        'city',
-        'street',
-        'streetNumber',
-        'district',
-        'complement',
-        'telephone',
-        'fantasyName',
-        'linkSite'
-      ].includes(key)) {
-        return;
-      }
-      if (['gcg', 'cep', 'telephone'].includes(key)) {
-        value = value.replace(/\D/g, '')
-      }
-      data.append(key, value)
-    })
-    data.append('profilePicture', profilePicture as Blob);
+    data.append('linkSite', partner.linkSite);
+    data.append('corporateName', partner.name);
+    data.append('fantasyName', partner.fantasyName);
+    profilePicture && data.append('profilePicture', profilePicture);
 
     try {
       await api.patch('partner', data, { headers: { 'Content-Type': 'application/x-www-url-formencoded' } });
-      alert('Cadastro atualizado com sucesso')
-      navigate(`/profile/partner/${auth?.id}`)
+      alert('Cadastro atualizado com sucesso');
+      setAuth(prev => prev && { ...prev, profilePicture: previewImage || pfp });
+      navigate(`/profile/partner/${auth?.id}`);
+
     } catch (e) {
       console.log(e)
     }
   }
-
   return (
     <>
       <Header />
       <div className={`${styles.container} container`}>
-
         <div className={styles.imageContainer}>
           <Breadcrumb type="Abrigos" to={partner.fantasyName} />
-          <Avatar src={previewImage || partner.profilePicture} />
+          <Avatar src={previewImage || pfp} />
           <input
             ref={profileRef}
-            onChange={handleSelectImage}
+            onChange={handleProfilePicture}
             style={{ display: 'none' }}
             type="file"
             id='input_profile_picture'
@@ -246,7 +215,7 @@ export function EditPartnerProfile() {
         </div>
         <div className={styles.profileContainer}>
           <div className={styles.profileHeader}>
-            <Link to={`/profile/${auth?.role}/${auth?.id}`}>
+            <Link to={`/profile/partner/${auth?.id}`}>
               <IconBack />
             </Link>
             <h1>Editar perfil</h1>
@@ -258,7 +227,7 @@ export function EditPartnerProfile() {
                 type="text"
                 name="name"
                 value={partner.name}
-                onChange={valueInput}
+                onChange={handleInputChange}
               />
 
               <Input
@@ -266,7 +235,7 @@ export function EditPartnerProfile() {
                 type="text"
                 width="100%"
                 name="gcg"
-                value={partner.gcg}
+                value={cnpj || formatCnpj(partner.gcg || '')}
                 onChange={handleCnpjChange}
               />
             </div>
@@ -277,15 +246,15 @@ export function EditPartnerProfile() {
                 type="text"
                 name="fantasyName"
                 value={partner.fantasyName}
-                onChange={valueInput}
+                onChange={handleInputChange}
               />
 
               <Input
                 label="Telefone"
                 type="text"
                 name="telephone"
+                value={telephone || formatTelephone(partner.telephone || '')}
                 onChange={handleTelephoneChange}
-                value={partner.telephone}
               />
             </div>
 
@@ -294,7 +263,7 @@ export function EditPartnerProfile() {
                 label="URL do seu site"
                 type="url"
                 name="linkSite"
-                onChange={valueInput}
+                onChange={handleInputChange}
                 value={partner.linkSite}
               />
             </div>
@@ -307,7 +276,7 @@ export function EditPartnerProfile() {
                 type="text"
                 width="28%"
                 name="CEP"
-                value={partner.cep}
+                value={cep || formatCep(partner.cep || '')}
                 onChange={handleCepChange}
               />
 
@@ -315,7 +284,7 @@ export function EditPartnerProfile() {
                 label="UF"
                 name="uf"
                 value={partner.uf}
-                onChange={handleSelectedUf}
+                onChange={handleInputChange}
                 options={ufs.map(uf => ({
                   label: uf,
                   value: uf,
@@ -327,7 +296,7 @@ export function EditPartnerProfile() {
                 label="Cidade"
                 name="city"
                 value={partner.city}
-                onChange={handleSelectedCity}
+                onChange={handleInputChange}
                 options={
                   !cities[partner.uf]
                     ? [{ value: '', label: 'Selecione um Estado' }]
@@ -346,7 +315,7 @@ export function EditPartnerProfile() {
                 type="text"
                 name="street"
                 value={partner.street}
-                onChange={valueInput}
+                onChange={handleInputChange}
               />
             </div>
 
@@ -357,7 +326,7 @@ export function EditPartnerProfile() {
                 width="30%"
                 name="streetNumber"
                 value={partner.streetNumber}
-                onChange={valueInput}
+                onChange={handleInputChange}
               />
 
               <Input
@@ -365,7 +334,7 @@ export function EditPartnerProfile() {
                 type="text"
                 name="district"
                 value={partner.district}
-                onChange={valueInput}
+                onChange={handleInputChange}
               />
 
               <Input
@@ -373,7 +342,7 @@ export function EditPartnerProfile() {
                 type="text"
                 name="complement"
                 value={partner.complement}
-                onChange={valueInput}
+                onChange={handleInputChange}
               />
             </div>
 

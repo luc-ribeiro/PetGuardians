@@ -105,7 +105,7 @@ public class ShelterController : ControllerBase
     [AllowAnonymous]
     public ActionResult Read(int id)
     {
-        var shelter = _context.Shelters.Where(s => s.Id == id && s.Active).Include(s => s.Images).Include(s => s.Donations).FirstOrDefault();
+        var shelter = _context.Shelters.Where(s => s.Id == id && s.Active).Include(s => s.Images).Include(s => s.Donations).ThenInclude(d => d.Donor).FirstOrDefault();
 
         if (shelter == null)
         {
