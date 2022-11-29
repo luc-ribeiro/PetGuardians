@@ -128,7 +128,7 @@ public class ShelterController : ControllerBase
                 donor = d.Donor.Name,
                 approved = d.Approved,
                 approvedAt = d.ApprovedAt,
-                value = d.Value,
+                value = d.Value / 100,
                 keyPIX = d.KeyPix,
                 createdAt = d.CreatedAt
             }).ToList()
