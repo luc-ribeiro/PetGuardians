@@ -77,7 +77,7 @@ public class DonationController : ControllerBase
         }
         _donation.Approved = true;
         _donation.ApprovedAt = DateTime.Now;
-        _donation.Value = value;
+        _donation.Value = value * 100;
         _context.SaveChanges();
         return Ok();
     }
