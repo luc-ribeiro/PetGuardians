@@ -105,8 +105,33 @@ public class ShelterController : ControllerBase
     [AllowAnonymous]
     public ActionResult Read(int id)
     {
-        var shelter = _context.Shelters.Where(s => s.Id == id && s.Active).Include(s => s.Images).Include(s => s.Donations).ThenInclude(d => d.Donor).FirstOrDefault();
-        
+        var shelter = _context.Shelters.Where(d => d.Id == id && d.Active).Select(d => new
+        {
+            id = d.Id,
+            name = d.Name,
+            gcg = d.GCG,
+            telephone = d.Telephone,
+            cep = d.CEP,
+            uf = d.UF,
+            city = d.City,
+            street = d.Street,
+            streetNumber = d.StreetNumber,
+            district = d.District,
+            complement = d.Complement,
+            email = d.Email,
+            profilePicture = d.ProfilePicture,
+            profilePictureMimeType = d.ProfilePictureMimeType,
+            Donations = d.Donations.Select(d => new
+            {
+                id = d.Id,
+                donor = d.Donor.Name,
+                approved = d.Approved,
+                approvedAt = d.ApprovedAt,
+                value = d.Value,
+                keyPIX = d.KeyPix,
+                createdAt = d.CreatedAt
+            }).ToList()
+        });
 
         if (shelter == null)
         {

@@ -403,7 +403,7 @@ export function EditPartnerProfile() {
               ''
             )}
 
-            <Button type="submit">Cadastrar</Button>
+            <Button type="submit">Atualizar</Button>
           </form>
         </div>
       </div>

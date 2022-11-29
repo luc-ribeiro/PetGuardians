@@ -214,7 +214,7 @@ export function EditShelterProfile() {
     try {
       await api.patch('shelter', data, { headers: { 'Content-Type': 'application/x-www-url-formencoded' } });
       alert('Cadastro atualizado com sucesso');
-      navigate(`/profile/partner/${auth?.id}`);
+      navigate(`/profile/shelter/${auth?.id}`);
       setAuth(prev => prev && { ...prev, profilePicture: profilePicture?.preview || pfp });
     } catch (e) {
       console.log(e)
@@ -368,7 +368,7 @@ export function EditShelterProfile() {
               <Input
                 label="Chave PIX"
                 type="text"
-                name="keyPix"
+                name="keyPIX"
                 onChange={handleInputChange}
                 value={shelter.keyPIX}
               />
@@ -430,7 +430,7 @@ export function EditShelterProfile() {
               ''
             )}
 
-            <Button type="submit">Cadastrar</Button>
+            <Button type="submit">Atualizar</Button>
           </form>
         </div>
       </div>
