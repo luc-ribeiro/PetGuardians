@@ -101,7 +101,11 @@ public class PartnerController : ControllerBase
     [AllowAnonymous]
     public ActionResult Read(string name, string uf, string city)
     {
-        return Ok(_context.Partners.Where(s => s.FantasyName.Contains(name) && s.UF.Equals(uf) && s.City.Equals(city) && s.Active).ToList());
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return Ok(_context.Partners.Where(p => p.UF.Equals(uf) && p.City.Equals(city) && p.Active).ToList());
+        }
+        return Ok(_context.Partners.Where(p => p.FantasyName.Contains(name) && p.UF.Equals(uf) && p.City.Equals(city) && p.Active).ToList());
     }
 
     /// <summary>

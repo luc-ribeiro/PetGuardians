@@ -121,6 +121,10 @@ public class ShelterController : ControllerBase
     [AllowAnonymous]
     public ActionResult Read(string name, string uf, string city)
     {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return Ok(_context.Shelters.Where(s => s.UF.Equals(uf) && s.City.Equals(city) && s.Active).ToList());
+        }
         return Ok(_context.Shelters.Where(s => s.FantasyName.Contains(name) && s.UF.Equals(uf) && s.City.Equals(city) && s.Active).ToList());
     }
 
@@ -207,7 +211,7 @@ public class ShelterController : ControllerBase
             shelter = new
             {
                 FantasyName = _shelter.FantasyName,
-                
+
                 KeyPIX = _shelter.KeyPIX,
                 About = _shelter.About,
             }
