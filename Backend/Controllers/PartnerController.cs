@@ -99,7 +99,7 @@ public class PartnerController : ControllerBase
     /// </summary>
     [HttpGet]
     [AllowAnonymous]
-    public ActionResult Read(string name, string uf, string city)
+    public ActionResult Read(string? name, string uf, string city)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
