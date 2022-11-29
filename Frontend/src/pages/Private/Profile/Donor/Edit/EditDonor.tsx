@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import * as yup from 'yup'
@@ -17,188 +17,124 @@ import { Input } from '../../../../../components/Forms/Input'
 import { Select } from '../../../../../components/Forms/Select'
 import { Button } from '../../../../../components/Forms/Button'
 
-import { Login } from '../../../../Login'
 
 import { DonorType } from '../../../../../types/Donor'
-import { CNPJQueryResponse } from '../../../../../types/CNPJ'
 import { CEPQueryResponse } from '../../../../../types/CEP'
 import { IBGEUFResponse } from '../../../../../types/UF'
 import { IBGECityResponse } from '../../../../../types/City'
-import { formatTelephone } from '../../../../../utils/Telephone'
-import { formatCep } from '../../../../../utils/cep'
-import { formatCpf } from '../../../../../utils/cpf'
+import { formatTelephone, formatCep, formatCpf, cleanFormat, formatDate } from '../../../../../utils/stringFormatter'
+import { CitiesType } from '../../../../../types/Cities'
 
 export function EditDonorProfile() {
-  const { auth } = useAuth()
+  const { auth, setAuth } = useAuth();
+  const profileRef = useRef<HTMLInputElement>(null);
   const api = usePrivateApi()
   const navigate = useNavigate()
 
-  const [user, setUser] = useState({} as DonorType)
-
+  const [donor, setDonor] = useState({} as DonorType)
   const [ufs, setUfs] = useState<string[]>([])
-  const [cities, setCities] = useState<string[]>([])
-  const [selectedUf, setSelectedUf] = useState('0')
-  const [selectedCity, setSelectedCity] = useState('0')
-  const [cleanCnpj, setCleanCnpj] = useState('')
+  const [cities, setCities] = useState<CitiesType>({});
+  const [cep, setCep] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [telephone, setTelephone] = useState('');
+  const [previewImage, setPreviewImage] = useState<string>('')
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [status, setStatus] = useState({ type: '', message: '' });
 
-  const [image, setImage] = useState<File[]>([])
-  const [previewImage, setPreviewImage] = useState<string[]>([])
-
-  const [status, setStatus] = useState({
-    type: '',
-    message: '',
-  })
-
-  const [donor, setDonor] = useState({
-    name: user.name,
-    telephone: user.telephone,
-    gcg: user.gcg,
-    birthday: user.birthday,
-    cep: user.cep,
-    street: user.street,
-    streetNumber: user.streetNumber,
-    district: user.district,
-    complement: user.complement,
-    uf: user.uf,
-    city: user.city,
-    profilePicture: user.profilePicture,
-    // image: user.image,
-    // newImage: '',
-  })
+  const pfp = donor.profilePicture ? `data:${donor.profilePictureMimeType};base64,${donor.profilePicture}` : undefined;
 
   useEffect(() => {
     var isMounted = true
-    const abortController = new AbortController()
-
+    const abort = new AbortController();
     const fetchProfile = async () => {
       try {
-        const response = await api.get(
-          `${auth?.role.toLowerCase()}/${auth?.id}`,
-          { signal: abortController.signal },
-        )
-        isMounted && setUser(response.data)
-      } catch (error) {}
+        const response = await api.get(`donor/${auth?.id}`, { signal: abort.signal });
+        isMounted && setDonor(response.data);
+      } catch (error) { }
     }
-
-    fetchProfile()
-
+    const fetchEstados = async () => {
+      const response = (await axios.get<IBGEUFResponse[]>('https://servicodados.ibge.gov.br/api/v1/localidades/estados', { signal: abort.signal })).data;
+      isMounted && setUfs(response.map(uf => uf.sigla));
+    }
+    fetchProfile();
+    fetchEstados();
     return () => {
-      isMounted = false
-      abortController.abort()
+      isMounted = false;
+      abort.abort();
     }
-  }, [])
+  }, []);
 
-  const valueInput = (e: any) =>
-    setDonor({ ...donor, [e.target.name]: e.target.value })
-
+  /* Consultar Endereço */
   useEffect(() => {
-    if (cleanCnpj.length == 14) {
-      axios
-        .get<CNPJQueryResponse>(
-          `https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`,
-        )
-        .then(response => {
-          setDonor({
-            ...donor,
-            ['name']: response.data.razao_social,
-          } as any)
-        })
+    var isMounted = true;
+    const abort = new AbortController();
+    const fetchAddress = async () => {
+      const response = (await axios.get<CEPQueryResponse>(`https://brasilapi.com.br/api/cep/v2/${cleanFormat(cep)}`, { signal: abort.signal })).data;
+      isMounted && setDonor(prev => ({
+        ...prev,
+        street: response.street,
+        district: response.neighborhood,
+        uf: response.state,
+        city: response.city
+      }));
     }
-  }, [donor.gcg])
-
-  useEffect(() => {
-    if (user.cep?.length == 9) {
-      axios
-        .get<CEPQueryResponse>(
-          `https://brasilapi.com.br/api/cep/v2/${user.cep}`,
-        )
-        .then(response => {
-          setDonor({
-            ...donor,
-            ['street']: response.data.street,
-            ['district']: response.data.neighborhood,
-            ['uf']: response.data.state,
-            ['city']: response.data.city,
-          } as any)
-          setSelectedUf(response.data.state)
-          setSelectedCity(response.data.city)
-        })
+    cleanFormat(cep).length == 8 && fetchAddress();
+    return () => {
+      isMounted = false;
+      abort.abort();
     }
-  }, [donor.cep])
+  }, [cep]);
 
+  /* Consultar Cidades */
   useEffect(() => {
-    axios
-      .get<IBGEUFResponse[]>(
-        'https://servicodados.ibge.gov.br/api/v1/localidades/estados',
-      )
-      .then(response => {
-        const ufInitials = response.data.map(uf => uf.sigla)
-        setUfs(ufInitials)
-      })
-  }, [])
-
-  useEffect(() => {
-    if (selectedUf === '0') {
-      return
+    if (!donor.uf || cities[donor.uf]) {
+      return;
     }
+    var isMounted = true;
+    const abort = new AbortController();
+    const fetchCities = async () => {
+      const response = (await axios.get<IBGECityResponse[]>(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${donor.uf}/municipios`, { signal: abort.signal })).data;
+      isMounted && setCities(prev => ({ ...prev, [donor.uf]: response.map(city => city.nome) }));
+    }
+    fetchCities();
+    return () => {
+      isMounted = false;
+      abort.abort();
+    }
+  }, [donor.uf]);
 
-    axios
-      .get<IBGECityResponse[]>(
-        `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedUf}/municipios`,
-      )
-      .then(response => {
-        const cityNames = response.data.map(city => city.nome)
-        setCities(cityNames)
-      })
-  }, [selectedUf])
-
-  function handleCpfChange(event: ChangeEvent<HTMLInputElement>) {
-    const formattedCpf = formatCpf(event.target.value)
-    setDonor({ ...donor, ['gcg']: formattedCpf })
-  }
-
-  function handleTelephoneChange(event: ChangeEvent<HTMLInputElement>) {
-    const formattedTelephone = formatTelephone(event.target.value)
-    setDonor({ ...donor, ['telephone']: formattedTelephone })
-  }
-
-  function handleCepChange(event: ChangeEvent<HTMLInputElement>) {
-    const formattedCep = formatCep(event.target.value)
-    setDonor({ ...donor, ['cep']: formattedCep })
-  }
-
-  function handleSelectedUf(event: ChangeEvent<HTMLSelectElement>) {
-    const uf = event.target.value
-    setSelectedUf(uf)
-  }
-
-  function handleSelectedCity(event: ChangeEvent<HTMLSelectElement>) {
-    const city = event.target.value
-    setSelectedCity(city)
-  }
-
-  function handleSelectImage(event: ChangeEvent<HTMLInputElement>) {
+  const handleInputChange = (e: any) => {
+    setDonor(prev => ({ ...prev, [e.target.name]: e.target.value }))
+  };
+  const handleProfilePicture = (event: ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) {
       return
     }
-    const selectedImage = Array.from(event.target.files)
-
-    setImage(selectedImage)
-
-    const selectedImagePreview = selectedImage.map(image => {
-      return URL.createObjectURL(image)
-    })
-    setPreviewImage(selectedImagePreview)
-  }
+    const selectedImage = event.target.files.item(0);
+    if (selectedImage) {
+      setProfilePicture(selectedImage)
+      setPreviewImage(URL.createObjectURL(selectedImage));
+    }
+  };
+  const handleCepChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setCep(formatCep(e.target.value));
+    setDonor(prev => ({ ...prev, cep: cleanFormat(e.target.value) }));
+  };
+  const handleCpfChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setCpf(formatCpf(event.target.value))
+    setDonor(prev => ({ ...prev, gcg: cleanFormat(event.target.value) }));
+  };
+  const handleTelephoneChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setTelephone(formatTelephone(event.target.value))
+    setDonor(prev => ({ ...prev, telephone: cleanFormat(event.target.value) }));
+  };
 
   async function validate() {
     let schema = yup.object().shape({
       street: yup.string().required('Erro: Necessário preencher o nome da rua'),
       cep: yup.string().required('Erro: Necessário preencher o CEP'),
       telephone: yup.string().required('Erro: Necessário preencher o telefone'),
-      fantasyName: yup
-        .string()
-        .required('Erro: Necessário preencher o nome fantasia'),
+      birthday: yup.string().required('Erro: Necessário preencher o nome fantasia'),
       gcg: yup.string().required('Erro: Necessário preencher o CNPJ'),
       name: yup.string().required('Erro: Necessário preencher o campo nome'),
     })
@@ -216,46 +152,37 @@ export function EditDonorProfile() {
   }
 
   async function handleSubmit(event: FormEvent) {
-    event.preventDefault()
-
-    if (!(await validate())) return
-
-    const saveDataForm = true
-
-    if (saveDataForm) {
-      setStatus({
-        type: 'success',
-        message: 'Cadastro atualizado com sucesso',
-      })
-    } else {
-      setStatus({
-        type: 'error',
-        message: 'Erro: Cadastro não atualizado',
-      })
+    event.preventDefault();
+    if (!donor) {
+      return;
     }
 
-    const data = new FormData()
+    if (!(await validate())) {
+      return;
+    }
 
-    Object.entries(donor).forEach(([key, value]) => {
-      if (['gcg', 'cep', 'telephone'].includes(key)) {
-        value = value.replace(/\D/g, '')
-      }
-      data.append(key, value)
-    })
-
-    data.append('profilePicture', image[0])
+    const data = new FormData();
+    data.append('cep', donor.cep);
+    data.append('uf', donor.uf);
+    data.append('city', donor.city);
+    data.append('street', donor.street);
+    data.append('streetNumber', donor.streetNumber);
+    data.append('district', donor.district);
+    data.append('complement', donor.complement);
+    data.append('telephone', donor.telephone);
+    data.append('profilePicture', profilePicture as Blob);
+    
+    data.append('fullName', donor.name);
+    data.append('birthday', donor.birthday);
 
     try {
-      await api.patch('donor', data)
-      alert('Cadastro atualizado com sucesso')
-      navigate(`profile/${auth?.role}/${auth?.id}`)
+      await api.patch('donor', data, { headers: { 'Content-Type': 'application/x-www-url-formencoded' } })
+      alert('Cadastro atualizado com sucesso');
+      setAuth(prev => prev && { ...prev, profilePicture: previewImage || pfp });
+      navigate(`/profile/donor/${auth?.id}`);
     } catch (e) {
       console.log(e)
     }
-  }
-
-  if (!user) {
-    return <Login />
   }
 
   return (
@@ -263,13 +190,21 @@ export function EditDonorProfile() {
       <Header />
       <div className={`${styles.container} container`}>
         <div className={styles.imageContainer}>
-          <Breadcrumb type="Doador" to={user.name} />
-          <Avatar />
-          <button className={styles.button}>Trocar foto</button>
+          <Breadcrumb type="Doador" to={donor.name} />
+          <Avatar src={previewImage || pfp} />
+          <input
+            ref={profileRef}
+            onChange={handleProfilePicture}
+            style={{ display: 'none' }}
+            type="file"
+            id='input_profile_picture'
+            accept=".jpeg, .png, .jpg"
+          />
+          <button className={styles.button} onClick={() => profileRef?.current?.click()}>Trocar foto</button>
         </div>
         <div className={styles.profileContainer}>
           <div className={styles.profileHeader}>
-            <Link to={`/profile/${auth?.role}/${auth?.id}`}>
+            <Link to={`/profile/donor/${auth?.id}`}>
               <IconBack />
             </Link>
             <h1>Editar perfil</h1>
@@ -281,7 +216,7 @@ export function EditDonorProfile() {
               type="text"
               name="name"
               value={donor.name}
-              onChange={valueInput}
+              onChange={handleInputChange}
             />
 
             <Input
@@ -289,7 +224,7 @@ export function EditDonorProfile() {
               type="text"
               width="100%"
               name="gcg"
-              value={donor.gcg}
+              value={cpf || formatCpf(donor.gcg || '')}
               onChange={handleCpfChange}
             />
 
@@ -299,8 +234,8 @@ export function EditDonorProfile() {
                 type="date"
                 width="40%"
                 name="birthday"
-                value={donor.birthday}
-                onChange={valueInput}
+                value={donor.birthday || donor.birthday ? formatDate(new Date(donor.birthday)) : formatDate(new Date())}
+                onChange={handleInputChange}
               />
 
               <Input
@@ -308,7 +243,7 @@ export function EditDonorProfile() {
                 type="text"
                 name="telephone"
                 onChange={handleTelephoneChange}
-                value={donor.telephone}
+                value={telephone || formatTelephone(donor.telephone || '')}
               />
             </div>
 
@@ -320,15 +255,15 @@ export function EditDonorProfile() {
                 type="text"
                 width="28%"
                 name="cep"
-                value={donor.cep}
-                onChange={valueInput}
+                value={cep || formatCep(donor.cep || '')}
+                onChange={handleCepChange}
               />
 
               <Select
                 label="UF"
                 name="UF"
-                value={selectedUf}
-                onChange={handleSelectedUf}
+                value={donor.uf}
+                onChange={handleInputChange}
                 options={ufs.map(uf => ({
                   label: uf,
                   value: uf,
@@ -339,12 +274,16 @@ export function EditDonorProfile() {
               <Select
                 label="Cidade"
                 name="city"
-                value={selectedCity}
-                onChange={handleSelectedCity}
-                options={cities.map(city => ({
-                  label: city,
-                  value: city,
-                }))}
+                value={donor.city}
+                onChange={handleInputChange}
+                options={
+                  !cities[donor.uf]
+                    ? [{ value: '', label: 'Selecione um Estado' }]
+                    : cities[donor.uf].map(city => ({
+                      label: city,
+                      value: city,
+                    }))
+                }
                 width="50%"
               />
             </div>
@@ -355,7 +294,7 @@ export function EditDonorProfile() {
                 type="text"
                 name="street"
                 value={donor.street}
-                onChange={valueInput}
+                onChange={handleInputChange}
               />
             </div>
 
@@ -366,7 +305,7 @@ export function EditDonorProfile() {
                 width="30%"
                 name="streetNumber"
                 value={donor.streetNumber}
-                onChange={valueInput}
+                onChange={handleInputChange}
               />
 
               <Input
@@ -374,7 +313,7 @@ export function EditDonorProfile() {
                 type="text"
                 name="district"
                 value={donor.district}
-                onChange={valueInput}
+                onChange={handleInputChange}
               />
 
               <Input
@@ -382,36 +321,11 @@ export function EditDonorProfile() {
                 type="text"
                 name="complement"
                 value={donor.complement}
-                onChange={valueInput}
+                onChange={handleInputChange}
               />
             </div>
 
             <div className={styles.divider}></div>
-
-            <div className="input-block">
-              <label className={styles.label} htmlFor="images">
-                Foto de perfil
-              </label>
-
-              <div className={styles.imageContainer}>
-                {previewImage.map(image => {
-                  return <img key={image} src={image} alt=""></img>
-                })}
-                {previewImage.length < 1 && (
-                  <label htmlFor="image[]" className={styles.newImage}>
-                    +
-                  </label>
-                )}
-              </div>
-              <input
-                multiple
-                onChange={handleSelectImage}
-                type="file"
-                name="image"
-                accept=".jpeg, .png, .jpg"
-                id="image[]"
-              />
-            </div>
 
             {status.type === 'success' ? (
               <p style={{ color: 'green' }}>{status.message}</p>

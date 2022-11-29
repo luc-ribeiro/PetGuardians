@@ -130,6 +130,7 @@ public class PartnerController : ControllerBase
         _partner.Complement = request.Complement ?? "";
         _partner.Telephone = request.Telephone;
         _partner.FantasyName = request.FantasyName ?? "";
+        _partner.Name = request.CorporateName ?? "";
         _partner.LinkSite = request.LinkSite ?? "";
 
         using (var memoryStream = new MemoryStream())

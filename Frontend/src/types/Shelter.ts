@@ -1,10 +1,11 @@
 import { DonationType } from './Donation'
+import { Image } from './Image'
 import { PersonType } from './Person'
 
 export interface ShelterType extends PersonType {
   fantasyName: string
-  images: []
+  images: Image[]
   about?: string | null
-  keyPix?: string
+  keyPIX?: string
   donations: DonationType[]
 }
