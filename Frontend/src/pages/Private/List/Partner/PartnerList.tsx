@@ -87,8 +87,8 @@ export function PartnerList() {
 
       <div className={styles.headerContainer}>
         <div className={`${styles.headerWrapper} container`}>
-          <h1>Abrigos</h1>
-          <p>Faça uma busca dos abrigos disponíveis</p>
+          <h1>Parceiros</h1>
+          <p>Encontre nossos parceiros </p>
         </div>
 
         <div className={styles.search}>
@@ -137,15 +137,14 @@ export function PartnerList() {
         <div className={styles.partner}>
           {partners.map((partner: any) => {
             return (
-              <Link to={`/profile/partner/${partner.id}`} key={partner.id}>
+              <Link to={`/partner/${partner.id}`} key={partner.id}>
                 <div>
                   {partner.profilePicture ? (
                     <img
                       src={`data:${partner.profilePictureMimeType};base64,${partner.profilePicture}`}
-                      alt=""
                     />
                   ) : (
-                    <img src={AvatarImage} alt="" />
+                    <img src={AvatarImage} />
                   )}
                 </div>
                 <div className={styles.partnerInfo}>

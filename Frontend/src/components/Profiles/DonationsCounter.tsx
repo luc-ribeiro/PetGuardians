@@ -5,7 +5,6 @@ export function DonationsCounter(total: DonationType[]) {
   return (
     <p className={styles.totalDonations}>
       {total.length ?? '0'} <span>doações recebidas</span>
-      {console.log(total)}
     </p>
   )
 }

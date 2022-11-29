@@ -47,8 +47,8 @@ export default function RoutesList() {
         <Route element={<RequireAuth />}>
           <Route path="partners" element={<PartnerList />} />
           <Route path="shelters" element={<ShelterList />} />
-          <Route path="profile/partner/:id" element={<ViewPartnerProfile />} />
-          <Route path="profile/shelter/:id" element={<ViewShelterProfile />} />
+          <Route path="partner/:id" element={<ViewPartnerProfile />} />
+          <Route path="shelter/:id" element={<ViewShelterProfile />} />
         </Route>
 
         {/* Rotas exclusivas de Donors */}

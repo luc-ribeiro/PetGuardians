@@ -1,15 +1,13 @@
 import { FormEvent, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import usePrivateApi from '../../hooks/useAxiosPrivate'
 import { DonationType } from '../../types/Donation'
 import styles from './DonationsTable.module.css'
 
-// {auth?.id != user?.id && (
-//   <button onClick={openModal} className={styles.buttonDonation}>
-//     Fazer Doação
-//   </button>
-// )}
+import Modal from 'react-modal'
 
 export function DonationsTable(donations: DonationType[]) {
+  const { id } = useParams()
   const api = usePrivateApi()
   const [modal, setModal] = useState(false)
   const [value, setValue] = useState(0)
@@ -26,7 +24,7 @@ export function DonationsTable(donations: DonationType[]) {
     event.preventDefault()
 
     try {
-      await api.patch(`/donation`, { id: id, value: value })
+      await api.patch(`/donation`, { id, value: value })
       alert('Doação cadastrada com sucesso')
       closeModal()
     } catch (e) {

@@ -49,7 +49,7 @@ export function ViewShelterProfile() {
     event.preventDefault()
 
     try {
-      await api.post(`/donation`, { shelterId: shelter?.id })
+      await api.post(`/donation`, shelter?.id)
       alert('Doação cadastrada com sucesso')
       closeModal()
     } catch (e) {
@@ -84,7 +84,7 @@ export function ViewShelterProfile() {
               <div className={styles.buttonsContainer}>
                 {auth?.id == shelter?.id && (
                   <Link className={styles.button} to="edit">
-                    Editar perfil
+                    Editar perfil vieww
                   </Link>
                 )}
 

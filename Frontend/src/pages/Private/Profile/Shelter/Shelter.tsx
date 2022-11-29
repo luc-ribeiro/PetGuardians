@@ -4,7 +4,7 @@ import { Header } from '../../../../components/Header'
 import { Footer } from '../../../../components/Footer'
 import { Breadcrumb } from '../../../../components/Profiles/Breadcrumb'
 import { Avatar } from '../../../../components/Profiles/Avatar'
-import { DonationsTable } from '../../../../components/Profiles/DonationsTable'
+import { DonationsTable } from './Donation/DonationsTable'
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import useAuth from '../../../../hooks/useAuth'
@@ -60,7 +60,7 @@ export function ShelterProfile() {
             <div className={styles.buttonsContainer}>
               {auth?.id == user?.id && (
                 <Link className={styles.button} to="edit">
-                  Editar perfil
+                  Editar perfil profile
                 </Link>
               )}
             </div>
@@ -70,7 +70,7 @@ export function ShelterProfile() {
           </div>
 
           {user && <AboutShelter about={user.about} images={user.images} />}
-          {user && <DonationsTable donations={user?.donations} />}
+          {user && <DonationsTable donations={user.donations} />}
         </div>
       </div>
       <Footer />

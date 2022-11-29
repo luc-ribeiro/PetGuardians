@@ -6,7 +6,7 @@ interface InputProps {
   type: string
   name?: string
   placeholder?: string
-  value?: string
+  value?: string | number
   onChange?: ChangeEventHandler<HTMLInputElement>
   error?: ReactNode
   onBlur?: FocusEventHandler<HTMLInputElement>

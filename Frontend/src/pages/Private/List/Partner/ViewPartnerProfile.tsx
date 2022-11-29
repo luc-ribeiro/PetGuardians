@@ -1,26 +1,25 @@
+import { useEffect, useState } from 'react'
+import usePrivateApi from '../../../../hooks/useAxiosPrivate'
+import useAuth from '../../../../hooks/useAuth'
+import { Link, useParams } from 'react-router-dom'
+import ReactLoading from 'react-loading'
+
 import styles from './ViewPartnerProfile.module.css'
 
 import { Header } from '../../../../components/Header'
 import { Footer } from '../../../../components/Footer'
 import { Breadcrumb } from '../../../../components/Profiles/Breadcrumb'
 import { Avatar } from '../../../../components/Profiles/Avatar'
-import { DonationsTable } from '../../../../components/Profiles/DonationsTable'
-import { Link, useParams } from 'react-router-dom'
-import { ProductTable } from '../../../../components/Profiles/ProductTable'
-import { useEffect, useState } from 'react'
-import useAuth from '../../../../hooks/useAuth'
-
-import usePrivateApi from '../../../../hooks/useAxiosPrivate'
 import { CouponTable } from './Coupon/CouponTable'
+
 import { PartnerType } from '../../../../types/Partner'
-import ReactLoading from 'react-loading'
 
 export function ViewPartnerProfile() {
   const { id } = useParams()
   const { auth } = useAuth()
   const api = usePrivateApi()
-  const [partner, setPartner] = useState<PartnerType>()
 
+  const [partner, setPartner] = useState<PartnerType>()
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {

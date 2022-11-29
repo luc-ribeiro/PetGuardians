@@ -4,16 +4,16 @@ import { Header } from '../../../../components/Header'
 import { Footer } from '../../../../components/Footer'
 import { Breadcrumb } from '../../../../components/Profiles/Breadcrumb'
 import { Avatar } from '../../../../components/Profiles/Avatar'
-import { DonationsTable } from '../../../../components/Profiles/DonationsTable'
+import { DonationsTable } from './Donation/DonationsTable'
+import { DonationsCounter } from '../../../../components/Profiles/DonationsCounter'
+
 import { Link, useParams } from 'react-router-dom'
 import { ProductTable } from '../../../../components/Profiles/ProductTable'
 import { useEffect, useState } from 'react'
 import useAuth from '../../../../hooks/useAuth'
 
 import usePrivateApi from '../../../../hooks/useAxiosPrivate'
-import { PersonType } from '../../../../types/Person'
 import { DonorType } from '../../../../types/Donor'
-import { DonationsCounter } from '../../../../components/Profiles/DonationsCounter'
 
 export function DonorProfile() {
   const { auth } = useAuth()
@@ -41,8 +41,6 @@ export function DonorProfile() {
       abortController.abort()
     }
   }, [])
-
-  console.log(user)
 
   return (
     <>

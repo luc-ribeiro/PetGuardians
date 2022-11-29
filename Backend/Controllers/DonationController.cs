@@ -43,7 +43,7 @@ public class DonationController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Donor")]
-    public ActionResult CreateDonation(int shelterId)
+    public ActionResult CreateDonation([FromBody] int shelterId)
     {
         Shelter? _shelter = _context.Shelters.Where(s => s.Id == shelterId && s.Active).FirstOrDefault();
         if (_shelter == null)
@@ -68,7 +68,7 @@ public class DonationController : ControllerBase
     [HttpPatch]
     [Authorize(Roles = "Shelter")]
     [Route("{id}")]
-    public ActionResult ApproveDonation(int id, int value)
+    public ActionResult ApproveDonation([FromRoute] int id, [FromBody] int value)
     {
         Donation? _donation = _context.Donations.Where(d => d.Id == id && d.ShelterId == _userService.GetId()).FirstOrDefault();
         if (_donation == null)

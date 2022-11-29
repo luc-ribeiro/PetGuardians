@@ -73,7 +73,7 @@ export function Header() {
           </div>
         ) : (
           <div className={styles.navLogin}>
-            <Link to={`/profile/${auth.role}/${auth.id}`}>
+            <Link to={`/profile/${auth.role}/${user.id}`}>
               <div className={styles.userContainer}>
                 <img
                   className={styles.userAvatar}

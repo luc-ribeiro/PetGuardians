@@ -135,7 +135,7 @@ export function ShelterList() {
         <div className={styles.shelter}>
           {shelters.map((shelter: any) => {
             return (
-              <Link to={`/profile/shelter/${shelter.id}`} key={shelter.id}>
+              <Link to={`/shelter/${shelter.id}`} key={shelter.id}>
                 <div>
                   <img
                     src={`data:${shelter.profilePictureMimeType};base64,${shelter.profilePicture}`}
