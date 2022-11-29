@@ -101,3 +101,8 @@
   font: 700 24px/32px var(--type-text);
   color: var(--c8);
 }
+
+.loading {
+  margin: 0 auto;
+  padding: 300px 0;
+}

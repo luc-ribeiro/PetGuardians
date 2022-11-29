@@ -67,10 +67,10 @@ export function DonorProfile() {
             )}
           </div>
           <div className={styles.qtdDonationsContainer}>
-            {user && <DonationsCounter />}
+            {user && <DonationsCounter total={user.donations} />}
           </div>
 
-          {user && <DonationsTable />}
+          {user && <DonationsTable donations={user?.donations} />}
         </div>
       </div>
       <Footer />

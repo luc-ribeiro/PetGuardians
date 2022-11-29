@@ -26,27 +26,26 @@ import { formatCnpj } from '../../../../../utils/CNPJ'
 import { formatTelephone } from '../../../../../utils/Telephone'
 import { formatCep } from '../../../../../utils/cep'
 
-
 interface Cities {
   [key: string]: string[]
 }
 export function EditPartnerProfile() {
-  const { auth } = useAuth();
-  const api = usePrivateApi();
-  const profileRef = useRef<HTMLInputElement>(null);
+  const { auth } = useAuth()
+  const api = usePrivateApi()
+  const profileRef = useRef<HTMLInputElement>(null)
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const [partner, setPartner] = useState({} as PartnerType);
+  const [partner, setPartner] = useState({} as PartnerType)
 
-  const [ufs, setUfs] = useState<string[]>([]);
-  const [cities, setCities] = useState<Cities>({});
+  const [ufs, setUfs] = useState<string[]>([])
+  const [cities, setCities] = useState<Cities>({})
 
-  const [cleanCnpj, setCleanCnpj] = useState('');
-  const [cleanCep, setCleanCep] = useState('');
-  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [cleanCnpj, setCleanCnpj] = useState('')
+  const [cleanCep, setCleanCep] = useState('')
+  const [profilePicture, setProfilePicture] = useState<File | null>(null)
 
-  const [previewImage, setPreviewImage] = useState('');
+  const [previewImage, setPreviewImage] = useState('')
 
   const [status, setStatus] = useState({
     type: '',
@@ -55,77 +54,110 @@ export function EditPartnerProfile() {
 
   useEffect(() => {
     var isMounted = true
-    const abortController = new AbortController();
+    const abortController = new AbortController()
     const fetchProfile = async () => {
       try {
-        const response = await api.get(`partner/${auth?.id}`, { signal: abortController.signal })
-        isMounted && setPartner(response.data);
-      } catch (error) { }
+        const response = await api.get(`partner/${auth?.id}`, {
+          signal: abortController.signal,
+        })
+        isMounted && setPartner(response.data)
+      } catch (error) {}
     }
     const fetchEstados = async () => {
-      const response = (await axios.get<IBGEUFResponse[]>('https://servicodados.ibge.gov.br/api/v1/localidades/estados', { signal: abortController.signal })).data;
-      isMounted && setUfs(response.map(uf => uf.sigla));
+      const response = (
+        await axios.get<IBGEUFResponse[]>(
+          'https://servicodados.ibge.gov.br/api/v1/localidades/estados',
+          { signal: abortController.signal },
+        )
+      ).data
+      isMounted && setUfs(response.map(uf => uf.sigla))
     }
-    fetchProfile();
-    fetchEstados();
+    fetchProfile()
+    fetchEstados()
     return () => {
-      isMounted = false;
-      abortController.abort();
+      isMounted = false
+      abortController.abort()
     }
   }, [])
 
-  const valueInput = (e: any) => setPartner({ ...partner, [e.target.name]: e.target.value })
+  const valueInput = (e: any) =>
+    setPartner({ ...partner, [e.target.name]: e.target.value })
 
   useEffect(() => {
-    var isMounted = true;
-    const abort = new AbortController();
+    var isMounted = true
+    const abort = new AbortController()
     const fetchRazaoSocial = async () => {
-      const response = (await axios.get<CNPJQueryResponse>(`https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`, { signal: abort.signal })).data;
-      isMounted && setPartner(prev => ({ ...prev, name: response?.razao_social, fantasyName: response?.nome_fantasia }));
+      const response = (
+        await axios.get<CNPJQueryResponse>(
+          `https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`,
+          { signal: abort.signal },
+        )
+      ).data
+      isMounted &&
+        setPartner(prev => ({
+          ...prev,
+          name: response?.razao_social,
+          fantasyName: response?.nome_fantasia,
+        }))
     }
-    cleanCnpj.length == 14 && fetchRazaoSocial();
+    cleanCnpj.length == 14 && fetchRazaoSocial()
     return () => {
-      isMounted = false;
-      abort.abort();
+      isMounted = false
+      abort.abort()
     }
   }, [cleanCnpj])
 
   useEffect(() => {
-    var isMounted = true;
-    const abort = new AbortController();
+    var isMounted = true
+    const abort = new AbortController()
     const fetchAddress = async () => {
-      const response = (await axios.get<CEPQueryResponse>(`https://brasilapi.com.br/api/cep/v2/${cleanCep}`, { signal: abort.signal })).data;
-      isMounted && setPartner(prev => ({
-        ...prev,
-        street: response.street,
-        district: response.neighborhood,
-        uf: response.state,
-        city: response.city
-      }));
+      const response = (
+        await axios.get<CEPQueryResponse>(
+          `https://brasilapi.com.br/api/cep/v2/${cleanCep}`,
+          { signal: abort.signal },
+        )
+      ).data
+      isMounted &&
+        setPartner(prev => ({
+          ...prev,
+          street: response.street,
+          district: response.neighborhood,
+          uf: response.state,
+          city: response.city,
+        }))
     }
-    cleanCep.length == 8 && fetchAddress();
+    cleanCep.length == 8 && fetchAddress()
     return () => {
-      isMounted = false;
-      abort.abort();
+      isMounted = false
+      abort.abort()
     }
-  }, [cleanCep]);
+  }, [cleanCep])
 
   useEffect(() => {
     if (!partner.uf || cities[partner.uf]) {
-      return;
+      return
     }
-    var isMounted = true;
-    const abort = new AbortController();
+    var isMounted = true
+    const abort = new AbortController()
     const fetchCities = async () => {
-      const response = (await axios.get<IBGECityResponse[]>(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${partner.uf}/municipios`, { signal: abort.signal })).data;
-      isMounted && setCities(prev => ({ ...prev, [partner.uf]: response.map(city => city.nome) }));
+      const response = (
+        await axios.get<IBGECityResponse[]>(
+          `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${partner.uf}/municipios`,
+          { signal: abort.signal },
+        )
+      ).data
+      isMounted &&
+        setCities(prev => ({
+          ...prev,
+          [partner.uf]: response.map(city => city.nome),
+        }))
     }
-    fetchCities();
+    fetchCities()
     return () => {
-      isMounted = false;
-      abort.abort();
+      isMounted = false
+      abort.abort()
     }
-  }, [partner.uf]);
+  }, [partner.uf])
 
   function handleCnpjChange(event: ChangeEvent<HTMLInputElement>) {
     const [cleanCnpj, formattedCnpj] = formatCnpj(event.target.value)
@@ -134,8 +166,8 @@ export function EditPartnerProfile() {
   }
   function handleCepChange(event: ChangeEvent<HTMLInputElement>) {
     const [cleanCep, formatetedCep] = formatCep(event.target.value)
-    setCleanCep(cleanCep);
-    setPartner(prev => ({ ...prev, cep: formatetedCep }));
+    setCleanCep(cleanCep)
+    setPartner(prev => ({ ...prev, cep: formatetedCep }))
   }
 
   function handleTelephoneChange(event: ChangeEvent<HTMLInputElement>) {
@@ -144,7 +176,7 @@ export function EditPartnerProfile() {
   }
 
   function handleSelectedUf(event: ChangeEvent<HTMLSelectElement>) {
-    setPartner(prev => ({ ...prev, uf: event.target.value }));
+    setPartner(prev => ({ ...prev, uf: event.target.value }))
   }
 
   function handleSelectedCity(event: ChangeEvent<HTMLSelectElement>) {
@@ -155,11 +187,11 @@ export function EditPartnerProfile() {
     if (!event.target.files) {
       return
     }
-    const selectedImage = event.target.files.item(0);
+    const selectedImage = event.target.files.item(0)
     if (selectedImage) {
       setProfilePicture(selectedImage)
-      setPreviewImage(URL.createObjectURL(selectedImage));
-      console.log(URL.createObjectURL(selectedImage));
+      setPreviewImage(URL.createObjectURL(selectedImage))
+      console.log(URL.createObjectURL(selectedImage))
     }
   }
 
@@ -190,35 +222,38 @@ export function EditPartnerProfile() {
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
 
-    if (!(await validate()))
-      return
+    if (!(await validate())) return
 
     const data = new FormData()
 
     Object.entries(partner).forEach(([key, value]) => {
-      if (![
-        'cep',
-        'uf',
-        'city',
-        'street',
-        'streetNumber',
-        'district',
-        'complement',
-        'telephone',
-        'fantasyName',
-        'linkSite'
-      ].includes(key)) {
-        return;
+      if (
+        ![
+          'cep',
+          'uf',
+          'city',
+          'street',
+          'streetNumber',
+          'district',
+          'complement',
+          'telephone',
+          'fantasyName',
+          'linkSite',
+        ].includes(key)
+      ) {
+        return
       }
       if (['gcg', 'cep', 'telephone'].includes(key)) {
         value = value.replace(/\D/g, '')
       }
       data.append(key, value)
     })
-    data.append('profilePicture', profilePicture as Blob);
+    data.append('profilePicture', profilePicture as Blob)
 
     try {
-      await api.patch('partner', data, { headers: { 'Content-Type': 'application/x-www-url-formencoded' } });
+      await api.patch('partner', data, {
+        headers: { 'Content-Type': 'application/x-www-url-formencoded' },
+      })
       alert('Cadastro atualizado com sucesso')
       navigate(`/profile/partner/${auth?.id}`)
     } catch (e) {
@@ -230,19 +265,28 @@ export function EditPartnerProfile() {
     <>
       <Header />
       <div className={`${styles.container} container`}>
-
         <div className={styles.imageContainer}>
           <Breadcrumb type="Abrigos" to={partner.fantasyName} />
-          <Avatar src={previewImage || partner.profilePicture} />
+          <Avatar
+            src={
+              partner?.profilePicture &&
+              `data:${partner?.profilePictureMimeType};base64,${partner?.profilePicture}`
+            }
+          />
           <input
             ref={profileRef}
             onChange={handleSelectImage}
             style={{ display: 'none' }}
             type="file"
-            id='input_profile_picture'
+            id="input_profile_picture"
             accept=".jpeg, .png, .jpg"
           />
-          <button className={styles.button} onClick={() => profileRef?.current?.click()}>Trocar foto</button>
+          <button
+            className={styles.button}
+            onClick={() => profileRef?.current?.click()}
+          >
+            Trocar foto
+          </button>
         </div>
         <div className={styles.profileContainer}>
           <div className={styles.profileHeader}>
@@ -332,9 +376,9 @@ export function EditPartnerProfile() {
                   !cities[partner.uf]
                     ? [{ value: '', label: 'Selecione um Estado' }]
                     : cities[partner.uf].map(city => ({
-                      label: city,
-                      value: city,
-                    }))
+                        label: city,
+                        value: city,
+                      }))
                 }
                 width="50%"
               />

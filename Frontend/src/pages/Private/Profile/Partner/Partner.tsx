@@ -32,7 +32,7 @@ export function PartnerProfile() {
           { signal: abortController.signal },
         )
         isMounted && setUser(response.data)
-      } catch (error) { }
+      } catch (error) {}
     }
 
     fetchProfile()
@@ -41,36 +41,40 @@ export function PartnerProfile() {
       isMounted = false
       abortController.abort()
     }
-  }, []);
+  }, [])
 
   const updateCoupon = (coupon: CouponType) => {
     if (!user) {
-      return;
+      return
     }
 
     // Procura um cupom da tabela
-    const index = user.coupons.findIndex(_coupon => _coupon.id === coupon.id);
+    const index = user.coupons.findIndex(_coupon => _coupon.id === coupon.id)
 
     // Atualizando um cupom na tabela
     if (index > -1) {
-      const coupons = user.coupons;
-      coupons[index] = coupon;
-      setUser(prev => prev && {
-        ...prev,
-        coupons
-      });
+      const coupons = user.coupons
+      coupons[index] = coupon
+      setUser(
+        prev =>
+          prev && {
+            ...prev,
+            coupons,
+          },
+      )
     }
 
     // Inserindo um cupom na tabela
     else {
-      setUser(prev => prev && {
-        ...prev,
-        coupons: [...prev.coupons, coupon]
-      });
+      setUser(
+        prev =>
+          prev && {
+            ...prev,
+            coupons: [...prev.coupons, coupon],
+          },
+      )
     }
   }
-
-  console.log(user?.profilePicture)
 
   return (
     <>
@@ -78,7 +82,12 @@ export function PartnerProfile() {
       <div className={`${styles.container} container`}>
         <div className={styles.imageContainer}>
           <Breadcrumb type="Parceiros" to={user?.fantasyName} />
-          <Avatar src={`data:${user?.profilePictureMimeType};base64,${user?.profilePicture}`} />
+          <Avatar
+            src={
+              user?.profilePicture &&
+              `data:${user?.profilePictureMimeType};base64,${user?.profilePicture}`
+            }
+          />
         </div>
         <div className={styles.profileContainer}>
           <div className={styles.profileHeader}>
@@ -98,7 +107,9 @@ export function PartnerProfile() {
             )}
           </div>
 
-          {user && <CouponTable coupons={user.coupons} onSuccess={updateCoupon} />}
+          {user && (
+            <CouponTable coupons={user.coupons} onSuccess={updateCoupon} />
+          )}
         </div>
       </div>
       <Footer />

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { api } from '../../../../services/api'
 
-import styles from './Partner.module.css'
+import styles from './PartnerList.module.css'
 
 import AvatarImage from '../../../../assets/avatar-img.jpg'
 
@@ -20,7 +20,7 @@ interface IBGECityResponse {
   nome: string
 }
 
-export function Partner() {
+export function PartnerList() {
   const [partners, setPartners] = useState([])
 
   const [partnerName, setPartnerName] = useState('')

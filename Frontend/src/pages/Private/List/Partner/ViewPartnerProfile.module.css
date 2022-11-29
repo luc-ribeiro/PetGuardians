@@ -38,3 +38,8 @@
   font-size: 16px;
   color: var(--c12);
 }
+
+.loading {
+  margin: 0 auto;
+  padding: 300px 0;
+}

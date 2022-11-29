@@ -9,31 +9,30 @@ import usePrivateApi from '../../../../../hooks/useAxiosPrivate'
 import { CouponType } from '../../../../../types/Coupon'
 
 interface CouponTableProps {
-  coupons: CouponType[],
+  coupons: CouponType[]
   onSuccess(coupon: CouponType): void
 }
 export function CouponTable({ coupons, onSuccess }: CouponTableProps) {
   const api = usePrivateApi()
-  const [coupon, setCoupon] = useState<CouponType | null>(null);
+  const [coupon, setCoupon] = useState<CouponType | null>(null)
 
   async function handleSubmit(event: any) {
-    event.preventDefault();
+    event.preventDefault()
     if (!coupon) {
-      return;
+      return
     }
 
     try {
       if (coupon.id) {
-        await api.patch(`partner/coupon/${coupon.id}`, coupon);
+        await api.patch(`partner/coupon/${coupon.id}`, coupon)
         alert('Cupom alterado com sucesso')
-      }
-      else {
-        const response = await api.post(`partner/coupon/`, coupon);
-        coupon.id = response.data;
+      } else {
+        const response = await api.post(`partner/coupon/`, coupon)
+        coupon.id = response.data
         alert('Cupom cadastrado com sucesso')
       }
-      onSuccess(coupon);
-      setCoupon(null);
+      onSuccess(coupon)
+      setCoupon(null)
     } catch (e) {
       console.log('Cupom não alterado')
     }
@@ -43,7 +42,10 @@ export function CouponTable({ coupons, onSuccess }: CouponTableProps) {
     <div className={styles.tableContainer}>
       <div className={styles.tableHeader}>
         <h3>Cupons Cadastrados</h3>
-        <button onClick={() => setCoupon({} as CouponType)} className={styles.buttonAdd}>
+        <button
+          onClick={() => setCoupon({} as CouponType)}
+          className={styles.buttonAdd}
+        >
           Cadastrar Cupom
         </button>
       </div>
@@ -55,27 +57,26 @@ export function CouponTable({ coupons, onSuccess }: CouponTableProps) {
           </tr>
         </thead>
         <tbody>
-          {
-            !coupons.length
-              ? <div>Sem cupom cadastrado</div>
-              : coupons.map(coupon => (
-                <tr key={coupon.id}>
-                  <td>{coupon.code}</td>
-                  <td>{coupon.active ? 'Ativo' : 'Inativo'}</td>
-                  <td>
-                    <button
-                      className={styles.iconButton}
-                      onClick={() => setCoupon(coupon)}
-                    >
-                      <EditIcon />
-                    </button>
-                  </td>
-                </tr>
-              ))
-          }
+          {!coupons.length ? (
+            <div>Sem cupom cadastrado</div>
+          ) : (
+            coupons.map(coupon => (
+              <tr key={coupon.id}>
+                <td>{coupon.code}</td>
+                <td>{coupon.active ? 'Ativo' : 'Inativo'}</td>
+                <td>
+                  <button
+                    className={styles.iconButton}
+                    onClick={() => setCoupon(coupon)}
+                  >
+                    <EditIcon />
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
-
 
       <Modal
         isOpen={!!coupon}
@@ -83,8 +84,7 @@ export function CouponTable({ coupons, onSuccess }: CouponTableProps) {
         className={styles.modal}
         ariaHideApp={false}
       >
-        {
-          coupon &&
+        {coupon && (
           <>
             <div className={styles.headerModal}>
               <h2>{coupon.id ? 'Editar' : 'Cadastrar'} Cupom</h2>
@@ -101,24 +101,33 @@ export function CouponTable({ coupons, onSuccess }: CouponTableProps) {
                 label="Código Cupom"
                 type="text"
                 name="code"
-                onChange={event => setCoupon(prev => prev && { ...prev, code: event.target.value })}
+                onChange={event =>
+                  setCoupon(
+                    prev => prev && { ...prev, code: event.target.value },
+                  )
+                }
                 value={coupon.code}
               />
-              {
-                coupon.id &&
+              {coupon.id && (
                 <label>
                   <input
                     type="checkbox"
                     checked={coupon?.active}
-                    onChange={() => setCoupon(prev => prev && { ...prev, active: !prev.active })}
+                    onChange={() =>
+                      setCoupon(
+                        prev => prev && { ...prev, active: !prev.active },
+                      )
+                    }
                   />
                   Ativo
                 </label>
-              }
-              <Button type="submit">{coupon.id ? 'Editar' : 'Cadastrar'}</Button>
+              )}
+              <Button type="submit">
+                {coupon.id ? 'Editar' : 'Cadastrar'}
+              </Button>
             </form>
           </>
-        }
+        )}
       </Modal>
     </div>
   )

@@ -10,10 +10,7 @@ export function Avatar({ src }: AvatarProps) {
   return (
     <div className={styles.avatarWrapper}>
       {src ? (
-        <img
-          src={src}
-          className={styles.avatarImg}
-        />
+        <img src={src} className={styles.avatarImg} />
       ) : (
         <img src={avatarImg} className={styles.avatarImg} />
       )}

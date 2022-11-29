@@ -77,7 +77,11 @@ export function Header() {
               <div className={styles.userContainer}>
                 <img
                   className={styles.userAvatar}
-                  src={auth.profilePicture || imgPlaceholder}
+                  src={
+                    (user.profilePicture &&
+                      `data:${user.profilePictureMimeType};base64,${user.profilePicture}`) ||
+                    imgPlaceholder
+                  }
                 />
                 <p className={styles.userProfile}>Meu perfil</p>
               </div>
