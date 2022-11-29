@@ -105,29 +105,30 @@ public class ShelterController : ControllerBase
     [AllowAnonymous]
     public ActionResult Read(int id)
     {
-        var shelter = _context.Shelters.Where(d => d.Id == id && d.Active).Select(d => new
+        var shelter = _context.Shelters.Where(s => s.Id == id && s.Active).Select(s => new
         {
-            id = d.Id,
-            name = d.Name,
-            gcg = d.GCG,
-            telephone = d.Telephone,
-            cep = d.CEP,
-            uf = d.UF,
-            city = d.City,
-            street = d.Street,
-            streetNumber = d.StreetNumber,
-            district = d.District,
-            complement = d.Complement,
-            email = d.Email,
-            profilePicture = d.ProfilePicture,
-            profilePictureMimeType = d.ProfilePictureMimeType,
-            Donations = d.Donations.Select(d => new
+            id = s.Id,
+            name = s.Name,
+            gcg = s.GCG,
+            telephone = s.Telephone,
+            cep = s.CEP,
+            uf = s.UF,
+            city = s.City,
+            street = s.Street,
+            streetNumber = s.StreetNumber,
+            district = s.District,
+            complement = s.Complement,
+            email = s.Email,
+            profilePicture = s.ProfilePicture,
+            profilePictureMimeType = s.ProfilePictureMimeType,
+            fantasyName = s.FantasyName,
+            Donations = s.Donations.Select(d => new
             {
                 id = d.Id,
                 donor = d.Donor.Name,
                 approved = d.Approved,
                 approvedAt = d.ApprovedAt,
-                value = d.Value,
+                value = d.Value / 100,
                 keyPIX = d.KeyPix,
                 createdAt = d.CreatedAt
             }).ToList()

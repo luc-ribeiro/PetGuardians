@@ -121,10 +121,10 @@ public class DonorController : ControllerBase
             profilePictureMimeType = d.ProfilePictureMimeType,
             Donations = d.Donations.Select(d => new
             {
-                shelter = d.Shelter.Name,
+                shelter = d.Shelter.FantasyName,
                 approved = d.Approved,
                 approvedAt = d.ApprovedAt,
-                value = d.Value,
+                value = d.Value / 100,
                 keyPIX = d.KeyPix
             }).ToList()
         }).FirstOrDefault();
