@@ -84,3 +84,17 @@
   font: 700 24px/32px var(--type-text);
   color: var(--c8);
 }
+
+.checkbox {
+  font: 400 16px/22px var(--type-text);
+  color: var(--c9);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.checkbox input {
+  background-color: var(--c10);
+  color: var(--c10);
+}

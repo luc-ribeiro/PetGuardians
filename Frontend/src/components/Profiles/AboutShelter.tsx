@@ -4,15 +4,14 @@ import ShelterImage1 from '../../assets/shelter-image-1.jpg'
 import ShelterImage2 from '../../assets/shelter-image-2.jpg'
 import ShelterImage3 from '../../assets/shelter-image-3.jpg'
 import ShelterImage4 from '../../assets/shelter-image-4.jpg'
+import { ImageType } from '../../types/Image'
 
 interface AboutProps {
   about?: string | undefined | null
-  images?: []
-  type?: string
-  src?: string
+  images?: ImageType[]
 }
 
-export function AboutShelter({ about, images, type, src }: AboutProps) {
+export function AboutShelter({ about, images }: AboutProps) {
   return (
     <div className={styles.aboutContainer}>
       <h3>Sobre nós</h3>
@@ -22,9 +21,9 @@ export function AboutShelter({ about, images, type, src }: AboutProps) {
       </p>
 
       <div className={styles.imageContainer}>
-        {/* {images.forEach(image => (
-          <img src={`data:${type};base64, ${src}`} alt="" />
-        ))} */}
+        {images?.map(image => (
+          <img src={`data:${image.mimeType};base64, ${image.base64}`} alt="" />
+        ))}
       </div>
     </div>
   )

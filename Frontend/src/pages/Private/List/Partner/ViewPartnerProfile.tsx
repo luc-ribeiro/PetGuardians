@@ -52,12 +52,13 @@ export function ViewPartnerProfile() {
               <p className={styles.userCity}>
                 {partner?.street} {partner?.streetNumber}, {partner?.district},
                 CEP {partner?.cep}, {partner?.city} - {partner?.uf}
-                <Link
+                <a
                   className={styles.linkPartner}
-                  to={partner?.linkSite || ''}
+                  href={partner?.linkSite}
+                  target="_blank"
                 >
                   Site: {partner?.linkSite}
-                </Link>
+                </a>
               </p>
 
               {auth?.id == partner?.id && (

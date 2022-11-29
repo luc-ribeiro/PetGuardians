@@ -96,7 +96,7 @@ export function PartnerList() {
             <Input
               type="text"
               name="nome"
-              label="Nome do abrigo"
+              label="Nome do parceiro (opcional)"
               value={partnerName}
               placeholder="Pesquisar"
               onChange={({ target }) => {

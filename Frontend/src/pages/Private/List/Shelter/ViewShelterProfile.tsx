@@ -19,6 +19,7 @@ import { DonationsCounter } from '../../../../components/Profiles/DonationsCount
 import { ReactComponent as CloseIcon } from '../../../../assets/Close-Icon.svg'
 import { Input } from '../../../../components/Forms/Input'
 import { Button } from '../../../../components/Forms/Button'
+import { formatCep } from '../../../../utils/stringFormatter'
 
 export function ViewShelterProfile() {
   const { id } = useParams()
@@ -78,7 +79,8 @@ export function ViewShelterProfile() {
               <h1 className={styles.userName}>{shelter?.fantasyName}</h1>
               <p className={styles.userCity}>
                 {shelter?.street} {shelter?.streetNumber}, {shelter?.district},
-                CEP {shelter?.cep}, {shelter?.city} - {shelter?.uf}
+                CEP {formatCep(shelter?.cep || '')}, {shelter?.city} -{' '}
+                {shelter?.uf}
               </p>
 
               <div className={styles.buttonsContainer}>
@@ -96,7 +98,12 @@ export function ViewShelterProfile() {
               </div>
             </div>
             <div className={styles.qtdDonationsContainer}>
-              {shelter && <DonationsCounter total={shelter.donations} />}
+              {shelter && (
+                <DonationsCounter
+                  donations={shelter.donations}
+                  type="recebidas"
+                />
+              )}
             </div>
             {auth?.id != shelter?.id && (
               <Modal
@@ -107,12 +114,19 @@ export function ViewShelterProfile() {
               >
                 <div className={styles.headerModal}>
                   <h2>Realizar Doação</h2>
+
                   <button className={styles.iconButton} onClick={closeModal}>
                     <CloseIcon />
                   </button>
                 </div>
 
                 <form onSubmit={handleSubmit}>
+                  <p className={styles.pixLabel}>
+                    Após clicar em confirmar, realize o pagamento com o valor
+                    desejado utilizando seu banco de preferência e aguarde até o
+                    abrigo aprovar o recebimento :]
+                  </p>
+                  <p className={styles.pix}>Chave PIX: {shelter?.keyPIX}</p>
                   <Button type="submit">Confirmar Doação</Button>
                 </form>
               </Modal>

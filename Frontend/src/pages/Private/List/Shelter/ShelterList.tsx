@@ -94,7 +94,7 @@ export function ShelterList() {
             <Input
               type="text"
               name="nome"
-              label="Nome do abrigo"
+              label="Nome do abrigo (opcional)"
               value={shelterName}
               placeholder="Pesquisar"
               onChange={({ target }) => {

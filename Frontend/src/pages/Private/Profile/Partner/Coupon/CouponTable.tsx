@@ -109,7 +109,7 @@ export function CouponTable({ coupons, onSuccess }: CouponTableProps) {
                 value={coupon.code}
               />
               {coupon.id && (
-                <label>
+                <label className={styles.checkbox}>
                   <input
                     type="checkbox"
                     checked={coupon?.active}

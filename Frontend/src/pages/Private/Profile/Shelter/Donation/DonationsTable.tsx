@@ -13,9 +13,10 @@ import moment from 'moment'
 
 interface DonationTableProps {
   donations: DonationType[]
+  onSuccess(donation: DonationType): void
 }
 
-export function DonationsTable({ donations }: DonationTableProps) {
+export function DonationsTable({ donations, onSuccess }: DonationTableProps) {
   const { id } = useParams()
   const api = usePrivateApi()
   const [donation, setDonation] = useState<DonationType | null>(null)
@@ -32,6 +33,7 @@ export function DonationsTable({ donations }: DonationTableProps) {
     try {
       await api.patch(`/donation/${donation?.id}`, value)
       alert('Doação aprovada com sucesso')
+      onSuccess(donation)
     } catch (e) {
       console.log('Doação não aprovada')
     }
@@ -44,6 +46,7 @@ export function DonationsTable({ donations }: DonationTableProps) {
       <table className={styles.table}>
         <thead>
           <tr>
+            <th></th>
             <th>Data</th>
             <th>Valor</th>
             <th>Status</th>
@@ -55,6 +58,8 @@ export function DonationsTable({ donations }: DonationTableProps) {
           ) : (
             donations.map(donation => (
               <tr key={donation.id}>
+                <td>{donation.id}</td>
+                {/* <td>{donation.donor.name}</td> */}
                 <td>{moment(donation.createdAt).format('DD/MM/YYYY HH:mm')}</td>
                 <td>{donation.value / 100}</td>
                 <td>{donation.approved ? 'Aprovada' : 'Pendente'}</td>
@@ -97,13 +102,14 @@ export function DonationsTable({ donations }: DonationTableProps) {
                 name="value"
                 onChange={event =>
                   setDonation(
-                    prev => prev && { ...prev, value: event.target.value },
+                    prev =>
+                      prev && { ...prev, value: Number(event.target.value) },
                   )
                 }
                 value={donation.value}
               />
               {donation.id && (
-                <label>
+                <label className={styles.checkbox}>
                   <input
                     type="checkbox"
                     checked={donation?.approved}

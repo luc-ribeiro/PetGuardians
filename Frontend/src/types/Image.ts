@@ -1,5 +1,5 @@
-export interface Image {
-    id: number,
-    base64: string,
-    mimeType: string
+export interface ImageType {
+  id: number
+  base64: string
+  mimeType: string
 }

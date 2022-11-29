@@ -106,3 +106,18 @@
   margin: 0 auto;
   padding: 300px 0;
 }
+
+.pixLabel {
+  max-width: 40ch;
+}
+
+.pixLabel,
+.pix {
+  font: 400 16px/24px var(--type-text);
+  color: var(--c10);
+}
+
+.pix {
+  margin: 16px 0;
+  font: 600 20px/30px var(--type-text);
+}

@@ -14,6 +14,7 @@ import usePrivateApi from '../../../../hooks/useAxiosPrivate'
 import { ShelterType } from '../../../../types/Shelter'
 import { AboutShelter } from '../../../../components/Profiles/AboutShelter'
 import { DonationsCounter } from '../../../../components/Profiles/DonationsCounter'
+import { DonationType } from '../../../../types/Donation'
 
 export function ShelterProfile() {
   const { auth } = useAuth()
@@ -41,6 +42,41 @@ export function ShelterProfile() {
     }
   }, [])
 
+  const updateDonation = (donation: DonationType) => {
+    if (!user) {
+      return
+    }
+
+    // Procura um cupom da tabela
+    const index = user.donations.findIndex(
+      _donation => _donation.id === donation.id,
+    )
+
+    // Atualizando um cupom na tabela
+    if (index > -1) {
+      const donations = user.donations
+      donations[index] = donation
+      setUser(
+        prev =>
+          prev && {
+            ...prev,
+            donation,
+          },
+      )
+    }
+
+    // Inserindo um cupom na tabela
+    else {
+      setUser(
+        prev =>
+          prev && {
+            ...prev,
+            donations: [...prev.donations, donation],
+          },
+      )
+    }
+  }
+
   return (
     <>
       <Header />
@@ -66,11 +102,18 @@ export function ShelterProfile() {
             </div>
           </div>
           <div className={styles.qtdDonationsContainer}>
-            {user && <DonationsCounter total={user.donations} />}
+            {user && (
+              <DonationsCounter donations={user.donations} type="recebidas" />
+            )}
           </div>
 
           {user && <AboutShelter about={user.about} images={user.images} />}
-          {user && <DonationsTable donations={user.donations} />}
+          {user && (
+            <DonationsTable
+              donations={user.donations}
+              onSuccess={updateDonation}
+            />
+          )}
         </div>
       </div>
       <Footer />
