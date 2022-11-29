@@ -124,7 +124,8 @@ public class ShelterController : ControllerBase
             fantasyName = s.FantasyName,
             about = s.About,
             keyPIX = s.KeyPIX,
-            images = s.Images.Select(i => new{
+            images = s.Images.Select(i => new
+            {
                 id = i.Id,
                 mimeType = i.MimeType,
                 base64 = i.Base64
@@ -138,7 +139,7 @@ public class ShelterController : ControllerBase
                 value = d.Value / 100,
                 keyPIX = d.KeyPix,
                 createdAt = d.CreatedAt
-            }).ToList()
+            }).OrderByDescending(d => d.createdAt).ToList()
         }).FirstOrDefault();
 
         if (shelter == null)
