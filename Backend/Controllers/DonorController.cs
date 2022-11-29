@@ -127,7 +127,7 @@ public class DonorController : ControllerBase
                 value = d.Value,
                 keyPIX = d.KeyPix
             }).ToList()
-        });
+        }).FirstOrDefault();
 
         if (_donor == null)
         {

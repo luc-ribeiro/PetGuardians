@@ -131,7 +131,7 @@ public class ShelterController : ControllerBase
                 keyPIX = d.KeyPix,
                 createdAt = d.CreatedAt
             }).ToList()
-        });
+        }).FirstOrDefault();
 
         if (shelter == null)
         {
