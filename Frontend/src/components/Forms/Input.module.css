@@ -18,3 +18,8 @@
   background-color: var(--c2);
   width: 100%;
 }
+
+.input:disabled {
+  background-color: var(--c3);
+  color: var(--c6);
+}

@@ -67,6 +67,35 @@
   background-color: var(--p4);
 }
 
+.userContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.userAvatar {
+  border-radius: 50%;
+  width: 32px;
+}
+
+.userProfile {
+  font: 600 18px/24px var(--type-text);
+  color: var(--c9);
+}
+
+.logout {
+  padding: 8px 16px;
+  cursor: pointer;
+  color: var(--p2) !important;
+  border-radius: 8px;
+  transition: background 0.5s;
+  font-size: 16px;
+  font-weight: 600;
+  outline: 0;
+  border: 0;
+}
+
 .searchInput {
   outline: 0;
   padding: 10px 16px;

@@ -1,3 +1,7 @@
+https://www.abierto.cc/shop/product/30869/fenderino-guitar-shield-arduino-board-included/
+https://produto.mercadolivre.com.br/MLB-1227232952-10-pecas-transdutor-piezo-piezoeletrico-20mm-promoco-_JM#position=7&search_layout=grid&type=item&tracking_id=5f626fc6-c605-463f-b77f-50d00961cef3
+
+
 dotnet new --list 
 dotnet new web -o GameBackend
 

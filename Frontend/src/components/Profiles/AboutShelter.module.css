@@ -15,12 +15,13 @@
 
 .aboutText {
   margin-top: 24px;
-  font: 400 14px/18px var(--type-text);
+  font: 400 16px/20px var(--type-text);
 }
 
 .imageContainer {
   margin-top: 40px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
 }

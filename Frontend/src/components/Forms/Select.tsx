@@ -2,10 +2,10 @@ import { SelectHTMLAttributes } from 'react'
 import styles from './Select.module.css'
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
-  name: string
+  name?: string
   label: string
   options: Array<{
-    value: string
+    value: string | boolean
     label: string
   }>
   width?: string

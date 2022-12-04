@@ -1,0 +1,100 @@
+.tableContainer {
+  background-color: var(--w);
+  border-radius: 8px;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+  margin-top: 52px;
+  padding: 24px 64px;
+  font-family: var(--type-text);
+  color: var(--c9);
+}
+
+.tableHeader {
+  display: flex;
+  align-items: center;
+}
+
+.buttonAdd {
+  padding: 8px;
+  background: linear-gradient(180deg, #1f9eac 0%, #108592 58.55%, #067380 100%);
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+  color: var(--w);
+  border-radius: 8px;
+  display: inline-block;
+
+  font: 600 14px/20px var(--type-text);
+  border: 0;
+  cursor: pointer;
+  margin-right: -48px;
+}
+
+.tableContainer h3 {
+  text-align: center;
+  font-weight: 400;
+  margin: 0 auto;
+  padding-left: 40px;
+  color: var(--c8);
+}
+
+.table {
+  margin-top: 32px;
+  width: 100%;
+}
+
+.table th {
+  text-align: left;
+  padding-bottom: 8px;
+}
+
+.table td {
+  padding-bottom: 8px;
+}
+
+.modal {
+  top: 50%;
+  left: 50%;
+  border-radius: 8px;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+
+  transform: translate(-50%, -50%);
+  background-color: var(--w);
+  position: absolute;
+  padding: 32px;
+}
+
+.headerModal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.iconButton {
+  outline: 0;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.modal h2 {
+  font: 700 24px/32px var(--type-text);
+  color: var(--c8);
+}
+
+.checkbox {
+  font: 400 16px/22px var(--type-text);
+  color: var(--c9);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.checkbox input {
+  background-color: var(--c10);
+  color: var(--c10);
+}

@@ -4,13 +4,14 @@ import styles from './Input.module.css'
 interface InputProps {
   label?: string
   type: string
-  name: string
+  name?: string
   placeholder?: string
-  value?: string
+  value?: string | number
   onChange?: ChangeEventHandler<HTMLInputElement>
   error?: ReactNode
   onBlur?: FocusEventHandler<HTMLInputElement>
-  width?: string
+  width?: string,
+  disabled?: boolean
 }
 
 export function Input({
@@ -23,6 +24,7 @@ export function Input({
   error,
   onBlur,
   width = '100%',
+  disabled
 }: InputProps) {
   return (
     <div className={styles.wrapper} style={{ width }}>
@@ -38,6 +40,7 @@ export function Input({
         value={value}
         onChange={onChange}
         onBlur={onBlur}
+        disabled={disabled}
       />
       {error && <p className={styles.error}>{error}</p>}
     </div>

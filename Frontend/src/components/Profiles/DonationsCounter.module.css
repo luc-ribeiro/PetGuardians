@@ -1,0 +1,8 @@
+.totalDonations {
+  font: 700 32px/48px var(--type-title);
+  color: var(--c8);
+}
+
+.totalDonations span {
+  font: 400 20px/30px var(--type-text);
+}
