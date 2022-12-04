@@ -48,7 +48,12 @@ export function DonorProfile() {
       <div className={`${styles.container} container`}>
         <div className={styles.imageContainer}>
           <Breadcrumb type="Doador" to={user?.name} />
-          <Avatar src={user?.profilePicture} />
+          <Avatar
+            src={
+              user?.profilePicture &&
+              `data:${user?.profilePictureMimeType};base64,${user?.profilePicture}`
+            }
+          />
         </div>
         <div className={styles.profileContainer}>
           <div className={styles.profileHeader}>

@@ -132,9 +132,9 @@ export function ShelterList() {
       </div>
 
       <main className={`${styles.mainWrapper} container`}>
-        <div className={styles.shelter}>
-          {shelters.map((shelter: any) => {
-            return (
+        {shelters.map((shelter: any) => {
+          return (
+            <div className={styles.shelter}>
               <Link to={`/shelter/${shelter.id}`} key={shelter.id}>
                 <div>
                   <img
@@ -149,9 +149,9 @@ export function ShelterList() {
                   </p>
                 </div>
               </Link>
-            )
-          })}
-        </div>
+            </div>
+          )
+        })}
       </main>
 
       <Footer />

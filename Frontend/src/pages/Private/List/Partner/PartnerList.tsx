@@ -134,9 +134,9 @@ export function PartnerList() {
       </div>
 
       <main className={`${styles.mainWrapper} container`}>
-        <div className={styles.partner}>
-          {partners.map((partner: any) => {
-            return (
+        {partners.map((partner: any) => {
+          return (
+            <div className={styles.partner}>
               <Link to={`/partner/${partner.id}`} key={partner.id}>
                 <div>
                   {partner.profilePicture ? (
@@ -154,9 +154,9 @@ export function PartnerList() {
                   </p>
                 </div>
               </Link>
-            )
-          })}
-        </div>
+            </div>
+          )
+        })}
       </main>
 
       <Footer />
