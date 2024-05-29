@@ -1,11 +1,17 @@
 # PetGuardians
 
-Projeto criado para o interdisciplinar do curso de Análise e Desenvolvimento de Sistemas da FATEC Rio Preto.
+<div align="right">
+    Clique <a href="https://github.com/luc-ribeiro/PetGuardians/blob/main/README-PTBR.md">aqui</a> para ver a versão em Português.
+</div>
 
-Consiste em uma plataforma onde abrigos de animais podem se cadastrar e receber doações dos doadores cadastrados na plataforma.
-Também é possível que entidades que queiram ser parceiros dos abrigos possam se cadastrar e adicionar cupons para descontos para os doadores que tenham feito uma doação no abrigo parceiro.
+<br>
+<br>
 
-Integrantes do projeto:
+This project was created for the interdisciplinary course in Systems Analysis and Development at FATEC Rio Preto.
+
+It consists of a platform where animal shelters can register and receive donations from donors registered on the platform. Entities that want to partner with shelters can also register and add discount coupons for donors who have made a donation to the partner shelter.
+
+Project members:
 
 - Lara Selena Gonçalves Scaranello
 - Laura Caroline Silva
